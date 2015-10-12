@@ -6,7 +6,7 @@ function [ ap ] = create_segments( bmm, trials, envs, predicates, MARGIN, NUM_LE
 % create one cell for each of the different action primitives
 ap = cell(bmm.k,1);
 
-if nargin < 7
+if nargin < 6
     NUM_LEVELS = 6; % limit ourselves to the first 6 levels
 end
 

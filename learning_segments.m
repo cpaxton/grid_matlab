@@ -19,7 +19,9 @@ SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
 SHOW_DATA_LOGLIKELIHOOD = false;
 SKIP_IMG = false;
+
 %DELETE_MOVEMENT_ROTATION = true;
+NUM_LEVELS = 12;
 NFIG = 1;
 NDIM = 7;
 NGATE_FEATURES = 4; %6; %7;
@@ -33,7 +35,7 @@ rng('default')
 %% create individual segments
 ap = create_segments(bmm, trials, envs, predicates, MARGIN);
 if HOLD_OUT
-    apt = create_segments(bmm, test_trials, envs, test_predicates, MARGIN);
+    apt = create_segments(bmm, test_trials, envs, test_predicates, MARGIN, NUM_LEVELS);
 end
 if SHOW_SEGMENTS_EXAMPLE
     draw_registered_action_primitives(bmm,ap);
