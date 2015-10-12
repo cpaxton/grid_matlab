@@ -1,0 +1,13 @@
+figure();clf;
+subplot(2,3,1);
+evaluate_tree([150,950,-0.20]',envs{1},bmm,models,[1 0]);
+subplot(2,3,2);
+evaluate_tree([150,950,-0.20]',envs{2},bmm,models,[4 5 1 0]);
+subplot(2,3,3);
+evaluate_tree([150,950,-0.20]',envs{3},bmm,models,[4 5 1 0]);
+subplot(2,3,4);
+evaluate_tree([150,950,-0.20]',envs{4},bmm,models,[4 2 3 5 1 0]);
+subplot(2,3,5);
+evaluate_tree([150,950,-0.20]',envs{5},bmm,models,[4 2 3 2 3 5 1 0]);
+subplot(2,3,6);
+evaluate_tree([150,850,-0.20]',envs{6},bmm,models,[4 2 3 2 3 5 1 0]);
