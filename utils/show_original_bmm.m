@@ -1,7 +1,7 @@
 
 figure(2); clf;
-for i=1:6
-    h = subplot(,6,i);
+for i=1:12
+    h = subplot(4,3,i);
     draw_environment(envs{i}, true);
     for j=1:length(predicates{i})
         labels = BernoulliAssign(bmm,predicates{i}{j}');
