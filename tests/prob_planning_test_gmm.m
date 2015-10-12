@@ -32,7 +32,7 @@ for i=1:2:N_Z_DIM
 end
 Z  = struct('mu',mu,'sigma',sigma);
 
-current = models{3};
+current = models{4};
 goal = models{2};
 
 traj = prob_planning(x0,current,goal,local_env,next_env);
