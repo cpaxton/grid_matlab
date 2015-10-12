@@ -20,3 +20,13 @@ learning_segments % learns models associated with each predicate
 ```
 
 You can then try a few different experiments.
+
+### Visualize Actions
+
+You can show the current set of actions on levels 1-12 with:
+
+```
+show_original_bmm
+```
+
+Colors correspond to different actions.

@@ -33,10 +33,8 @@ HOLD_OUT = true;
 rng('default')
 
 %% create individual segments
-ap = create_segments(bmm, trials, envs, predicates, MARGIN);
-if HOLD_OUT
-    apt = create_segments(bmm, test_trials, envs, test_predicates, MARGIN, NUM_LEVELS);
-end
+ap = create_segments(bmm, trials, envs, predicates, MARGIN, NUM_LEVELS);
+
 if SHOW_SEGMENTS_EXAMPLE
     draw_registered_action_primitives(bmm,ap);
 end
