@@ -16,7 +16,7 @@ if bmm.k <= 3
     end
 else
     % plan ends with an "exit" action and goes to the final exit state
-    plan = [1 6];
+    plan = [1 5];
     ngates = length(env.gates);
     
     prev_gate = [];
@@ -24,7 +24,7 @@ else
     
     if ngates > 0
         
-        plan = [5 plan];
+        plan = [3 plan];
         
         prev_gate = ngates;
         next_gate = ngates+1;

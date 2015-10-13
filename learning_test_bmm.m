@@ -5,35 +5,28 @@ SKIP_FORWARD_BACKWARD = true;
 % test_needle;
 
 D = size(predicates{1}{1},1);
-K = 6;
+K = 5;
 p = zeros(D, K);
 prior = zeros(1,K);
 
 input = [];
-for i=1:6
+for i=1:12 % all levels
     for j=1:length(predicates{i})
         input = [input predicates{i}{j}];
         goals = next_goal(trials{i}{j},envs{i});
         
         for ii=1:size(predicates{i}{j},2)
             if trials{i}{j}.x(ii) >= envs{i}.width
-                % class 6
-                p(:,6) = p(:,6) + predicates{i}{j}(:,ii);
-                prior(6) = prior(6) + 1;
-            elseif goals(ii) > length(envs{i}.gates) && ~in_gates(trials{i}{j}.x(ii),trials{i}{j}.y(ii),envs{i}.gates)
-                % class 1
-                p(:,1) = p(:,1) + predicates{i}{j}(:,ii);
-                prior(1) = prior(1) + 1;
-            %elseif trials{i}{j}.x(ii) > envs{i}.width
-            %    p(:,6) = p(:,1) + predicates{i}{j}(:,ii);
-            %    prior(6) = prior(6) + 1;
-            elseif goals(ii) > length(envs{i}.gates)
-                % class 5
+                % class 5 = DONE LEVEL
                 p(:,5) = p(:,5) + predicates{i}{j}(:,ii);
                 prior(5) = prior(5) + 1;
             elseif in_gates(trials{i}{j}.x(ii),trials{i}{j}.y(ii),envs{i}.gates);
                 p(:,2) = p(:,2) + predicates{i}{j}(:,ii);
                 prior(2) = prior(2) + 1;
+            elseif goals(ii) > length(envs{i}.gates) %&& ~in_gates(trials{i}{j}.x(ii),trials{i}{j}.y(ii),envs{i}.gates)
+                % class 1 = EXIT
+                p(:,1) = p(:,1) + predicates{i}{j}(:,ii);
+                prior(1) = prior(1) + 1;
             elseif goals(ii) <= length(envs{i}.gates) && goals(ii) > 1
                 p(:,3) = p(:,3) + predicates{i}{j}(:,ii);
                 prior(3) = prior(3) + 1;
