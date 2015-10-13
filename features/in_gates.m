@@ -11,8 +11,13 @@ else
 
 in_gates = zeros(length(gates),length(x));
 for i=1:length(gates)
-    in = inpolygon(x,y,gates{i}.corners(1,:),gates{i}.corners(2,:));
-    in_gates(i,:) = in;
+    for j = 1:length(gates{i})
+        in = inpolygon(x,y,gates{i}{j}.corners(1,:),gates{i}{j}.corners(2,:));
+        in_gates(i,:) = in;
+        if in > 0
+            break
+        end
+    end
 end
 in_gates = [in_gates;zeros(size(x))];
 [in,idx] = max(in_gates);

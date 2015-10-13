@@ -1,4 +1,4 @@
-function [trials, features, predicates] = load_dataset(envs,dirname,nlevels)
+function [trials, predicates] = load_dataset(envs,dirname,nlevels)
 
 lengths = ones(nlevels,1);
 trials = cell(nlevels,1);
@@ -17,17 +17,15 @@ end
 
 %% create data to explore
 
-features = cell(6,1);
-predicates = cell(6,1);
+predicates = cell(length(envs),1);
 
 %fprintf('Creating features and predicates...\n');
 
 for i=1:length(trials)
-    features{i} = cell(size(trials{i}));
     predicates{i} = cell(size(trials{i}));
     for j=1:length(trials{i})
-        [Ftmp, Ptmp] = compute_features(trials{i}{j},envs{i});
-        features{i}{j} = Ftmp;
+        traj = [trials{i}{j}.x;trials{i}{j}.y;trials{i}{j}.w;trials{i}{j}.movement;trials{i}{j}.rotation];
+        Ptmp = traj_compute_predicates(traj,envs{i});
         predicates{i}{j} = Ptmp;
         fprintf('... done level %d, trial %d\n',i,j);
     end

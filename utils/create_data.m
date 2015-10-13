@@ -23,8 +23,12 @@ envs = {load_environment('./trials/environment_0.txt'),...
     load_environment('./trials/environment_12.txt'),...
     load_environment('./trials/environment_13.txt')};
 
+%% placeholder because partner gates aren't set up right yet
+envs{11}.gates = {{envs{11}.gates{1}{1},envs{11}.gates{2}{1}}};
+
+%% get training data
 fprintf('Loading training data...\n');
-[trials, features, predicates] = load_dataset(envs,'./trials/',14);
+[trials, predicates] = load_dataset(envs,'./trials/',14);
 
 
 %% plot data showing levels and trials

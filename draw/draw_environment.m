@@ -1,7 +1,7 @@
 function draw_environment( env, gray )
 
 if nargin < 2
-  gray = false;
+    gray = false;
 end
 
 tissue = [232/255 146/255 124/255];
@@ -34,17 +34,19 @@ c3 = [255/255 12/255 150/255 ];
 ce = [0,0,0];
 
 if gray
-  c1 = [0.95, 0.95, 0.95];
-  c2 = [0.75,0.75,0.75];
-  c3 = [0.75,0.75,0.75];
-  ce = [0.66, 0.66, 0.66];
+    c1 = [0.95, 0.95, 0.95];
+    c2 = [0.75,0.75,0.75];
+    c3 = [0.75,0.75,0.75];
+    ce = [0.66, 0.66, 0.66];
 end
 
 hold on;
 for i=1:length(gates)
-   fill(gates{i}.corners(1,:), gates{i}.corners(2,:), c1,'edgeColor',ce);
-   fill(gates{i}.top(1,:), gates{i}.top(2,:), c2,'edgeColor',ce);
-   fill(gates{i}.bottom(1,:), gates{i}.bottom(2,:), c3,'edgeColor',ce);
+    for j=1:length(gates{i})
+        fill(gates{i}{j}.corners(1,:), gates{i}{j}.corners(2,:), c1,'edgeColor',ce);
+        fill(gates{i}{j}.top(1,:), gates{i}{j}.top(2,:), c2,'edgeColor',ce);
+        fill(gates{i}{j}.bottom(1,:), gates{i}{j}.bottom(2,:), c3,'edgeColor',ce);
+    end
 end
 
 end

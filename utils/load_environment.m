@@ -87,7 +87,7 @@ for i=1:nGates
     gate.width = (max(corners(1,:)) - min(corners(1,:)));
     gate.height = (max(corners(2,:)) - min(corners(2,:)));
     
-    gates{i} = gate;
+    gates{i} = {gate};
 end
 
 %% read in number of surfaces
