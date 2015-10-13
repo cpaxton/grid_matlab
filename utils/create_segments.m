@@ -59,10 +59,7 @@ for k=1:bmm.k
                 exit = [envs{i}.width-origin_x;(envs{i}.height / 2)-origin_y;0];
                 exit = rotate_trajectory(exit,-origin_w);
                 samples(next_sample).orig_exit = [envs{i}.width;(envs{i}.height / 2);0];
-                %exit_features = get_end_distance(segs{ex}(1:3,:),exit);
-                %exit_features = [envs{i}.width - segs{ex}(1,:);cos(-segs{ex}(3,:));sin(-segs{ex}(3,:))];
-                
-                %effort_features = [abs(segs{ex}(4,:));abs(segs{ex}(5,:))];
+
                 effort_features = [abs(segs{ex}(5,:))];
                 
                 samples(next_sample).originalData = segs{ex};
