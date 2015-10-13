@@ -1,4 +1,4 @@
-function [goals, state] = next_goal (data, env, next_gate)
+function [goals, state, opts] = next_goal (data, env, next_gate)
 % NEXT_GOAL returns the next goal for each frame in a sequence
 
 gates_done = zeros(size(env.gates)); % store whether or not gates are hit
@@ -9,8 +9,10 @@ end
 
 goals = zeros(size(data.x));
 
+
+[gates,gate_opts]= in_gates(data.x,data.y,env.gates);
 for i = 1:data.length
-    gate = in_gates(data.x(i),data.y(i),env.gates);
+    gate = gates(i);
     if gate > 0
         gates_done(gate) = true;
         if gate == next_gate
@@ -19,6 +21,10 @@ for i = 1:data.length
     end
     goals(i) = next_gate;
 end
+
+gates
+gate_opts
+pause
 
 if nargout > 1
     state = [];
