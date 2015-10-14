@@ -6,9 +6,9 @@ function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env
 %   Z is the initial distribution we will refine
 
 
-STEP_SIZE = 0.75;
-N_SAMPLES = 100;
-N_ITER = 10;
+STEP_SIZE = 0.6;
+N_SAMPLES = 50;
+N_ITER = 20;
 N_PRIMITIVES = 4;
 N_Z_DIM = 2*N_PRIMITIVES;
 N_STEPS = 10;
@@ -85,8 +85,8 @@ while iter < N_ITER
             
             %fprintf('%f / %f\n',p_action,p_goal);
             
-            p(sample) =  exp((p_action + p_goal) - p_z);
-            pg(sample) = exp(p_action + p_goal);
+            p(sample) =  exp(p_action + p_goal);
+            pg(sample) = exp(p_goal);
             
             %if p_goal > -700
             %    ok = true;

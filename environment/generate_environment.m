@@ -25,7 +25,7 @@ for i=1:(num_gates+num_deep_tissue)
         gate_height = 100+normrnd(0.1*height,0.04*height);
         gate_width = 0.6*gate_height; %normrnd(0.21*height,0.10*height);
         w = normrnd(0,0.1);
-        gates{placed_gates+1} = create_gate(gate_x,gate_y,w,gate_width,gate_height);
+        gates{placed_gates+1} = {create_gate(gate_x,gate_y,w,gate_width,gate_height)};
         placed_gates = placed_gates + 1;
     else
         spread = 0.05*height;

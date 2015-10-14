@@ -16,7 +16,6 @@ function prob = gaussPDF(Data, Mu, Sigma)
 %            N datapoints.     
 
 [nbVar,nbData] = size(Data);
-
 Data = Data' - repmat(Mu',nbData,1);
 
 prob = sum((Data*inv(Sigma)).*Data, 2);

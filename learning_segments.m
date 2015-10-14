@@ -5,8 +5,8 @@ use_kmeans = true;
 use_coordinates = true;
 use_dtw = false;
 DEMO_LEN = 50;
-MIN_CLUSTERS = 3;
-MAX_CLUSTERS = 3;
+MIN_CLUSTERS = 1;
+MAX_CLUSTERS = 1;
 PGMM_CLUSTERS = 5;
 USE_EFFORT = true;
 USE_XY = false;
@@ -50,6 +50,11 @@ models = analyze_primitives(ap,models);
 %% loop over the different actions
 % create a model for each one
 for k=1:bmm.k
+    
+    %if k ~= 2
+    %    continue
+    %end
+    
     %% which environmental features are important for this action?
     use_gate = true;
     use_prev_gate = true;
@@ -255,14 +260,20 @@ for k=1:bmm.k
         
         if ~use_pca
             
-            if use_kmeans
-                [Priors, Mu, Sigma] = EM_init_kmeans(trainingData, j);
+            if j == 1
+                Priors = 1;
+                Mu = mean(trainingData,2);
+                Sigma = cov(trainingData')';
             else
-                [Priors, Mu, Sigma] = EM_init_time(trainingData, j);
+                if use_kmeans
+                    [Priors, Mu, Sigma] = EM_init_kmeans(trainingData, j);
+                else
+                    [Priors, Mu, Sigma] = EM_init_time(trainingData, j);
+                end
+                
+                [Priors, Mu, Sigma] = EM(trainingData, Priors, Mu, Sigma);
+                
             end
-            
-            [Priors, Mu, Sigma] = EM(trainingData, Priors, Mu, Sigma);
-            
             tmp_model = struct('priors',Priors,'mu',Mu,'sigma',Sigma);
             
             ll = gmmLogLikelihood(trainingData,tmp_model,j);
