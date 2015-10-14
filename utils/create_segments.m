@@ -51,11 +51,11 @@ for k=1:bmm.k
                 next_opt = opts{ex}(1,:);
                 prev_opt = opts{ex}(2,:);
                 
-                assert(all(next_opt==next_opt(1)));
-                assert(all(prev_opt==prev_opt(1)));
+                %assert(all(next_opt==next_opt(1)));
+                %assert(all(prev_opt==prev_opt(1)));
                 
-                next_opt = next_opt(1);
-                prev_opt = prev_opt(1);
+                next_opt = mode(next_opt);
+                prev_opt = mode(prev_opt);
                 
                 if sen{ex} - sst{ex} < 2
                     %fprintf(' ---> Segment %d only had %d examples, skipping!\n',ex,size(segs{ex},2));
