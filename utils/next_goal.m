@@ -1,4 +1,4 @@
-function [goals, state, opts] = next_goal (data, env, next_gate)
+function [goals, opts, state] = next_goal (data, env, next_gate)
 % NEXT_GOAL returns the next goal for each frame in a sequence
 
 gates_done = zeros(size(env.gates)); % store whether or not gates are hit
@@ -22,12 +22,28 @@ for i = 1:data.length
     goals(i) = next_gate;
 end
 
-gates
-gate_opts
-pause
+ref_opts = zeros(max(goals),1);
+for i = 1:(max(goals)-1) % ASSUME FOR NOW THAT ALL GOALS ARE REACHED
+    option = max(gate_opts(gates==i));
+    ref_opts(i) = option;
+end
 
-if nargout > 1
+next_opt = zeros(size(gate_opts));
+prev_opt = zeros(size(gate_opts));
+for i = 1:length(goals)
+    if goals(i) > 1
+        prev_opt(i) = ref_opts(goals(i)-1);
+    end
+    if goals(i) < next_gate
+        next_opt(i) = ref_opts(goals(i));
+    end
+end
+
+% pack it up
+opts = [next_opt;prev_opt];
+
+if nargout > 2
     state = [];
     state.gates_done = gates_done;
-    state.next_gate = next_gate; 
+    state.next_gate = next_gate;
 end

@@ -40,12 +40,22 @@ for k=1:bmm.k
             segp = split_seq(predicates{i}{j},labels,k,MARGIN);
             
             %% compute the next frame for each time step
-            goals = next_goal(trials{i}{j},envs{i});
+            [goals, opts] = next_goal(trials{i}{j},envs{i});
             
             goals = split_seq(goals,labels,k,MARGIN);
+            opts = split_seq(opts,labels,k,MARGIN);
             
             %% create training example
             for ex=1:length(segs)
+                
+                next_opt = opts{ex}(1,:);
+                prev_opt = opts{ex}(2,:);
+                
+                assert(all(next_opt==next_opt(1)));
+                assert(all(prev_opt==prev_opt(1)));
+                
+                next_opt = next_opt(1);
+                prev_opt = prev_opt(1);
                 
                 if sen{ex} - sst{ex} < 2
                     %fprintf(' ---> Segment %d only had %d examples, skipping!\n',ex,size(segs{ex},2));
@@ -88,10 +98,10 @@ for k=1:bmm.k
                 samples(next_sample).effort_features = effort_features;
                 
                 if  goals{ex}(sst{ex}) <= length(envs{i}.gates)
-                    samples(next_sample).orig_gate = envs{i}.gates{goals{ex}(sst{ex})};
+                    samples(next_sample).orig_gate = envs{i}.gates{goals{ex}(sst{ex})}{next_opt};
                     samples(next_sample).gate = relative_gate(origin_x, ...
                         origin_y, -origin_w, ...
-                        envs{i}.gates{goals{ex}(sst{ex})});
+                        envs{i}.gates{goals{ex}(sst{ex})}{next_opt});
                     samples(next_sample).has_gate = true;
                     samples(next_sample).gate_features = ...
                         get_gate_distances( ...
@@ -104,10 +114,10 @@ for k=1:bmm.k
                 end
                 
                 if goals{ex}(sst{ex}) > 1
-                    samples(next_sample).orig_prev_gate = envs{i}.gates{goals{ex}(sst{ex})-1};
+                    samples(next_sample).orig_prev_gate = envs{i}.gates{goals{ex}(sst{ex})-1}{prev_opt};
                     samples(next_sample).prev_gate = relative_gate(origin_x, ...
                         origin_y, -origin_w, ...
-                        envs{i}.gates{goals{ex}(sst{ex})-1});
+                        envs{i}.gates{goals{ex}(sst{ex})-1}{prev_opt});
                     samples(next_sample).has_prev_gate = true;
                     samples(next_sample).prev_gate_features = ...
                         get_gate_distances( ...
