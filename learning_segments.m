@@ -18,15 +18,15 @@ SHOW_SEGMENTS_EXAMPLE = true;
 SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
 SHOW_DATA_LOGLIKELIHOOD = false;
-SKIP_IMG = false;
+SKIP_IMG = true;
 
 %DELETE_MOVEMENT_ROTATION = true;
-NUM_LEVELS = 6;
+NUM_LEVELS = 8;
 NFIG = 1;
 NDIM = 7;
-NGATE_FEATURES = 4; %6; %7;
+NGATE_FEATURES = 5; %6; %7;
 NEXIT_FEATURES = 2; %3;
-MARGIN = 1;
+MARGIN = 0;
 HOLD_OUT = true;
 
 %% initialize random number generator
