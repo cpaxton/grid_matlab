@@ -4,7 +4,8 @@ function draw_trial( trial )
 
 u = cos(trial.w);
 v = sin(trial.w);
-quiver(trial.x, trial.y, u, v);
+%quiver(trial.x, trial.y, u, v);
+plot(trial.x,trial.y);
 
 end
 

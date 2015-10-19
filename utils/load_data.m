@@ -5,7 +5,6 @@ function [ trial ] = load_data( filename, env, fig )
 if nargin > 2
     figure(fig);
 end
-
 raw = csvread(filename)';
 
 trial = struct('length',size(raw,2),...
