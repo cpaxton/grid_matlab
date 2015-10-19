@@ -6,8 +6,7 @@ use_coordinates = true;
 use_dtw = false;
 DEMO_LEN = 50;
 MIN_CLUSTERS = 1;
-MAX_CLUSTERS = 1;
-PGMM_CLUSTERS = 5;
+MAX_CLUSTERS = 5;
 USE_EFFORT = true;
 USE_XY = false;
 USE_DIFF = true;
@@ -24,10 +23,10 @@ SKIP_IMG = true;
 NUM_LEVELS = 8;
 NFIG = 1;
 NDIM = 7;
-NGATE_FEATURES = 5; %6; %7;
+NGATE_FEATURES = 4; %6; %7;
 NEXIT_FEATURES = 2; %3;
 MARGIN = 0;
-HOLD_OUT = true;
+HOLD_OUT = false;
 
 %% initialize random number generator
 rng('default')
@@ -302,10 +301,10 @@ for k=1:bmm.k
             best_ab = -1*ll;
             best_model = tmp_model;
             best_num = j;
-        elseif a < best_ab
-            best_ab = a;
-            best_model = tmp_model;
-            best_num = j;
+        %elseif ~use_loglik && a < best_ab
+        %    best_ab = a;
+        %    best_model = tmp_model;
+        %    best_num = j;
         end
         
     end
