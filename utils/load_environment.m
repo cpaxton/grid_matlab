@@ -71,7 +71,9 @@ for i=1:nGates
     
     topY = mean(gateTop(2,:));
     bottomY = mean(gateBottom(2,:));
-
+    %topd = mean(sum(gateTop.^2));
+    %bottomd = mean(sum(gateBottom.^2));
+    
     if topY < bottomY
        tmp = gateTop;
        gateTop = gateBottom;

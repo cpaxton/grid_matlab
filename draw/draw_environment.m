@@ -46,6 +46,7 @@ for i=1:length(gates)
         fill(gates{i}{j}.corners(1,:), gates{i}{j}.corners(2,:), c1,'edgeColor',ce);
         fill(gates{i}{j}.top(1,:), gates{i}{j}.top(2,:), c2,'edgeColor',ce);
         fill(gates{i}{j}.bottom(1,:), gates{i}{j}.bottom(2,:), c3,'edgeColor',ce);
+        draw_frame_angle([gates{i}{j}.x;gates{i}{j}.y],gates{i}{j}.w,100);
     end
 end
 

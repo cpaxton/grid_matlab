@@ -31,6 +31,20 @@ envs{11}.gates = {{envs{11}.gates{1}{1},envs{11}.gates{2}{1}}};
 fprintf('Loading training data...\n');
 [trials, predicates] = load_dataset(envs,'./trials/',14);
 
+%% apply corrections based on training data
+% this portion of the code assumes users are passing through the gates from
+% "left" to "right" all of the time
+% the issue is that gates arent' really given in a unified coordinate
+% frame
+for i = 1:length(envs)
+   w = trials{i}{1}.w;
+   [gate,opt] = in_gates(trials{i}{1}.x,trials{i}{1}.y,envs{i}.gates);
+   for j = 1:length(gate)
+       if gate(j) > 0
+           
+       end
+   end
+end
 
 %% plot data showing levels and trials
 
