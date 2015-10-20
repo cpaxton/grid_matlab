@@ -167,7 +167,9 @@ end
 function obs = check_collisions(traj,obstacles)
 obs = 0;
 for i = 1:length(obstacles)
-    if any(inpolygon(traj(1,:),traj(2,:),obstacles{i}.bounds(1,:),obstacles{i}.bounds(2,:)))
+    if ~obstacles{i}.isDeepTissue
+        continue
+    elseif any(inpolygon(traj(1,:),traj(2,:),obstacles{i}.bounds(1,:),obstacles{i}.bounds(2,:)))
         obs = i;
         break;
     end

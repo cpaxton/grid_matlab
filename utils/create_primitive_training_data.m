@@ -2,6 +2,12 @@ function [trainingData,norm_mean,norm_std] = create_primitive_training_data(mode
 
 if ~model.use_diff
     trainingData = [ap.t];
+    if model.use_in_gate
+       trainingData = [trainingData; ap.predicates(1,:)]; 
+    end
+    if model.use_in_tissue
+       trainingData = [trainingData; ap.predicates(5,:)]; 
+    end
     if model.use_xy
         trainingData = [trainingData;ap.trainingData];
     end

@@ -13,7 +13,7 @@ USE_DIFF = true;
 USE_PARAM = false;
 USE_SURFACE_PROXIMITY = false;
 USE_IN_TISSUE = false;
-USE_IN_GATES = false;
+USE_IN_GATE = false;
 SHOW_SEGMENTS_EXAMPLE = true;
 SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
@@ -64,6 +64,16 @@ for k=1:bmm.k
     in_na = 1;
     next_in = 2;
     vars = {'time'};
+    if USE_IN_GATE
+        in = [in next_in];
+        vars{next_in} = 'in_gate';
+        next_in = next_in+1;
+    end
+    if USE_IN_TISSUE
+        in = [in next_in];
+        vars{next_in} = 'in_tissue';
+        next_in = next_in+1;
+    end
     if USE_XY
         in = [in next_in:next_in+2];
         vars{next_in} = 'xy_x';
@@ -170,6 +180,8 @@ for k=1:bmm.k
     models{k}.use_effort = USE_EFFORT;
     models{k}.use_xy = USE_XY;
     models{k}.use_diff = USE_DIFF;
+    models{k}.use_in_gate = USE_IN_GATE;
+    models{k}.use_in_tissue = USE_IN_TISSUE;
     models{k}.use_surface_proximity = USE_SURFACE_PROXIMITY;
     models{k}.in = in;
     models{k}.in_na = in_na;

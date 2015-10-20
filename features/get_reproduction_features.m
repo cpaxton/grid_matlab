@@ -2,6 +2,12 @@ function f = get_reproduction_features(pt,model,local_env,prev_f)
 f = [];
 
 %% compute standard features
+if model.use_in_gate
+    
+end
+if model.use_in_tissue
+    
+end
 if model.use_xy
     f = [f; pt(1:3,:)];
 end

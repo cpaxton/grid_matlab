@@ -16,10 +16,10 @@ N_GEN_SAMPLES = 50*N_SAMPLES;
 
 max_p = 1;
 
-if nargin < 6
+if nargin < 4
     obstacles = {};
 end
-if nargin < 7
+if nargin < 5
     if model.in_gate
         xg = local_env.prev_gate.width;
         local_env.prev_gate.corners
@@ -39,7 +39,7 @@ if nargin < 7
     end
     Z  = struct('mu',mu,'sigma',sigma);
 end
-if nargin < 8
+if nargin < 6
     
 end
 
@@ -134,7 +134,9 @@ end
 function obs = check_collisions(traj,obstacles)
 obs = 0;
 for i = 1:length(obstacles)
-    if any(inpolygon(traj(1,:),traj(2,:),obstacles{i}.bounds(1,:),obstacles{i}.bounds(2,:)))
+    if ~obstacles{i}.isDeepTissue
+        continue
+    elseif any(inpolygon(traj(1,:),traj(2,:),obstacles{i}.bounds(1,:),obstacles{i}.bounds(2,:)))
         obs = i;
         break;
     end
