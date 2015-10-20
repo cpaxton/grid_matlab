@@ -6,7 +6,7 @@ function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env
 %   Z is the initial distribution we will refine
 
 SHOW_FIGURES = false;
-STEP_SIZE = 0.6;
+STEP_SIZE = 0.7;
 N_SAMPLES = 50;
 N_ITER = 20;
 N_PRIMITIVES = 4;
