@@ -1,4 +1,4 @@
-function traj = sample_seq(x0,z)%,t)
+function traj = sample_seq(x0,z)
     num = length(z);
     traj = [];
     for i = 1:3:num

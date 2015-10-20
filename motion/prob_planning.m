@@ -1,4 +1,4 @@
-function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z)
+function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, n_iter)
 %UNTITLED Summary of this function goes here
 %   model is the skill we are using
 %   next_model is the following skill
@@ -27,20 +27,19 @@ if nargin < 7
     else
         xg = x0(1) - local_env.exit(1);
     end
-    %movement_guess = norm(xg) / (N_PRIMITIVES * N_STEPS);
-    %norm(xg(1:2)) / N_PRIMITIVES
-    %fprintf('====%f===%f\n',movement_guess,norm(xg(1:2)) / N_PRIMITIVES);
     movement_guess = 15;
     N_STEPS = ceil(norm(xg) / N_PRIMITIVES / movement_guess);
     
     mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([0;movement_guess;N_STEPS],N_PRIMITIVES,1);
-    %cv = 0.01*cov([trials{1}{1}.rotation;trials{1}{1}.movement]');
     cv = [10 0 0; 0 5 0; 0 0 1];
     sigma = eye(N_Z_DIM);
     for i=1:3:N_Z_DIM
         sigma(i:(i+2),i:(i+2)) = cv;
     end
     Z  = struct('mu',mu,'sigma',sigma);
+end
+if nargin < 8
+    
 end
 
 trajs = cell(N_SAMPLES,1);
@@ -68,7 +67,6 @@ while iter < N_ITER
     sample = 0;
     for i = 1:N_GEN_SAMPLES
         p_z = log(mvnpdf(samples(:,i),Z.mu,Z.sigma));
-        %traj = sample_seq(x0,samples(:,i),N_STEPS);
         traj = sample_seq(x0,samples(:,i));
         
         if check_collisions(traj,obstacles) == 0
