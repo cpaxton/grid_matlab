@@ -6,7 +6,7 @@ if ~model.use_diff
        trainingData = [trainingData; ap.predicates(1,:)]; 
     end
     if model.use_in_tissue
-       trainingData = [trainingData; ap.predicates(5,:)]; 
+       trainingData = [trainingData; ap.in_tissue]; 
     end
     if model.use_xy
         trainingData = [trainingData;ap.trainingData];
