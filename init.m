@@ -21,6 +21,7 @@ EXIT = 1;
 AT_EXIT = 5;
 
 %% show current
+HOLD_OUT = false;
 if ~HOLD_OUT
     show_original_bmm;
 end

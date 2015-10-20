@@ -159,7 +159,7 @@ for k=1:bmm.k
     % set up for tp-gmm model
     %models{k}.nbVar = NDIM;
     %models{k}.nbFrames = 1 + use_gate + use_prev_gate;
-    models{k}.nbStates = PGMM_CLUSTERS;
+    models{k}.nbStates = MIN_CLUSTERS;
     models{k}.color = gmmColors(:,k)';
     models{k}.marker = markers(k);
     models{k}.use_gate = use_gate;
