@@ -14,6 +14,7 @@ addpath('./utils/tightfig');
 addpath('./draw');
 addpath('./motion');
 addpath('./motion/samplers');
+addpath('./motion/helpers');
 addpath('./motion/goal');
 addpath('./gmmgmr');
 addpath('./tests');
