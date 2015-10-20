@@ -15,12 +15,12 @@ for i=1:length(x);
     for j=1:length(y);
         
         if model.use_gate
-            f = get_gate_distances([x(i);y(j);0],env.gates{conf.gate});
+            f = get_gate_distances([x(i);y(j);0],env.gates{conf.gate}{conf.opt});
         else
             f = [];
         end
         if model.use_prev_gate
-            f = [f;get_gate_distances([x(i);y(j);0],env.gates{conf.prev_gate})];
+            f = [f;get_gate_distances([x(i);y(j);0],env.gates{conf.prev_gate}{conf.prev_opt})];
         end
         if model.use_exit
             f = [f;get_end_distance([x(i);y(j);0],env.exit)];
@@ -45,10 +45,10 @@ image(img,'CDataMapping','scaled');
 
 figure(4);clf;hold on;
 if model.use_gate
-    draw_gates({env.gates{conf.gate}});
+    draw_gates({env.gates{conf.gate}{conf.opt}});
 end
 if model.use_prev_gate
-    draw_gates({env.gates{conf.prev_gate}});
+    draw_gates({env.gates{conf.prev_gate}{conf.prev_opt}});
 end
 
 if model.use_exit

@@ -13,6 +13,7 @@ USE_DIFF = true;
 USE_PARAM = false;
 USE_SURFACE_PROXIMITY = false;
 USE_IN_TISSUE = false;
+USE_IN_GATES = false;
 SHOW_SEGMENTS_EXAMPLE = true;
 SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
@@ -333,3 +334,9 @@ for k=1:bmm.k
         scatter(trainingData(1,:),train_ll);
     end
 end
+
+models{1}.num_primitives = 4;
+models{2}.num_primitives = 1;
+models{3}.num_primitives = 4;
+models{4}.num_primitives = 4;
+models{5}.num_primitives = 1;

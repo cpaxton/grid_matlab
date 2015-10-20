@@ -11,5 +11,5 @@ function traj = sample_seq(x0,z)
     end
     %x = zeros(5,1);
     %x(1:3) = dynamics(traj(1:3,end),traj(4:5,end));
-    %traj = [traj x];
+    traj = [traj x0];
 end

@@ -5,14 +5,16 @@ function [ traj, Z ] = prob_planning_no_goal( x0, model, local_env, obstacles, Z
 %   env is a representation of the local environment
 %   Z is the initial distribution we will refine
 
-
-STEP_SIZE = 0.75;
-N_SAMPLES = 100;
+SHOW_FIGURES = false;
+STEP_SIZE = 0.55;
+N_SAMPLES = 75;
 N_ITER = 10;
-N_PRIMITIVES = 4;
-N_Z_DIM = 2*N_PRIMITIVES;
+N_PRIMITIVES = model.num_primitives;
+N_Z_DIM = 3*N_PRIMITIVES;
 N_STEPS = 10;
 N_GEN_SAMPLES = 50*N_SAMPLES;
+
+max_p = 1;
 
 if nargin < 6
     obstacles = {};
@@ -20,25 +22,25 @@ end
 if nargin < 7
     if model.in_gate
         xg = local_env.prev_gate.width;
+        local_env.prev_gate.corners
     elseif model.use_gate
         xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
     else
         xg = x0(1) - local_env.exit(1);
     end
-    %movement_guess = norm(xg) / (N_PRIMITIVES * N_STEPS);
-    %norm(xg(1:2)) / N_PRIMITIVES
-    %fprintf('====%f===%f\n',movement_guess,norm(xg(1:2)) / N_PRIMITIVES);
-    movement_guess = 15;
+    movement_guess = model.movement_mean;
     N_STEPS = ceil(norm(xg) / N_PRIMITIVES / movement_guess);
     
-    mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([0;movement_guess],N_PRIMITIVES,1);
-    %cv = 0.01*cov([trials{1}{1}.rotation;trials{1}{1}.movement]');
-    cv = [10 0; 0 5];
+    mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([0;movement_guess;N_STEPS],N_PRIMITIVES,1);
+    cv = [model.movement_dev 0 0; 0 model.rotation_dev 0; 0 0 1];
     sigma = eye(N_Z_DIM);
-    for i=1:2:N_Z_DIM
-        sigma(i:(i+1),i:(i+1)) = cv;
+    for i=1:3:N_Z_DIM
+        sigma(i:(i+2),i:(i+2)) = cv;
     end
     Z  = struct('mu',mu,'sigma',sigma);
+end
+if nargin < 8
+    
 end
 
 trajs = cell(N_SAMPLES,1);
@@ -59,7 +61,7 @@ while iter < N_ITER
     sample = 0;
     for i = 1:N_GEN_SAMPLES
         p_z = log(mvnpdf(samples(:,i),Z.mu,Z.sigma));
-        traj = sample_seq(x0,samples(:,i),N_STEPS);
+        traj = sample_seq(x0,samples(:,i));
         
         if check_collisions(traj,obstacles) == 0
             
@@ -76,10 +78,8 @@ while iter < N_ITER
 
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
             p_action = log(mean(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));
-            %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
-            %p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
             
-            p(sample) =  exp(p_action - p_z);
+            p(sample) =  exp(p_action);
             pg(sample) = exp(p_action);
             
             if sample == N_SAMPLES
@@ -90,9 +90,6 @@ while iter < N_ITER
     
     if sum(p) == 0
         continue
-    %elseif ok == false
-    %    fprintf (' ... did not reach goal!\n');
-    %    continue;
     end
     
     % update z

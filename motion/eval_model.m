@@ -28,17 +28,13 @@ end
 
 %% rotate the necessary gates/exits/environment features
 tmp_env = [];
-%tmp_env.exit = [env.width-pt(1);(env.height / 2)-pt(2);0];
-%tmp_env.exit = rotate_trajectory(tmp_env.exit,-pt(3));
-
 tmp_env.exit = [env.width;(env.height / 2);0];
-%tmp_env.exit = rotate_trajectory(tmp_env.exit,-pt(3));
 
 if model.use_gate
-    tmp_env.gate = relative_gate(pt(1),pt(2),-pt(3),env.gates{conf.gate});
+    tmp_env.gate = relative_gate(pt(1),pt(2),-pt(3),env.gates{conf.gate}{conf.opt});
 end
 if model.use_prev_gate
-    tmp_env.prev_gate = relative_gate(pt(1),pt(2),-pt(3),env.gates{conf.prev_gate});
+    tmp_env.prev_gate = relative_gate(pt(1),pt(2),-pt(3),env.gates{conf.prev_gate}{conf.prev_opt});
 end
 
 if USE_OPT
@@ -58,36 +54,6 @@ end
 
 path(1:3,:) = rotate_trajectory(path(1:3,:),pt(3));
 path(1:2,:) = path(1:2,:) + repmat(pt(1:2),1,size(path,2));
-% 
-% if USE_BMM
-%     success=false;
-%     for i=1:size(path,2)
-%         if USE_STATE
-%             [~,p,state] = get_features_for_point(path(1,i),path(2,i),path(3,i),i,path(4,i),env,state);
-%         else
-%             [~,p,state] = get_features_for_point(path(1,i),path(2,i),path(3,i),i,path(4,i),env);
-%             
-%             USE_STATE = true;
-%         end
-%         
-%         [label,prob,z] = BernoulliAssign(bmm,p');
-%         if label ~= conf.k
-%             label
-%             prob
-%             i
-%             z
-%             p
-%             fprintf('---\n');
-%             success = true;
-%             
-%             path = path(:,1:(i-1));
-%             break;
-%         end
-%         
-%     end
-% else
-%     success=true;
-% end
 
 end
 

@@ -6,10 +6,10 @@ function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env
 %   Z is the initial distribution we will refine
 
 SHOW_FIGURES = false;
-STEP_SIZE = 0.7;
-N_SAMPLES = 50;
-N_ITER = 20;
-N_PRIMITIVES = 4;
+STEP_SIZE = 0.55;
+N_SAMPLES = 75;
+N_ITER = 10;
+N_PRIMITIVES = model.num_primitives;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_STEPS = 10;
 N_GEN_SAMPLES = 50*N_SAMPLES;
@@ -22,16 +22,18 @@ end
 if nargin < 7
     if model.in_gate
         xg = local_env.prev_gate.width;
+        local_env.prev_gate.corners
     elseif model.use_gate
-        xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
+        %xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
+        xg = x0(1:2)' - [local_env.gate.x local_env.gate.y];
     else
         xg = x0(1) - local_env.exit(1);
     end
-    movement_guess = 15;
+    movement_guess = model.movement_mean;
     N_STEPS = ceil(norm(xg) / N_PRIMITIVES / movement_guess);
     
     mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([0;movement_guess;N_STEPS],N_PRIMITIVES,1);
-    cv = [10 0 0; 0 5 0; 0 0 1];
+    cv = [model.movement_dev 0 0; 0 model.rotation_dev 0; 0 0 1];
     sigma = eye(N_Z_DIM);
     for i=1:3:N_Z_DIM
         sigma(i:(i+2),i:(i+2)) = cv;
@@ -144,11 +146,14 @@ while iter < N_ITER
     dsigma = STEP_SIZE*(Z.sigma - sigma);
     
     Z  = struct('mu',mu,'sigma',Z.sigma-dsigma);
-    Z.sigma = Z.sigma + (1e-10*eye(N_Z_DIM));
+    noise = 10^(-iter);
+    Z.sigma = Z.sigma + (noise*eye(N_Z_DIM));
     
     fprintf('... done iter %d. avg p = %f, avg obj = %f\n',iter,log(avg_p),log(avg_pg));
     iter = iter + 1;
-
+    if SHOW_FIGURES
+        pause
+    end
 end
 
 [~,idx] = max(pg);

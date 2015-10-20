@@ -52,6 +52,13 @@ else
     next_gate = [next_gate ngates+1 ngates+1];
 end
 
+%% create options for gates
+% note that these are definitely temporary placeholders
+next_opt = ones(size(next_gate));
+prev_opt = ones(size(prev_gate));
+
+%% run
+
 x = [190,1000,0,0,0]';
 
 trajs = cell(length(plan),1);
@@ -71,18 +78,18 @@ for i = 1:length(plan)-1
     local_env = [];
     local_env.exit = [env.width;env.height / 2; 0];
     if next_gate(i) <= length(env.gates)
-        local_env.gate = env.gates{next_gate(i)};
+        local_env.gate = env.gates{next_gate(i)}{next_opt(i)};
     end
     if prev_gate(i) > 0
-        local_env.prev_gate = env.gates{prev_gate(i)};
+        local_env.prev_gate = env.gates{prev_gate(i)}{prev_opt(i)};
     end
     next_env = [];
     next_env.exit = local_env.exit;
     if next_gate(i+1) <= length(env.gates)
-        next_env.gate = env.gates{next_gate(i+1)};
+        next_env.gate = env.gates{next_gate(i+1)}{next_opt(i)};
     end
     if prev_gate(i+1) > 0
-        next_env.prev_gate = env.gates{prev_gate(i+1)};
+        next_env.prev_gate = env.gates{prev_gate(i+1)}{prev_opt(i)};
     end
     
     if use_goal
