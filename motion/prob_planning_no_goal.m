@@ -24,7 +24,8 @@ if nargin < 5
         xg = local_env.prev_gate.width;
         local_env.prev_gate.corners
     elseif model.use_gate
-        xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
+        %xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
+        xg = x0(1:2)' - [local_env.gate.x local_env.gate.y];
     else
         xg = x0(1) - local_env.exit(1);
     end
