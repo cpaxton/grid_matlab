@@ -3,10 +3,10 @@ f = [];
 
 %% compute standard features
 if model.use_in_gate
-    
+    f = [f; in_gates(pt(1,:),pt(2,:),local_env.gates) > 0];
 end
 if model.use_in_tissue
-    
+    f = [f; in_tissue(pt, local_env.obstacles)];
 end
 if model.use_xy
     f = [f; pt(1:3,:)];

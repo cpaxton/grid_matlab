@@ -50,6 +50,14 @@ else
     trainingData = [];
     for i = 1:length(ap)
         f = ap(i).t;
+        
+        if model.use_in_gate
+           f = [f; ap(i).predicates(1,:)]; 
+        end
+        if model.use_in_tissue
+            ap(i).in_tissue
+           f = [f; ap(i).in_tissue]; 
+        end
         if model.use_xy
             f = [f;ap(i).trainingData];
         end
@@ -95,5 +103,5 @@ end
 
 norm_mean = mean(trainingData,2);
 norm_std = std(trainingData')';
-
+norm_std(norm_std == 0) = 1;
 end

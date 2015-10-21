@@ -27,6 +27,8 @@ for idx=1:3:16
     
     env = [];
     env.exit = ap{k}(idx).exit;
+    env.obstacles = {};
+    env.gates = {};
     if models{k}.use_gate
         env.gate = ap{k}(idx).gate;
     end

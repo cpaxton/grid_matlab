@@ -76,6 +76,8 @@ for i = 1:length(plan)-1
     goal = models{plan(i+1)};
     
     local_env = [];
+    local_env.gates = env.gates;
+    local_env.obstacles = env.obstacles;
     local_env.exit = [env.width;env.height / 2; 0];
     if next_gate(i) <= length(env.gates)
         local_env.gate = env.gates{next_gate(i)}{next_opt(i)};
@@ -84,6 +86,8 @@ for i = 1:length(plan)-1
         local_env.prev_gate = env.gates{prev_gate(i)}{prev_opt(i)};
     end
     next_env = [];
+    next_env.gates = env.gates;
+    next_env.obstacles = env.obstacles;
     next_env.exit = local_env.exit;
     if next_gate(i+1) <= length(env.gates)
         next_env.gate = env.gates{next_gate(i+1)}{next_opt(i)};

@@ -66,6 +66,8 @@ for i = 1:length(plan)-1
     
     local_env = [];
     local_env.exit = [env.width;env.height / 2; 0];
+    local_env.obstacles = {};
+    local_env.gates = env.gates;
     if next_gate(i) <= length(env.gates)
         local_env.gate = env.gates{next_gate(i)}{1};
     end
@@ -74,6 +76,8 @@ for i = 1:length(plan)-1
     end
     next_env = [];
     next_env.exit = local_env.exit;
+    next_env.obstacles = {};
+    next_env.gates = env.gates;
     if next_gate(i+1) <= length(env.gates)
         next_env.gate = env.gates{next_gate(i+1)}{1};
     end

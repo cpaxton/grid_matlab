@@ -87,6 +87,7 @@ for k=1:bmm.k
                 
                 [nx,ny,nw] = needle_update(segs{ex}(1,:),segs{ex}(2,:),segs{ex}(3,:),segs{ex}(4,:),segs{ex}(5,:),envs{i});
                 
+                samples(next_sample).in_tissue = in_tissue([nx;ny;nw],envs{i}.surfaces);
                 samples(next_sample).trainingData = [nx;ny;nw];
                 samples(next_sample).data = segs{ex};
                 samples(next_sample).predicates = segp{ex};
