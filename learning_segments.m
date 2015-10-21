@@ -6,7 +6,7 @@ use_coordinates = true;
 use_dtw = false;
 DEMO_LEN = 50;
 MIN_CLUSTERS = 1;
-MAX_CLUSTERS = 3;
+MAX_CLUSTERS = 2;
 USE_EFFORT = true;
 USE_XY = false;
 USE_DIFF = true;
@@ -21,7 +21,7 @@ SHOW_DATA_LOGLIKELIHOOD = false;
 SKIP_IMG = true;
 
 %DELETE_MOVEMENT_ROTATION = true;
-NUM_LEVELS = 8;
+NUM_LEVELS = 12;
 NFIG = 1;
 NDIM = 7;
 NGATE_FEATURES = 5; %6; %7;
