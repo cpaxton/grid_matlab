@@ -1,6 +1,12 @@
 %% configuration
 plot_data = false;
 plot_data = true;
+gmmColors = [1.0 0.0 0.0 1.0 0.0 1.0;
+             0.0 1.0 0.0 0.0 1.0 1.0;
+             0.0 0.0 1.0 1.0 1.0 0.0];
+colors = 'rgbmcy';
+markers = '......';
+primitive_names = {'Approach','Pass-Through','Connect','Exit'};
 
 %% how I created the list of trials
 % trial_directory_info_v3 = dir('needle_master_trials_v3/trial_*');
@@ -36,15 +42,29 @@ fprintf('Loading training data...\n');
 % "left" to "right" all of the time
 % the issue is that gates arent' really given in a unified coordinate
 % frame
-for i = 1:length(envs)
-   w = trials{i}{1}.w;
-   [gate,opt] = in_gates(trials{i}{1}.x,trials{i}{1}.y,envs{i}.gates);
-   for j = 1:length(gate)
-       if gate(j) > 0
-           
-       end
-   end
-end
+% for i = 1:length(envs)
+%    w = trials{i}{1}.w;
+%    [gate,opt] = in_gates(trials{i}{1}.x,trials{i}{1}.y,envs{i}.gates);
+%    for j = 1:length(gate)
+%        if gate(j) > 0
+%            
+%        end
+%    end
+% end
+
+%% hack to fix levels 9/12 to be in line with gate orientation
+% used in training the rest of the examples
+
+envs{9}.gates{1}{1} = rotate_gate(envs{9}.gates{1}{1}.x, ...
+    envs{9}.gates{1}{1}.y, ...
+    -pi, ...
+    envs{9}.gates{1}{1});
+
+
+envs{12}.gates{1}{1} = rotate_gate(envs{12}.gates{1}{1}.x, ...
+    envs{12}.gates{1}{1}.y, ...
+    -pi, ...
+    envs{12}.gates{1}{1});
 
 %% plot data showing levels and trials
 
