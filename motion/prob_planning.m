@@ -6,23 +6,23 @@ function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env
 %   Z is the initial distribution we will refine
 
 SHOW_FIGURES = false;
+%N_ITER = 10;
 STEP_SIZE = 0.55;
 N_SAMPLES = 75;
-N_ITER = 10;
 N_PRIMITIVES = model.num_primitives;
 N_Z_DIM = 3*N_PRIMITIVES;
-N_STEPS = 10;
+%N_STEPS = 10;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 USE_GOAL = true;
 
-max_p = 1;
-if strcmp(class(next_model),'struct') < 1
+if ~isstruct(next_model)
     fprintf('NOTE: Not using goal.\n');
     USE_GOAL = false;
 end
 if nargin < 6
     obstacles = {};
 end
+
 if nargin < 7
     if model.in_gate
         xg = local_env.prev_gate.width;
@@ -44,14 +44,29 @@ if nargin < 7
     end
     Z  = struct('mu',mu,'sigma',sigma);
 end
+
+%% set number of iterations to run
 if nargin < 8
-    
+    N_ITER = 10;
+else
+    N_ITER = n_iter;
 end
 
 trajs = cell(N_SAMPLES,1);
 
 iter = 1;
 while iter < N_ITER
+
+    model_normalizer = (0.1^iter)*eye(size(model.Sigma,1));
+    for i = 1:model.nbStates
+        model.Sigma(:,:,1) = model.Sigma(:,:,1) + model_normalizer;
+    end
+    if USE_GOAL
+        goal_normalizer = (0.1^iter)*eye(size(next_model.Sigma,1));
+    for i = 1:next_model.nbStates
+        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
+    end
+    end
     
     samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
     params = zeros(size(samples,1),N_SAMPLES);
@@ -139,10 +154,6 @@ while iter < N_ITER
     avg_p = mean(p(1:sample));
     avg_pg = mean(pg(1:sample));
     
-    if 0; %avg_pg < last_avg_p
-        fprintf('skipping: %f < %f\n',log(avg_pg),log(last_avg_p));
-        continue;
-    end
     p = p / sum(p);
     
     mu = zeros(size(Z.mu));
@@ -166,6 +177,17 @@ while iter < N_ITER
     if SHOW_FIGURES
         pause
     end
+
+    % remove normalizing term
+    for i = 1:model.nbStates
+        model.Sigma(:,:,1) = model.Sigma(:,:,1) - model_normalizer;
+    end
+    if USE_GOAL
+    for i = 1:next_model.nbStates
+        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) - goal_normalizer;
+    end
+    end
+
 end
 
 [~,idx] = max(pg);
