@@ -13,9 +13,13 @@ N_PRIMITIVES = model.num_primitives;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_STEPS = 10;
 N_GEN_SAMPLES = 50*N_SAMPLES;
+USE_GOAL = true;
 
 max_p = 1;
-
+if strcmp(class(next_model),'struct') < 1
+    fprintf('NOTE: Not using goal.\n');
+    USE_GOAL = false;
+end
 if nargin < 6
     obstacles = {};
 end
@@ -79,25 +83,33 @@ while iter < N_ITER
             params(:,sample) = samples(:,i);
             
             fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
-            fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
             len = size(fa,2);
             fa = [1000 * (1:len) / len; fa];
-            fg = [0;fg];
+
+            if USE_GOAL
+                fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
+                fg = [0;fg];
+            end
             
             %ps = mvnpdf(f(1:(end),:),model.Mu,model.Sigma);
 
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
             p_action = log(mean(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
             %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
-            p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
-            
-            %fprintf('%f / %f\n',p_action,p_goal);
-            
-            p(sample) =  exp(p_action + p_goal);
-            pg(sample) = exp(p_goal);
-            
-            if p_goal > -700
-                ok = true;
+
+            if USE_GOAL
+                p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
+                %fprintf('%f / %f\n',p_action,p_goal);
+                
+                p(sample) =  exp(p_action + p_goal);
+                pg(sample) = exp(p_goal);
+
+                if p_goal > -700
+                    ok = true;
+                end
+            else
+                p(sample) =  exp(p_action);
+                pg(sample) = exp(p_action);
             end
             
             if SHOW_FIGURES
