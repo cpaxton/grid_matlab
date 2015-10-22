@@ -64,7 +64,7 @@ x = [190,1000,0,0,0]';
 trajs = cell(length(plan),1);
 
 hold on;
-draw_environment(env);
+draw_environment(env,false,true);
 
 % for each step in plan
 for i = 1:length(plan)-1

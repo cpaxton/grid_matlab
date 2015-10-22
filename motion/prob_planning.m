@@ -8,7 +8,7 @@ function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env
 SHOW_FIGURES = false;
 %N_ITER = 10;
 STEP_SIZE = 0.55;
-N_SAMPLES = 75;
+N_SAMPLES = 100;
 N_PRIMITIVES = model.num_primitives;
 N_Z_DIM = 3*N_PRIMITIVES;
 %N_STEPS = 10;
@@ -55,14 +55,15 @@ end
 trajs = cell(N_SAMPLES,1);
 
 iter = 1;
+good = 1;
 while iter < N_ITER
 
-    model_normalizer = (0.1^iter)*eye(size(model.Sigma,1));
+    model_normalizer = 0.1*(0.1^good)*eye(size(model.Sigma,1));
     for i = 1:model.nbStates
         model.Sigma(:,:,1) = model.Sigma(:,:,1) + model_normalizer;
     end
     if USE_GOAL
-        goal_normalizer = (0.1^iter)*eye(size(next_model.Sigma,1));
+        goal_normalizer = (0.1^good)*eye(size(next_model.Sigma,1));
     for i = 1:next_model.nbStates
         next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
     end
@@ -118,10 +119,6 @@ while iter < N_ITER
                 
                 p(sample) =  exp(p_action + p_goal);
                 pg(sample) = exp(p_goal);
-
-                if p_goal > -700
-                    ok = true;
-                end
             else
                 p(sample) =  exp(p_action);
                 pg(sample) = exp(p_action);
@@ -153,6 +150,12 @@ while iter < N_ITER
     
     avg_p = mean(p(1:sample));
     avg_pg = mean(pg(1:sample));
+    
+    if avg_p < 0.01
+        good = 1;
+    else
+        good = good + 1;
+    end
     
     p = p / sum(p);
     

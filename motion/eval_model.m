@@ -6,17 +6,6 @@ function [ path, ll] = eval_model( model, pt, env, conf)
 
 USE_OPT = false;
 
-if nargin<6
-    USE_STATE = false;
-else
-    USE_STATE = true;
-end
-if nargin<5
-    USE_BMM = false;
-else
-    USE_BMM = true;
-end
-
 if length(pt) ~= 3
     fprintf('WARNING: provided point should be in the form (x,y,theta)!\n');
 end
@@ -36,6 +25,8 @@ end
 if model.use_prev_gate
     tmp_env.prev_gate = relative_gate(pt(1),pt(2),-pt(3),env.gates{conf.prev_gate}{conf.prev_opt});
 end
+
+tmp_env.obstacles = env.surfaces;
 
 if USE_OPT
     [path, ll] = gmm_maximization( model, tmp_env);
