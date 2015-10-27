@@ -10,12 +10,14 @@ function [ f ] = get_clustering_features( traj, env )
 %   don't have an open and a closed gate.
 
 len = size(traj,2);
-state = struct('gates_done',num2cell(gate<0),'next_gate',num2cell(ones(1,size(x,2))));
+
+gate = in_gates(traj(1,:),traj(2,:),env.gates);
+state = struct('gates_done',num2cell(gate<0),'next_gate',num2cell(ones(1,size(traj,2))));
 
 for i = 1:len
     % take this slice of the example
     pt = traj(:,i);
-    [p,state] = compute_predicates(pt,state);
+    [p,state] = compute_predicates(pt,env,state(1));
 end
 
 end

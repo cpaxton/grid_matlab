@@ -2,7 +2,12 @@ function draw_trajectory( traj, color, marker)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
-marker = '.';
+if nargin < 2
+    color = 'r';
+end
+if nargin < 3
+    marker = '.';
+end
 
 u = cos(traj(3,:));
 v = sin(traj(3,:));
