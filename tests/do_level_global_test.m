@@ -1,3 +1,8 @@
+rng(100);
+N_ITER = 3;
+STEP_SIZE = 0.55;
+N_SAMPLES = 100;
+N_GEN_SAMPLES = 50*N_SAMPLES;
 
 %% solve level one thing at a time
 %env = envs{6};
@@ -36,14 +41,19 @@ end
 prev_gate = [prev_gate ngates ngates];
 next_gate = [next_gate ngates+1 ngates+1];
 
-x = [190,1000,0,0,0]';
-
-figure(1);clf;hold on;
-draw_environment(env);
-
 trajs = cell(length(plan),1);
 
-for i = 1:2 %length(plan)-1
+%% setup vars for iteration
+LEN = length(plan)-1;
+ITER = 1;
+Zs = cell(LEN,1);
+
+%% LOOP
+for iter = 1:N_ITER
+figure(iter);clf;hold on;
+draw_environment(env);
+x = [190,1000,0,0,0]';
+for i = 1:LEN
     
     fprintf('==============\n');
     fprintf('ACTION: %d, model=%d, gate=%d, prev_gate=%d\n',i,plan(i),next_gate(i),prev_gate(i));
@@ -72,13 +82,16 @@ for i = 1:2 %length(plan)-1
         next_env.prev_gate = env.gates{prev_gate(i+1)}{1};
     end
     
-    traj = prob_planning(x,current,goal,local_env,next_env,env.surfaces);
+    [traj,Z] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i},1,iter);
+    Zs{i} = Z;
+    
     plot(traj(1,:),traj(2,:),colors(plan(i)));
     
     x = traj(:,end);
     
     trajs{i} = traj;
     
+end
 end
 
 if bmm.k <= 3

@@ -1,4 +1,4 @@
-function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, n_iter)
+function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, n_iter, start_iter)
 %UNTITLED Summary of this function goes here
 %   model is the skill we are using
 %   next_model is the following skill
@@ -23,7 +23,7 @@ if nargin < 6
     obstacles = {};
 end
 
-if nargin < 7
+if nargin < 7 || ~isstruct(Z)
     if model.in_gate
         xg = local_env.prev_gate.width;
         local_env.prev_gate.corners
@@ -51,12 +51,15 @@ if nargin < 8
 else
     N_ITER = n_iter;
 end
+if nargin < 9
+    start_iter = 1;
+end
 
 trajs = cell(N_SAMPLES,1);
 
-iter = 1;
+iter = start_iter;
 good = 1;
-while iter < N_ITER
+while iter < start_iter + N_ITER
 
     model_normalizer = 0.1*(0.1^good)*eye(size(model.Sigma,1));
     for i = 1:model.nbStates
