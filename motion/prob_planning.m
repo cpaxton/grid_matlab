@@ -7,7 +7,7 @@ function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env
 
 SHOW_FIGURES = false;
 %N_ITER = 10;
-STEP_SIZE = 0.55;
+STEP_SIZE = 0.75;
 N_SAMPLES = 100;
 N_PRIMITIVES = model.num_primitives;
 N_Z_DIM = 3*N_PRIMITIVES;
