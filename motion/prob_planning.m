@@ -113,7 +113,7 @@ while iter < start_iter + N_ITER
             %ps = mvnpdf(f(1:(end),:),model.Mu,model.Sigma);
 
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
-            p_action = log(mean(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
+            p_action = log(min(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
             %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
 
             if USE_GOAL
@@ -175,7 +175,7 @@ while iter < start_iter + N_ITER
     dsigma = STEP_SIZE*(Z.sigma - sigma);
     
     Z  = struct('mu',mu,'sigma',Z.sigma-dsigma);
-    noise = 10^(-iter);
+    noise = 10^(-(iter/2));
     Z.sigma = Z.sigma + (noise*eye(N_Z_DIM));
     
     fprintf('... done iter %d. avg p = %f, avg obj = %f\n',iter,log(avg_p),log(avg_pg));
@@ -196,8 +196,8 @@ while iter < start_iter + N_ITER
 
 end
 
-[~,idx] = max(pg);
-traj = trajs{idx};
+%[~,idx] = max(pg);
+traj = sample_seq(x0,Z.mu); %trajs{idx};
 
 end
 

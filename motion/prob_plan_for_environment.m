@@ -66,10 +66,13 @@ trajs = cell(length(plan),1);
 hold on;
 draw_environment(env,false,true);
 
+fprintf('==============\n');
+fprintf('==============\n');
+
 % for each step in plan
 for i = 1:length(plan)-1
-    
-    fprintf('==============\n');
+
+    fprintf('--------------\n');
     fprintf('ACTION: %d, model=%d, gate=%d, prev_gate=%d\n',i,plan(i),next_gate(i),prev_gate(i));
     
     current = models{plan(i)};

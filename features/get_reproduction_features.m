@@ -12,8 +12,8 @@ if model.use_xy
     f = [f; pt(1:3,:)];
 end
 if model.use_effort
-    %f = [f; abs(pt(4:5,:))];
-    f = [f; abs(pt(5,:))];
+    f = [f; abs(pt(4:5,:))];
+    %f = [f; abs(pt(5,:))];
     %[mean(pt(5,:)) size(f,1)]
 end
 if model.use_surface_proximity

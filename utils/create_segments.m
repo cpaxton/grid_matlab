@@ -70,7 +70,8 @@ for k=1:bmm.k
                 exit = rotate_trajectory(exit,-origin_w);
                 samples(next_sample).orig_exit = [envs{i}.width;(envs{i}.height / 2);0];
 
-                effort_features = [abs(segs{ex}(5,:))];
+                %effort_features = [abs(segs{ex}(5,:))];
+                effort_features = abs(segs{ex}(4:5,:));
                 
                 samples(next_sample).originalData = segs{ex};
                 segs{ex}(1,:) = segs{ex}(1,:) - origin_x;

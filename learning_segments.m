@@ -9,7 +9,7 @@ MIN_CLUSTERS = 1;
 MAX_CLUSTERS = 3;
 USE_EFFORT = true;
 USE_XY = false;
-USE_DIFF = true;
+USE_DIFF = false;
 USE_PARAM = false;
 USE_SURFACE_PROXIMITY = false;
 USE_IN_TISSUE = true;
@@ -24,6 +24,7 @@ SKIP_IMG = true;
 NUM_LEVELS = 12;
 NFIG = 1;
 NDIM = 7;
+NEFFORT_FEATURES = 2;
 NGATE_FEATURES = 4; %6; %7;
 NEXIT_FEATURES = 2; %3;
 MARGIN = 0;
@@ -83,11 +84,12 @@ for k=1:bmm.k
         next_in = next_in+3;
     end
     if USE_EFFORT
-        %in = [in next_in:next_in+1];
-        %next_in = next_in+2;
-        in = [in next_in];
+        in = [in next_in:next_in+1];
+        %in = [in next_in];
         vars{next_in} = 'effort_rotation';
-        next_in = next_in+1;
+        vars{next_in+1} = 'effort_rotation';
+        %next_in = next_in+1;
+        next_in = next_in+2;
     end
     if USE_SURFACE_PROXIMITY
         in = [in next_in];
@@ -205,13 +207,7 @@ for k=1:bmm.k
     end
     
     if USE_DIFF
-        if ~USE_PARAM
-            models{k}.in = [models{k}.in (models{k}.in(2:end)+next_in-2)];
-        elseif USE_PARAM
-            models{k}.in = [models{k}.in (models{k}.in(2:(end-2))+next_in-2)];
-        end
-        %models{k}.in_na = [models{k}.in_na (models{k}.in_na(2:end)+next_in-2)];
-        %models{k}.in_naf = [models{k}.in_naf (models{k}.in_naf+next_in-2)];
+        models{k}.in = [models{k}.in (models{k}.in(2:end)+next_in-2)];
     end
     
     lens = zeros(length(ap{k}),1);

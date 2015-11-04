@@ -55,7 +55,6 @@ else
            f = [f; ap(i).predicates(1,:)]; 
         end
         if model.use_in_tissue
-            ap(i).in_tissue
            f = [f; ap(i).in_tissue]; 
         end
         if model.use_xy
