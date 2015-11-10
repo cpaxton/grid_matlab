@@ -1,4 +1,4 @@
-function [ traj, Z ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, n_iter, start_iter)
+function [ traj, Z, avg_p, avg_pg ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, n_iter, start_iter)
 %UNTITLED Summary of this function goes here
 %   model is the skill we are using
 %   next_model is the following skill
@@ -113,7 +113,9 @@ while iter < start_iter + N_ITER
             %ps = mvnpdf(f(1:(end),:),model.Mu,model.Sigma);
 
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
-            p_action = log(min(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
+            %p_action = log(min(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
+            p_action = mean(compute_loglik(fa,model.Mu,model.Sigma,model,model.in));%/len;
+            
             %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
 
             if USE_GOAL

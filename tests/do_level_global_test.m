@@ -49,49 +49,55 @@ ITER = 1;
 Zs = cell(LEN,1);
 
 %% LOOP
+good = 1;
 for iter = 1:N_ITER
-figure(iter);clf;hold on;
-draw_environment(env);
-x = [190,1000,0,0,0]';
-for i = 1:LEN
-    
-    fprintf('==============\n');
-    fprintf('ACTION: %d, model=%d, gate=%d, prev_gate=%d\n',i,plan(i),next_gate(i),prev_gate(i));
-    
-    current = models{plan(i)};
-    goal = models{plan(i+1)};
-    
-    local_env = [];
-    local_env.exit = [env.width;env.height / 2; 0];
-    local_env.obstacles = {};
-    local_env.gates = env.gates;
-    if next_gate(i) <= length(env.gates)
-        local_env.gate = env.gates{next_gate(i)}{1};
+    figure(iter);clf;hold on;
+    draw_environment(env);
+    x = [190,1000,0,0,0]';
+    for i = 1:good
+        
+        fprintf('==============\n');
+        fprintf('ACTION: %d, model=%d, gate=%d, prev_gate=%d\n',i,plan(i),next_gate(i),prev_gate(i));
+        
+        current = models{plan(i)};
+        goal = models{plan(i+1)};
+        
+        local_env = [];
+        local_env.exit = [env.width;env.height / 2; 0];
+        local_env.obstacles = {};
+        local_env.gates = env.gates;
+        if next_gate(i) <= length(env.gates)
+            local_env.gate = env.gates{next_gate(i)}{1};
+        end
+        if prev_gate(i) > 0
+            local_env.prev_gate = env.gates{prev_gate(i)}{1};
+        end
+        next_env = [];
+        next_env.exit = local_env.exit;
+        next_env.obstacles = {};
+        next_env.gates = env.gates;
+        if next_gate(i+1) <= length(env.gates)
+            next_env.gate = env.gates{next_gate(i+1)}{1};
+        end
+        if prev_gate(i+1) > 0
+            next_env.prev_gate = env.gates{prev_gate(i+1)}{1};
+        end
+        
+        [traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i},1,iter);
+        Zs{i} = Z;
+        
+        plot(traj(1,:),traj(2,:),colors(plan(i)));
+        
+        x = traj(:,end);
+        
+        trajs{i} = traj;
+        
     end
-    if prev_gate(i) > 0
-        local_env.prev_gate = env.gates{prev_gate(i)}{1};
-    end
-    next_env = [];
-    next_env.exit = local_env.exit;
-    next_env.obstacles = {};
-    next_env.gates = env.gates;
-    if next_gate(i+1) <= length(env.gates)
-        next_env.gate = env.gates{next_gate(i+1)}{1};
-    end
-    if prev_gate(i+1) > 0
-        next_env.prev_gate = env.gates{prev_gate(i+1)}{1};
+
+    if log(pg) > -10 && good < LEN
+        good = good + 1;
     end
     
-    [traj,Z] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i},1,iter);
-    Zs{i} = Z;
-    
-    plot(traj(1,:),traj(2,:),colors(plan(i)));
-    
-    x = traj(:,end);
-    
-    trajs{i} = traj;
-    
-end
 end
 
 if bmm.k <= 3
