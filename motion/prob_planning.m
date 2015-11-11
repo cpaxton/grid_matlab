@@ -44,7 +44,7 @@ if nargin < 7 || ~isstruct(Z)
     movement_guess = model.movement_mean;
     N_STEPS = ceil(norm(xg) / N_PRIMITIVES / movement_guess);
     
-    rg = rg / (N_STEPS*N_PRIMITIVES);
+    rg = rg / (N_STEPS*N_PRIMITIVES) * 20;
     mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([rg;movement_guess;N_STEPS],N_PRIMITIVES,1);
     cv = [model.movement_dev 0 0; 0 model.rotation_dev 0; 0 0 1];
     sigma = eye(N_Z_DIM);

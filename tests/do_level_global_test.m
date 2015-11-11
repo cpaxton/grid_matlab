@@ -9,7 +9,7 @@ N_GEN_SAMPLES = 50*N_SAMPLES;
 %env = envs{6};
 %env = envs{7};
 env = generate_environment(1920,1080,1,0);
-%env = generate_environment(1920,1080,2,0);
+env = generate_environment(1920,1080,2,0);
 
 % plan ends with an "exit" action and goes to the final exit state
 plan = [1 5];
