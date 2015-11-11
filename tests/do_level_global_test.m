@@ -1,4 +1,5 @@
 rng(100);
+%rng(102);
 N_ITER = 20;
 STEP_SIZE = 0.55;
 N_SAMPLES = 100;
@@ -8,6 +9,7 @@ N_GEN_SAMPLES = 50*N_SAMPLES;
 %env = envs{6};
 %env = envs{7};
 env = generate_environment(1920,1080,1,0);
+%env = generate_environment(1920,1080,2,0);
 
 % plan ends with an "exit" action and goes to the final exit state
 plan = [1 5];
@@ -28,7 +30,7 @@ if ngates > 0
             plan = [2 3 plan];
             ii = ngates - i;
             prev_gate = [ii ii prev_gate];
-            next_gate = [ii+1 ii+1 next_gate ]
+            next_gate = [ii+1 ii+1 next_gate ];
         end
     end
     
