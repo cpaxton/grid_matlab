@@ -3,10 +3,11 @@ function [trainingData,norm_mean,norm_std] = create_primitive_training_data(mode
 if ~model.use_diff
     trainingData = [ap.t];
     if model.use_in_gate
-       trainingData = [trainingData; ap.predicates(1,:)]; 
+        predicates= [ap.predicates];
+        trainingData = [trainingData; predicates(1,:)];
     end
     if model.use_in_tissue
-       trainingData = [trainingData; ap.in_tissue]; 
+        trainingData = [trainingData; ap.in_tissue];
     end
     if model.use_xy
         trainingData = [trainingData;ap.trainingData];
@@ -52,10 +53,10 @@ else
         f = ap(i).t;
         
         if model.use_in_gate
-           f = [f; ap(i).predicates(1,:)]; 
+            f = [f; ap(i).predicates(1,:)];
         end
         if model.use_in_tissue
-           f = [f; ap(i).in_tissue]; 
+            f = [f; ap(i).in_tissue];
         end
         if model.use_xy
             f = [f;ap(i).trainingData];
