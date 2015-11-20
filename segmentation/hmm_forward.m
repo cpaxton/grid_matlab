@@ -28,11 +28,11 @@ end
 
 %% loop over the rest of the variables
 for t = 2:len
-    for i = 1:hmm.nclasses
-        for ii = 1:hmm.nclasses
+    for ii = 1:hmm.nclasses
+        pyii = unary({x{t,:}},hmm.s(ii,:),{hmm.models{ii,:}});
+        for i = 1:hmm.nclasses
             %ptrans_yi_yii = log(hmm.T(i,ii));
             ptrans_yi_yii = hmm.T(i,ii);
-            pyii = unary({x{t,:}},hmm.s(ii,:),{hmm.models{ii,:}});
             pyi = alpha(t-1,i);
             alpha(t,ii) = alpha(t,ii) + (ptrans_yi_yii *  pyii * pyi);
         end
