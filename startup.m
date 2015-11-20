@@ -24,3 +24,4 @@ addpath('./EXTERNAL/dynamic_time_warping_v2.1');
 addpath('./EXTERNAL/GMM-GMR-v2.0');
 addpath('./EXTERNAL/barwitherr');
 addpath('./EXTERNAL');
+addpath('./segmentation');
