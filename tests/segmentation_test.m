@@ -44,7 +44,6 @@ for i = 1:LEN
         yt = truth(i);
         if true_s(yt,j) == 1
             x{i,j} = mvnrnd(models{yt,j}.mu,models{yt,j}.sigma)';
-            mvnpdf(x{i,j},models{yt,j}.mu,models{yt,j}.sigma)
         else
             x{i,j} = mvnrnd(background{j}.mu,background{j}.sigma)';
         end
