@@ -57,7 +57,7 @@ i = 1;
 for i = 1:10
     fprintf('===== %d ======\n',i);
 for yi = 1:4
-    p = unary({x{i,:}},yi,s(yi,:),{models{yi,:}});
+    p = unary({x{i,:}},s(yi,:),{models{yi,:}});
     pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
     fprintf('y=%d, truth=%d, p=%f, w/ true s=%f\n',yi,truth(i),p,pt);
 end
