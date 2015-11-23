@@ -16,6 +16,8 @@ addpath('./motion');
 addpath('./motion/samplers');
 addpath('./motion/helpers');
 addpath('./motion/goal');
+addpath('./motion/naive');
+addpath('./motion/tree');
 addpath('./gmmgmr');
 addpath('./tests');
 addpath('./tests/dev');
