@@ -26,12 +26,12 @@ for i = 1:hmm.nclasses
 end
 
 %% loop over the rest of the variables
-for t = (len-1):1
+for t = (len-1):-1:1
     for i = 1:hmm.nclasses
         for ii = 1:hmm.nclasses
             ptrans_yi_yii = hmm.T(i,ii);
             pyii = unary({x{t,:}},hmm.s(ii,:),{hmm.models{ii,:}});
-            pyi = beta(t-1,i);
+            pyi = beta(t+1,i);
             beta(t,ii) = beta(t,ii) + (ptrans_yi_yii *  pyii * pyi);
         end
     end

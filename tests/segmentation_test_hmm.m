@@ -1,8 +1,8 @@
-rng(102);
+%rng(102);
 
 NVIEWS = 3;
 NCLASSES = 4;
-LEN = 20;
+LEN = 5;
 CLASS_LENS = [2,3,4,3];
 
 %% initialize variables
@@ -24,7 +24,7 @@ background = cell(NVIEWS,1);
 % When missing and irrelevant it's drawn from the background distribution
 % for each view.
 
-trueT = rand(NCLASSES,NCLASSES) + 3*eye(NCLASSES);
+trueT = rand(NCLASSES,NCLASSES); %+ 3*eye(NCLASSES);
 trueT = trueT ./ repmat(sum(trueT,2),1,4);
 T0 = ones(NCLASSES,1) / NCLASSES;
 
@@ -47,7 +47,7 @@ for j=1:NVIEWS
 end
 for i=1:NCLASSES
     for j=1:NVIEWS
-        mu = rand(CLASS_LENS(j),1)*10 - 5;
+        mu = (rand(CLASS_LENS(j),1)*2 - 1) + 10*i;
         sigma = eye(CLASS_LENS(j));%*2*rand();
         model = struct('mu',mu,'sigma',sigma);
         models{i,j} = model;
@@ -71,13 +71,13 @@ hmm = struct('nviews',NVIEWS,'nclasses',NCLASSES,'T0',T0,'T',trueT,'models',{mod
 %% example
 i = 1;
 
-for i = 1:20
+for i = 1:LEN
     fprintf('===== %d ======\n',i);
     if i == 1
         for yi = 1:4
             %p = unary({x{i,:}},s(yi,:),{models{yi,:}})  + log(T(truth(i),yi));
             %pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
-            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) * (T0(yi));
+            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) ;%* (T0(yi));
             pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
             fprintf('y=%d, truth=%d, p=%f, w/ true s=%f\n',yi,truth(i),p,pt);
             py(i,yi) = p;
@@ -86,7 +86,7 @@ for i = 1:20
         for yi = 1:4
             %p = unary({x{i,:}},s(yi,:),{models{yi,:}})  + log(T(truth(i),yi));
             %pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
-            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) * (trueT(truth(i-1),yi));
+            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) ;%* (trueT(truth(i-1),yi));
             pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
             fprintf('y=%d, truth=%d, p=%f, w/ true s=%f\n',yi,truth(i),p,pt);
             py(i,yi) = p;
@@ -101,8 +101,10 @@ y = idx';
 
 %% alpha
 alpha = hmm_forward(x,hmm);
+beta = hmm_backward(x,hmm);
+gamma = hmm_gamma(alpha,beta);
 
-[~,idx] = max(alpha');
+[~,idx] = max(gamma');
 yalpha = idx';
 
 disp([truth y yalpha])

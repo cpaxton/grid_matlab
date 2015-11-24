@@ -7,7 +7,10 @@ function [ y_ ] = rand_hmm_transition( y, T )
 assert(abs(sum(T(y,:)) - 1) < 0.00001);
 
 %cumsum(T(y,:))
-y_ = min(find(rand() < cumsum(T(y,:))));
-
+r = rand();
+%r < cumsum(T(y,:))
+%T(y,:)
+y_ = min(find(r < cumsum(T(y,:))));
+%pause
 end
 
