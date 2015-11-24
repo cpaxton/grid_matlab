@@ -24,7 +24,7 @@ background = cell(NVIEWS,1);
 % When missing and irrelevant it's drawn from the background distribution
 % for each view.
 
-trueT = rand(NCLASSES,NCLASSES); %+ 3*eye(NCLASSES);
+trueT = rand(NCLASSES,NCLASSES);% + 3*eye(NCLASSES);
 trueT = trueT ./ repmat(sum(trueT,2),1,4);
 T0 = ones(NCLASSES,1) / NCLASSES;
 
