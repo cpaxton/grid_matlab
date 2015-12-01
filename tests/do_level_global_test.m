@@ -1,6 +1,6 @@
 rng(100);
 %rng(102);
-N_ITER = 20;
+N_ITER = 10;
 STEP_SIZE = 0.55;
 N_SAMPLES = 100;
 N_GEN_SAMPLES = 50*N_SAMPLES;
@@ -116,9 +116,9 @@ for iter = 1:N_ITER
         good_iters(i) = good_iter;
     end
     
-    if log(mean(actions(good).pg)) > -10 && good < LEN
+    if log(mean(actions(good).pg)) > -5 && good < LEN
         fprintf('EXPANDING HORIZON!\n');
-        %good = good + 1;
+        good = good + 1;
     end
     
 end
