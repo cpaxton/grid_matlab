@@ -85,7 +85,7 @@ samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 params = zeros(size(samples,1),N_SAMPLES);
 
 if SHOW_FIGURES
-    figure(iter); hold on;
+    %figure(iter); hold on;
 end
 
 %% INITIALIZE EMPTY VARIABLES

@@ -52,6 +52,7 @@ Zs = cell(LEN,1);
 
 %% LOOP
 good = 1;
+last_reset = 0;
 good_iters = 1;%ones(LEN,1);
 actions = cell(LEN,1);
 for iter = 1:N_ITER
@@ -60,7 +61,7 @@ for iter = 1:N_ITER
     x = [190,1000,0,0,0]';
     px = 1;
 
-    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES,'step_size',STEP_SIZE,'good',good_iters);
+    config = struct('n_iter',1,'start_iter',iter-last_reset,'n_primitives',3,'n_samples',N_SAMPLES,'step_size',STEP_SIZE,'good',good_iters);
     
     fprintf('==============\n');
     %% forward pass
@@ -126,6 +127,7 @@ for iter = 1:N_ITER
     if log(mean(actions{good}.pg)) > -5 && good < LEN
         fprintf('EXPANDING HORIZON!\n');
         good = good + 1;
+        last_reset = iter;
     end
     
 end
