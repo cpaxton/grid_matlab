@@ -1,19 +1,10 @@
-function [ traj, Z, avg_p, avg_pg ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, n_iter, start_iter)
+function [ traj, Z, avg_p, avg_pg ] = prob_planning( x0, model, next_model, local_env, next_env, obstacles, Z, config)
 %UNTITLED Summary of this function goes here
 %   model is the skill we are using
 %   next_model is the following skill
 %   env is a representation of the local environment
 %   Z is the initial distribution we will refine
 
-SHOW_FIGURES = false;
-%N_ITER = 10;
-STEP_SIZE = 0.75;
-N_SAMPLES = 100;
-N_PRIMITIVES = model.num_primitives;
-N_Z_DIM = 3*N_PRIMITIVES;
-%N_STEPS = 10;
-N_GEN_SAMPLES = 50*N_SAMPLES;
-USE_GOAL = true;
 
 if ~isstruct(next_model)
     fprintf('NOTE: Not using goal.\n');
@@ -23,6 +14,24 @@ if nargin < 6
     obstacles = {};
 end
 
+%% set number of iterations to run and other options
+if nargin < 8
+    N_ITER = 10;
+    start_iter = 1;
+    N_PRIMITIVES = model.num_primitives;
+else
+    N_ITER = config.n_iter;
+    start_iter = config.start_iter;
+    N_PRIMITIVES = config.num_primitives;
+end
+SHOW_FIGURES = false;
+STEP_SIZE = 0.75;
+N_SAMPLES = 100;
+N_Z_DIM = 3*N_PRIMITIVES;
+N_GEN_SAMPLES = 50*N_SAMPLES;
+USE_GOAL = true;
+
+%% setup Z
 if nargin < 7 || ~isstruct(Z)
     if model.in_gate
         xg = local_env.prev_gate.width;
@@ -54,16 +63,8 @@ if nargin < 7 || ~isstruct(Z)
     Z  = struct('mu',mu,'sigma',sigma);
 end
 
-%% set number of iterations to run
-if nargin < 8
-    N_ITER = 10;
-else
-    N_ITER = n_iter;
-end
-if nargin < 9
-    start_iter = 1;
-end
 
+%% run
 trajs = cell(N_SAMPLES,1);
 
 iter = start_iter;

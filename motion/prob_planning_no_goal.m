@@ -1,4 +1,4 @@
-function [ traj, Z ] = prob_planning_no_goal( x0, model, local_env, obstacles, Z, n_iter)
+function [ traj, Z ] = prob_planning_no_goal( x0, model, local_env, obstacles, Z, config)
 %UNTITLED Summary of this function goes here
 %   model is the skill we are using
 %   next_model is the following skill
@@ -12,5 +12,5 @@ elseif nargin < 5
 elseif nargin < 6
     [traj, Z] = prob_planning(x0, model, 0, local_env, 0, obstacles, Z);
 else
-    [traj, Z] = prob_planning(x0, model, 0, local_env, 0, obstacles, Z, n_iter);
+    [traj, Z] = prob_planning(x0, model, 0, local_env, 0, obstacles, Z, config);
 end

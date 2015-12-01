@@ -56,6 +56,9 @@ for iter = 1:N_ITER
     figure(iter);clf;hold on;
     draw_environment(env);
     x = [190,1000,0,0,0]';
+
+    config = struct('n_iter',1,'start_iter',iter,'num_primitives',3);
+
     for i = 1:good
         
         fprintf('==============\n');
@@ -63,6 +66,7 @@ for iter = 1:N_ITER
         
         current = models{plan(i)};
         goal = models{plan(i+1)};
+        config.num_primitives = current.num_primitives;
         
         local_env = [];
         local_env.exit = [env.width;env.height / 2; 0];
@@ -85,7 +89,7 @@ for iter = 1:N_ITER
             next_env.prev_gate = env.gates{prev_gate(i+1)}{1};
         end
         
-        [traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i},1,iter);
+        [traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i},config);
         Zs{i} = Z;
         
         plot(traj(1,:),traj(2,:),colors(plan(i)));
