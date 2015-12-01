@@ -1,7 +1,7 @@
 rng(100);
 %rng(102);
-N_ITER = 10;
-STEP_SIZE = 0.55;
+N_ITER = 11;
+STEP_SIZE = 0.85;
 N_SAMPLES = 100;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 
@@ -53,6 +53,7 @@ Zs = cell(LEN,1);
 %% LOOP
 good = 1;
 good_iters = ones(LEN,1);
+actions = cell(LEN,1);
 for iter = 1:N_ITER
     figure(iter);clf;hold on;
     draw_environment(env);
@@ -60,9 +61,6 @@ for iter = 1:N_ITER
     px = 1;
 
     config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES,'step_size',STEP_SIZE,'good',1);
-    
-    actions = [];
-    
     
     fprintf('==============\n');
     %% forward pass
@@ -100,23 +98,32 @@ for iter = 1:N_ITER
         fprintf('... done action %d, iter %d. avg p = %f, avg obj = %f\n', i,iter,log(mean(p)),log(mean(pg)));
         Zs{i} = Z;
         
-        action = struct('trajs',trajs,'traj_params',traj_params,'p',p,'pa',pa,'pg',pg);
-        actions = [actions action];
+        action = [];
+        %action = struct('test',{1},'trajs',trajs,'traj_params',traj_params,'p',p,'pa',pa,'pg',pg);
+        action.trajs = trajs; %,'traj_params',traj_params,'p',p,'pa',pa,'pg',pg);
+        action.traj_params = traj_params;
+        action.p  = p;
+        action.pg = pg;
+        action.pa = pa;
+        actions{i}=action;
         
-        
+        x = zeros(5,length(trajs));
+        px = p / sum(p);
         %plot(trajs{1}(1,:),traj(2,:),colors(plan(i)));
-        
-        x = trajs{1}(:,end);        
+        for j = 1:length(trajs)
+            x(:,j) = trajs{j}(:,end);
+        end
     end
 
     %% backward pass
     for i = good:-1:1
-        [Z,good_iter] = traj_update(actions(i).traj_params,actions(i).pg,Zs{i},config);
+        config.good = good_iters(i);
+        [Z,good_iter] = traj_update(actions{i}.traj_params,actions{i}.pg,Zs{i},config);
         Zs{i} = Z;
         good_iters(i) = good_iter;
     end
     
-    if log(mean(actions(good).pg)) > -5 && good < LEN
+    if log(mean(actions{good}.pg)) > -5 && good < LEN
         fprintf('EXPANDING HORIZON!\n');
         good = good + 1;
     end

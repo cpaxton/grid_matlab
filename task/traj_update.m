@@ -16,7 +16,7 @@ N_Z_DIM = size(Z.mu,1);
 
 %% good?
 avg_p = mean(p);
-if avg_p < 0.01
+if avg_p < 1e-10
     good = 1;
 else
     good = good + 1;
@@ -39,7 +39,7 @@ end
 dsigma = STEP_SIZE*(Z.sigma - sigma);
 
 Z  = struct('mu',mu,'sigma',Z.sigma-dsigma);
-noise = 10^(-(iter/2));
+noise = 10^(-(good+iter));
 Z.sigma = Z.sigma + (noise*eye(N_Z_DIM));
 
 %fprintf('... done iter %d. avg p = %f\n',iter,log(avg_p));

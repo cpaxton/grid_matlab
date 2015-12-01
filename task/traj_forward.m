@@ -6,7 +6,7 @@ function [ trajs, params, Z, p, pa, pg ] = traj_forward( x0, px0, model, next_mo
 %   Z is the initial distribution we will refine
 
 %% make sure this is a valid probability distribution
-assert(sum(px0) == 1);
+assert(abs(sum(px0) -1) < 1e-8);
 
 %% set up
 USE_GOAL = true;
@@ -40,7 +40,7 @@ if nargin < 7 || ~isstruct(Z)
         rg = 0;
     elseif model.use_gate
         %xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
-        xg = x0(1:2)' - [local_env.gate.x local_env.gate.y];
+        xg = x0(1:2,1)' - [local_env.gate.x local_env.gate.y];
         rg = atan2(local_env.gate.y-x0(2),local_env.gate.x-x0(1));
         if rg < -pi
             rg = rg + pi;
@@ -55,7 +55,7 @@ if nargin < 7 || ~isstruct(Z)
     N_STEPS = ceil(norm(xg) / N_PRIMITIVES / movement_guess);
     
     rg = rg / (N_STEPS*N_PRIMITIVES) * 20;
-    mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([rg;movement_guess;N_STEPS],N_PRIMITIVES,1);
+    mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([-rg;movement_guess;N_STEPS],N_PRIMITIVES,1);
     cv = [model.movement_dev 0 0; 0 model.rotation_dev 0; 0 0 1];
     sigma = eye(N_Z_DIM);
     for i=1:3:N_Z_DIM
@@ -94,11 +94,13 @@ pa = zeros(N_SAMPLES,1);
 pg = zeros(N_SAMPLES,1);
 
 %% GENERATE SAMPLES AND COMPUTE PROBABILITIES
-
+cpx0 = cumsum(px0);
 sample = 0;
 for i = 1:N_GEN_SAMPLES
     p_z = log(mvnpdf(samples(:,i),Z.mu,Z.sigma));
-    traj = sample_seq(x0,samples(:,i));
+    
+    x = x0(:,min(find(rand() < cpx0)));
+    traj = sample_seq(x,samples(:,i));
     
     if check_collisions(traj,obstacles) == 0
         
