@@ -27,3 +27,4 @@ addpath('./EXTERNAL/GMM-GMR-v2.0');
 addpath('./EXTERNAL/barwitherr');
 addpath('./EXTERNAL');
 addpath('./segmentation');
+addpath('./task');
