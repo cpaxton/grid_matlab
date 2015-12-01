@@ -57,7 +57,7 @@ for iter = 1:N_ITER
     draw_environment(env);
     x = [190,1000,0,0,0]';
 
-    config = struct('n_iter',1,'start_iter',iter,'num_primitives',3);
+    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',NUM_SAMPLES);
 
     for i = 1:good
         

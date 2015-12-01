@@ -20,16 +20,18 @@ if nargin < 8
     N_ITER = 10;
     start_iter = 1;
     N_PRIMITIVES = model.num_primitives;
+    N_SAMPLES = 100;
 else
     N_ITER = config.n_iter;
     start_iter = config.start_iter;
-    N_PRIMITIVES = config.num_primitives;
+    N_PRIMITIVES = config.n_primitives;
+    N_SAMPLES = config.n_samples;
 end
-SHOW_FIGURES = false;
+SHOW_FIGURES = true;
 STEP_SIZE = 0.75;
-N_SAMPLES = 100;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
+max_p = 1;
 
 %% setup Z
 if nargin < 7 || ~isstruct(Z)
@@ -86,14 +88,14 @@ while iter < start_iter + N_ITER
     params = zeros(size(samples,1),N_SAMPLES);
     
     if SHOW_FIGURES
-        figure(1+iter);clf;hold on;
-        if model.use_gate
-            draw_gates({local_env.gate});
-        end
-        if model.use_prev_gate
-            draw_gates({local_env.prev_gate});
-        end 
-        draw_surfaces(obstacles);
+        figure(iter);hold on;
+        %if model.use_gate
+        %    draw_gates({local_env.gate});
+        %end
+        %if model.use_prev_gate
+        %    draw_gates({local_env.prev_gate});
+        %end 
+        %draw_surfaces(obstacles);
     end
     
     p = zeros(N_SAMPLES,1);
@@ -119,8 +121,6 @@ while iter < start_iter + N_ITER
                 fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
                 fg = [0;fg];
             end
-            
-            %ps = mvnpdf(f(1:(end),:),model.Mu,model.Sigma);
 
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
             %p_action = log(min(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
@@ -144,7 +144,7 @@ while iter < start_iter + N_ITER
                 if r > 1
                     r = 1;
                 end
-                plot(traj(1,:),traj(2,:),'color',[r,0,0]);
+                plot(traj(1,:),traj(2,:),'color',model.color);
             end
             
             if sample == N_SAMPLES
@@ -192,9 +192,9 @@ while iter < start_iter + N_ITER
     
     fprintf('... done iter %d. avg p = %f, avg obj = %f\n',iter,log(avg_p),log(avg_pg));
     iter = iter + 1;
-    if SHOW_FIGURES
-        pause
-    end
+    %if SHOW_FIGURES
+    %    pause
+    %end
 
     % remove normalizing term
     for i = 1:model.nbStates
