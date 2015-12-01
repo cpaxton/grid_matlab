@@ -27,7 +27,7 @@ else
     N_PRIMITIVES = config.n_primitives;
     N_SAMPLES = config.n_samples;
 end
-SHOW_FIGURES = true;
+SHOW_FIGURES = false;
 STEP_SIZE = 0.75;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;

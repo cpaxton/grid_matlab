@@ -52,25 +52,32 @@ Zs = cell(LEN,1);
 
 %% LOOP
 good = 1;
+good_iters = ones(LEN,1);
 for iter = 1:N_ITER
     figure(iter);clf;hold on;
     draw_environment(env);
     x = [190,1000,0,0,0]';
+    px = 1;
 
-    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',NUM_SAMPLES);
-
+    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES,'step_size',STEP_SIZE,'good',1);
+    
+    actions = [];
+    
+    
+    fprintf('==============\n');
+    %% forward pass
     for i = 1:good
         
-        fprintf('==============\n');
-        fprintf('ACTION: %d, model=%d, gate=%d, prev_gate=%d\n',i,plan(i),next_gate(i),prev_gate(i));
+        %fprintf('ACTION: %d, model=%d, gate=%d, prev_gate=%d\n',i,plan(i),next_gate(i),prev_gate(i));
         
         current = models{plan(i)};
         goal = models{plan(i+1)};
         config.num_primitives = current.num_primitives;
+        config.good = good_iters(i);
         
         local_env = [];
         local_env.exit = [env.width;env.height / 2; 0];
-        local_env.obstacles = {};
+        local_env.obstacles = env.surfaces;
         local_env.gates = env.gates;
         if next_gate(i) <= length(env.gates)
             local_env.gate = env.gates{next_gate(i)}{1};
@@ -89,29 +96,29 @@ for iter = 1:N_ITER
             next_env.prev_gate = env.gates{prev_gate(i+1)}{1};
         end
         
-        [traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i},config);
+        [trajs,traj_params,Z,p,pa,pg] = traj_forward(x,px,current,goal,local_env,next_env,Zs{i},config);
+        fprintf('... done action %d, iter %d. avg p = %f, avg obj = %f\n', i,iter,log(mean(p)),log(mean(pg)));
         Zs{i} = Z;
         
-        plot(traj(1,:),traj(2,:),colors(plan(i)));
+        action = struct('trajs',trajs,'traj_params',traj_params,'p',p,'pa',pa,'pg',pg);
+        actions = [actions action];
         
-        x = traj(:,end);
         
-        trajs{i} = traj;
+        %plot(trajs{1}(1,:),traj(2,:),colors(plan(i)));
         
+        x = trajs{1}(:,end);        
     end
 
-    if log(pg) > -10 && good < LEN
-        good = good + 1;
+    %% backward pass
+    for i = good:-1:1
+        [Z,good_iter] = traj_update(actions(i).traj_params,actions(i).pg,Zs{i},config);
+        Zs{i} = Z;
+        good_iters(i) = good_iter;
     end
     
-end
-
-if bmm.k <= 3
-    fprintf('==============\n');
-    fprintf('ACTION: %d, model=%d, going to exit\n',i+1,plan(i+1));
+    if log(mean(actions(good).pg)) > -10 && good < LEN
+        fprintf('EXPANDING HORIZON!\n');
+        %good = good + 1;
+    end
     
-    traj = prob_planning_no_goal(x,goal,next_env,env.surfaces);
-    plot(traj(1,:),traj(2,:));
-    
-    trajs{i+1} = traj;
 end
