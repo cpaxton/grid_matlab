@@ -6,6 +6,7 @@ function [ traj, Z, avg_p, avg_pg ] = prob_planning( x0, model, next_model, loca
 %   Z is the initial distribution we will refine
 
 
+USE_GOAL = true;
 if ~isstruct(next_model)
     fprintf('NOTE: Not using goal.\n');
     USE_GOAL = false;
@@ -29,7 +30,6 @@ STEP_SIZE = 0.75;
 N_SAMPLES = 100;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
-USE_GOAL = true;
 
 %% setup Z
 if nargin < 7 || ~isstruct(Z)
