@@ -1,6 +1,6 @@
 rng(100);
 %rng(102);
-N_ITER = 11;
+N_ITER = 20;
 STEP_SIZE = 0.85;
 N_SAMPLES = 100;
 N_GEN_SAMPLES = 50*N_SAMPLES;
@@ -52,7 +52,7 @@ Zs = cell(LEN,1);
 
 %% LOOP
 good = 1;
-good_iters = ones(LEN,1);
+good_iters = 1;%ones(LEN,1);
 actions = cell(LEN,1);
 for iter = 1:N_ITER
     figure(iter);clf;hold on;
@@ -60,7 +60,7 @@ for iter = 1:N_ITER
     x = [190,1000,0,0,0]';
     px = 1;
 
-    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES,'step_size',STEP_SIZE,'good',1);
+    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES,'step_size',STEP_SIZE,'good',good_iters);
     
     fprintf('==============\n');
     %% forward pass
@@ -71,7 +71,7 @@ for iter = 1:N_ITER
         current = models{plan(i)};
         goal = models{plan(i+1)};
         config.num_primitives = current.num_primitives;
-        config.good = good_iters(i);
+        config.good = good_iters;
         
         local_env = [];
         local_env.exit = [env.width;env.height / 2; 0];
@@ -117,10 +117,10 @@ for iter = 1:N_ITER
 
     %% backward pass
     for i = good:-1:1
-        config.good = good_iters(i);
+        config.good = good_iters;
         [Z,good_iter] = traj_update(actions{i}.traj_params,actions{i}.pg,Zs{i},config);
         Zs{i} = Z;
-        good_iters(i) = good_iter;
+        good_iters = min(good_iter,good_iters);
     end
     
     if log(mean(actions{good}.pg)) > -5 && good < LEN
