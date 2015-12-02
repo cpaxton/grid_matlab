@@ -1,8 +1,9 @@
-
+rng(100);
 %% solve level one thing at a time
 %env = envs{6};
 %env = envs{7};
-env = generate_environment(1920,1080,2,2);
+%env = generate_environment(1920,1080,2,2);
+env = generate_environment(1920,1080,2,0);
 
 if bmm.k <= 3
     plan = [1];
