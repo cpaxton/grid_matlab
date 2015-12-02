@@ -95,7 +95,7 @@ for iter = 1:N_ITER
             next_env.prev_gate = env.gates{prev_gate(i+1)}{1};
         end
         
-        [trajs,traj_params,Z,p,pa,pg] = traj_forward(x,px,current,goal,local_env,next_env,Zs{i},config);
+        [trajs,traj_params,Z,p,pa,pg,idx] = traj_forward(x,px,current,goal,local_env,next_env,Zs{i},config);
         fprintf('... done action %d, iter %d. avg p = %f, avg obj = %f\n', i,iter,log(mean(p)),log(mean(pg)));
         Zs{i} = Z;
         
