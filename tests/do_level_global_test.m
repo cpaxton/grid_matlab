@@ -1,7 +1,7 @@
 rng(100);
 %rng(102);
-N_ITER = 20;
-STEP_SIZE = 0.75;
+N_ITER = 30;
+STEP_SIZE = 0.55;
 N_SAMPLES = 100;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 
@@ -116,25 +116,28 @@ for iter = 1:N_ITER
         end
     end
 
-    %% backward pass
-    for i = good:-1:1
-        
-        %if i == good
-            p = actions{i}.pa .* actions{i}.pg;
-        %else
-        %    p = pa .* p; % assuming independent actions
-        %end
-        
-        config.good = good_iters;
-        [Z,good_iter] = traj_update(actions{i}.traj_params,p,Zs{i},config);
-        Zs{i} = Z;
-        good_iters = min(good_iter,good_iters);
-    end
-    
     if log(mean(actions{good}.pg)) > -5 && good < LEN
         fprintf('EXPANDING HORIZON!\n');
         good = good + 1;
         last_reset = iter;
+    else
+        
+        %% backward pass
+        for i = good:-1:1
+            
+            if i == good
+                p = actions{i}.pa .* actions{i}.pg;
+            else
+                p = actions{i}.pa; % .* p; % assuming independent actions
+            end
+            
+            config.good = good_iters;
+            [Z,good_iter] = traj_update(actions{i}.traj_params,p,Zs{i},config);
+            Zs{i} = Z;
+            good_iters = min(good_iter,good_iters);
+        end
+        
+        
     end
     
 end
