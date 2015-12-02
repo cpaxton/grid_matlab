@@ -1,7 +1,7 @@
 rng(100);
 %rng(102);
-N_ITER = 30;
-STEP_SIZE = 0.55;
+N_ITER = 20;
+STEP_SIZE = 0.85;
 N_SAMPLES = 100;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 
