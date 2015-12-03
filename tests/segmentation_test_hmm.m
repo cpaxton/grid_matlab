@@ -3,13 +3,14 @@
 NVIEWS = 3;
 NCLASSES = 4;
 LEN = 5;
-CLASS_LENS = [2,3,4,3];
+CLASS_LENS = [1,1,1,1];%[2,3,4,3];
 
 %% initialize variables
 x = cell(LEN,NVIEWS);
 y = floor(rand(LEN,1)*NCLASSES)+1;
 py = zeros(LEN,NCLASSES);
-s = 0.5*ones(NCLASSES,NVIEWS);
+%s = 0.5*ones(NCLASSES,NVIEWS);
+s = ones(NCLASSES,NVIEWS);
 models = cell(NCLASSES,NVIEWS);
 background = cell(NVIEWS,1);
 
@@ -34,7 +35,7 @@ for i = 2:LEN
     truth(i) = rand_hmm_transition(truth(i-1),trueT);
 end
 
-true_s = zeros(NCLASSES,NVIEWS);
+true_s = ones(NCLASSES,NVIEWS);
 for i = 1:NCLASSES
     true_s(i,ceil(rand()*NVIEWS)) = 1;
 end
@@ -77,7 +78,7 @@ for i = 1:LEN
         for yi = 1:4
             %p = unary({x{i,:}},s(yi,:),{models{yi,:}})  + log(T(truth(i),yi));
             %pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
-            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) ;%* (T0(yi));
+            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) * (T0(yi));
             pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
             fprintf('y=%d, truth=%d, p=%f, w/ true s=%f\n',yi,truth(i),p,pt);
             py(i,yi) = p;
@@ -86,7 +87,7 @@ for i = 1:LEN
         for yi = 1:4
             %p = unary({x{i,:}},s(yi,:),{models{yi,:}})  + log(T(truth(i),yi));
             %pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
-            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) ;%* (trueT(truth(i-1),yi));
+            p = unary({x{i,:}},s(yi,:),{models{yi,:}}) * (trueT(truth(i-1),yi));
             pt = unary({x{i,:}},true_s(yi,:),{models{yi,:}});
             fprintf('y=%d, truth=%d, p=%f, w/ true s=%f\n',yi,truth(i),p,pt);
             py(i,yi) = p;
