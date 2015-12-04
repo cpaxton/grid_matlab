@@ -1,4 +1,4 @@
-function [ trajs, params, Z, p, pa, pg ] = traj_forward( x0, px0, model, next_model, local_env, next_env, Z, config)
+function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, next_model, local_env, next_env, Z, config)
 %TRAJ_FORWARD Generate forward samples of an action
 %   model is the skill we are using
 %   next_model is the following skill
@@ -32,6 +32,8 @@ SHOW_FIGURES = true;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 
+idx = zeros(N_SAMPLES,1);
+
 %% setup Z
 if nargin < 7 || ~isstruct(Z)
     if model.in_gate
@@ -52,7 +54,7 @@ if nargin < 7 || ~isstruct(Z)
         rg = 0;
     end
     movement_guess = model.movement_mean;
-    N_STEPS = ceil(norm(xg) / N_PRIMITIVES / movement_guess);
+    N_STEPS = ceil(0.8*norm(xg) / N_PRIMITIVES / movement_guess);
     
     rg = rg / (N_STEPS*N_PRIMITIVES) * 20;
     mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([-rg;movement_guess;N_STEPS],N_PRIMITIVES,1);
@@ -99,12 +101,14 @@ sample = 0;
 for i = 1:N_GEN_SAMPLES
     p_z = log(mvnpdf(samples(:,i),Z.mu,Z.sigma));
     
-    x = x0(:,min(find(rand() < cpx0)));
+    x_idx = min(find(rand() < cpx0));
+    x = x0(:,x_idx);
     traj = sample_seq(x,samples(:,i));
     
     if check_collisions(traj,obstacles) == 0
         
         sample = sample + 1;
+        idx(sample) = x_idx;
         
         trajs{sample} = traj;
         params(:,sample) = samples(:,i);
