@@ -103,6 +103,7 @@ for iter = 1:N_ITER
         %action = struct('test',{1},'trajs',trajs,'traj_params',traj_params,'p',p,'pa',pa,'pg',pg);
         action.trajs = trajs; %,'traj_params',traj_params,'p',p,'pa',pa,'pg',pg);
         action.traj_params = traj_params;
+        action.idx = idx;
         action.p  = p;
         action.pg = pg;
         action.pa = pa;
@@ -125,14 +126,18 @@ for iter = 1:N_ITER
         %% backward pass
         for i = good:-1:1
             
+            config.good = good_iters;
+            
+            % if good: update p appropriately
             if i == good
                 p = actions{i}.pa .* actions{i}.pg;
+                actions{i}.p = p;
+                [Z,good_iter] = traj_update(actions{i}.traj_params,p,Zs{i},config);
             else
                 p = actions{i}.pa; % .* p; % assuming independent actions
+                [Z,good_iter] = traj_update_prev(actions{i}.traj_params,p,actions{i+1}.idx,actions{i+1}.p,Zs{i},config);
             end
             
-            config.good = good_iters;
-            [Z,good_iter] = traj_update(actions{i}.traj_params,p,Zs{i},config);
             Zs{i} = Z;
             good_iters = min(good_iter,good_iters);
         end
