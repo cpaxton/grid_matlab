@@ -18,6 +18,7 @@ SHOW_SEGMENTS_EXAMPLE = true;
 SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
 SHOW_DATA_LOGLIKELIHOOD = false;
+SHOW_RESULTS = false;
 SKIP_IMG = true;
 
 %DELETE_MOVEMENT_ROTATION = true;
@@ -332,7 +333,9 @@ for k=1:bmm.k
         models{k}.inInvSigma(:,:,j) = inv(best_model.sigma(models{k}.in,models{k}.in,j));
     end
     
-    [img, expath] = show_pca_results(ap,models,k,SKIP_IMG);
+    if SHOW_RESULTS
+        [img, expath] = show_pca_results(ap,models,k,SKIP_IMG);
+    end
     
     if HOLD_OUT && SHOW_DATA_LOGLIKELIHOOD
         test_ll = compute_loglik(testData(models{k}.in,:),models{k}.Mu,models{k}.Sigma,models{k},models{k}.in);
