@@ -1,7 +1,7 @@
-rng(100);
+%rng(100);
 %rng(102);
 N_ITER = 20;
-STEP_SIZE = 0.85;
+STEP_SIZE = 1;%0.85;
 N_SAMPLES = 100;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 
@@ -51,12 +51,13 @@ ITER = 1;
 Zs = cell(LEN,1);
 
 %% LOOP
-good = 1;
+last_avg_goal = 0;
+good = 2;
 last_reset = 0;
 good_iters = 1;%ones(LEN,1);
 actions = cell(LEN,1);
 for iter = 1:N_ITER
-    figure(iter);clf;hold on;
+    figure(1);clf;hold on;
     draw_environment(env);
     x = [190,1000,0,0,0]';
     px = 1;
@@ -117,7 +118,10 @@ for iter = 1:N_ITER
         end
     end
 
-    if log(mean(actions{good}.pg)) > -5 && good < LEN
+    avg_goal = log(mean(actions{good}.pg));
+    
+    %if log(mean(actions{good}.pg)) > -7 && good < LEN
+    if abs(last_avg_goal - avg_goal) < 0.1 && good < LEN
         fprintf('EXPANDING HORIZON!\n');
         good = good + 1;
         last_reset = iter;
@@ -144,5 +148,9 @@ for iter = 1:N_ITER
         
         
     end
+    
+    last_avg_goal = avg_goal;
+    
+    M(iter) = getframe(gcf);
     
 end

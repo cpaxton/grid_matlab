@@ -27,7 +27,7 @@ else
     N_PRIMITIVES = config.n_primitives;
     N_SAMPLES = config.n_samples;
 end
-SHOW_FIGURES = false;
+SHOW_FIGURES = true;
 STEP_SIZE = 0.75;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
@@ -88,7 +88,7 @@ while iter < start_iter + N_ITER
     params = zeros(size(samples,1),N_SAMPLES);
     
     if SHOW_FIGURES
-        figure(iter);hold on;
+        %figure(iter); %hold on;
         %if model.use_gate
         %    draw_gates({local_env.gate});
         %end
@@ -140,10 +140,6 @@ while iter < start_iter + N_ITER
             end
             
             if SHOW_FIGURES
-                r = p(sample) / 2 / max_p;
-                if r > 1
-                    r = 1;
-                end
                 plot(traj(1,:),traj(2,:),'color',model.color);
             end
             
