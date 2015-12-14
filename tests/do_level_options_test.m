@@ -1,8 +1,8 @@
 rng(100);
 %rng(102);
 N_ITER = 20;
-STEP_SIZE = 0.55;
-N_SAMPLES = 100;
+STEP_SIZE = 0.5;
+N_SAMPLES = 200;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 MAX_OPTIONS = 5;
 MAX_PRIMITIVES = 5;
@@ -64,9 +64,9 @@ nprimitives = ones(MAX_PRIMITIVES,1) / MAX_PRIMITIVES;
 %% LOOP
 good = 1;
 for iter = 1:N_ITER
-    figure(iter);clf;hold on;
+    figure(1);clf;hold on;
     draw_environment(env);
-    x = [190,1000,0,0,0]';
+    x = [190,800,0,0,0]';
     
     config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES);
     % randomly choose values for every sample drawn to set up environment
@@ -125,7 +125,7 @@ for iter = 1:N_ITER
 
         end
         param_p = param_p / sum(param_p);
-        params(i,:) = ((1-STEP_SIZE)*params(i,:)) + (STEP_SIZE*param_p);
+        params(i,:) = ((1-(STEP_SIZE/3))*params(i,:)) + ((STEP_SIZE/3)*param_p);
         
         break;
         
@@ -135,14 +135,7 @@ for iter = 1:N_ITER
         good = good + 1;
     end
     
+    M(iter) = getframe(gcf);
 end
 
-if bmm.k <= 3
-    fprintf('==============\n');
-    fprintf('ACTION: %d, model=%d, going to exit\n',i+1,plan(i+1));
-    
-    traj = prob_planning_no_goal(x,goal,next_env,env.surfaces);
-    plot(traj(1,:),traj(2,:));
-    
-    trajs{i+1} = traj;
-end
+movie2avi(M, 'options.avi', 'compression', 'None');

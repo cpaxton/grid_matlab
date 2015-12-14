@@ -154,3 +154,5 @@ for iter = 1:N_ITER
     M(iter) = getframe(gcf);
     
 end
+
+movie2avi(M, 'global.avi', 'compression', 'None');

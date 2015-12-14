@@ -72,16 +72,16 @@ trajs = cell(N_SAMPLES,1);
 iter = start_iter;
 good = 1;
 while iter < start_iter + N_ITER
-
+    
     model_normalizer = 0.1*(0.1^good)*eye(size(model.Sigma,1));
     for i = 1:model.nbStates
         model.Sigma(:,:,1) = model.Sigma(:,:,1) + model_normalizer;
     end
     if USE_GOAL
         goal_normalizer = (0.1^good)*eye(size(next_model.Sigma,1));
-    for i = 1:next_model.nbStates
-        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
-    end
+        for i = 1:next_model.nbStates
+            next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
+        end
     end
     
     samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
@@ -94,7 +94,7 @@ while iter < start_iter + N_ITER
         %end
         %if model.use_prev_gate
         %    draw_gates({local_env.prev_gate});
-        %end 
+        %end
         %draw_surfaces(obstacles);
     end
     
@@ -116,18 +116,18 @@ while iter < start_iter + N_ITER
             fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
             len = size(fa,2);
             fa = [1000 * (1:len) / len; fa];
-
+            
             if USE_GOAL
                 fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
                 fg = [0;fg];
             end
-
+            
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
             %p_action = log(min(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
             p_action = mean(compute_loglik(fa,model.Mu,model.Sigma,model,model.in));%/len;
             
             %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
-
+            
             if USE_GOAL
                 p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
                 %fprintf('%f / %f\n',p_action,p_goal);
@@ -151,9 +151,6 @@ while iter < start_iter + N_ITER
     
     if sum(p) == 0
         continue
-    %elseif ok == false
-    %    fprintf (' ... did not reach goal!\n');
-    %    continue;
     end
     
     % update z
@@ -188,20 +185,16 @@ while iter < start_iter + N_ITER
     
     fprintf('... done iter %d. avg p = %f, avg obj = %f\n',iter,log(avg_p),log(avg_pg));
     iter = iter + 1;
-    %if SHOW_FIGURES
-    %    pause
-    %end
-
+    
     % remove normalizing term
     for i = 1:model.nbStates
         model.Sigma(:,:,1) = model.Sigma(:,:,1) - model_normalizer;
     end
     if USE_GOAL
-    for i = 1:next_model.nbStates
-        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) - goal_normalizer;
+        for i = 1:next_model.nbStates
+            next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) - goal_normalizer;
+        end
     end
-    end
-
 end
 
 %[~,idx] = max(pg);
