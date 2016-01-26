@@ -132,7 +132,9 @@ for i = 1:N_GEN_SAMPLES
             p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
             %fprintf('%f / %f\n',p_action,p_goal);
             
-            p(sample) =  exp(p_action + p_goal);
+            %p(sample) =  exp(p_action + p_goal);
+            p(sample) =  exp(p_action);
+            
             pa(sample) = exp(p_action);
             pg(sample) = exp(p_goal);
         else
