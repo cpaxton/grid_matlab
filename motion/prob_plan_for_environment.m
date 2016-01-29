@@ -99,9 +99,9 @@ for i = 1:length(plan)-1
     end
     
     if use_goal
-        traj = prob_planning(x,current,goal,local_env,next_env,env.surfaces);
+        traj = prob_planning(x0,current,goal,local_env,next_env,env.surfaces);
     else
-        traj = prob_planning_no_goal(x,current,local_env,env.surfaces);
+        traj = prob_planning_no_goal(x0,current,local_env,env.surfaces);
     end
     
     plot(traj(1,:),traj(2,:),colors(plan(i)));
@@ -115,7 +115,7 @@ if bmm.k <= 3
     fprintf('==============\n');
     fprintf('ACTION: %d, model=%d, going to exit\n',i+1,plan(i+1));
     
-    traj = prob_planning_no_goal(x,goal,next_env,env.surfaces);
+    traj = prob_planning_no_goal(x0,goal,next_env,env.surfaces);
     plot(traj(1,:),traj(2,:));
     
     trajs{i+1} = traj;

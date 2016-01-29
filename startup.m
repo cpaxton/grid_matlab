@@ -21,7 +21,7 @@ addpath('./motion/tree');
 addpath('./gmmgmr');
 addpath('./tests');
 addpath('./tests/dev');
-addpath('./tests/icra2016');
+addpath('./tests/conference');
 addpath('./EXTERNAL/dynamic_time_warping_v2.1');
 addpath('./EXTERNAL/GMM-GMR-v2.0');
 addpath('./EXTERNAL/barwitherr');
