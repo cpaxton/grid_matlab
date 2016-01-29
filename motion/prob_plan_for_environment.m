@@ -5,7 +5,7 @@ colors = 'rgbmcy';
 if nargin < 2
     use_goal = true;
 end
-
+disp('here')
 %% solve level one thing at a time
 
 if bmm.k <= 3
@@ -52,14 +52,13 @@ else
     next_gate = [next_gate ngates+1 ngates+1];
 end
 
+disp('here')
 %% create options for gates
 % note that these are definitely temporary placeholders
 next_opt = ones(size(next_gate));
 prev_opt = ones(size(prev_gate));
 
 %% run
-
-x = [190,1000,0,0,0]';
 
 trajs = cell(length(plan),1);
 
