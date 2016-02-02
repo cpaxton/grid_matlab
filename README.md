@@ -2,6 +2,8 @@
 
 Grounded Robot Instruction from Demonstration project by Chris Paxton
 
+MATLAB code for use with the Needle Master game!
+
 ### Goals
 
 We would like to answer the question: "how can we learn a grammar of re-usable robot actions that we can use to solve complex problems in new environments?"
