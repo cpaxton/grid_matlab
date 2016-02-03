@@ -55,7 +55,6 @@ last_reset = 0;
 good_iters = 1;%ones(LEN,1);
 actions = cell(LEN,1);
 for iter = 1:N_ITER
-    figure(1);clf;hold on;
     draw_environment(env);
     x = x0;
     px = 1;
@@ -110,7 +109,7 @@ for iter = 1:N_ITER
         
         x = zeros(5,length(trajs));
         px = p / sum(p);
-        %plot(trajs{1}(1,:),traj(2,:),colors(plan(i)));
+        %plot(trajs{1}(1,:),trajs{1}(2,:),colors(plan(i)));
         for j = 1:length(trajs)
             x(:,j) = trajs{j}(:,end);
         end

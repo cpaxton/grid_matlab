@@ -5,7 +5,6 @@ function [ traj, Z, avg_p, avg_pg ] = prob_planning( x0, model, next_model, loca
 %   env is a representation of the local environment
 %   Z is the initial distribution we will refine
 
-
 USE_GOAL = true;
 if ~isstruct(next_model)
     fprintf('NOTE: Not using goal.\n');
@@ -32,6 +31,7 @@ STEP_SIZE = 0.75;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 max_p = 1;
+collisions = 0;
 
 %% setup Z
 if nargin < 7 || ~isstruct(Z)
@@ -145,6 +145,14 @@ while iter < start_iter + N_ITER
             
             if sample == N_SAMPLES
                 break
+            end
+        else
+            collisions = collisions + 1;
+            
+            if collisions > 1000
+                collisions = 0;
+                disp('Too many collisions!');
+                return;
             end
         end
     end
