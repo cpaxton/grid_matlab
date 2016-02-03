@@ -23,6 +23,14 @@ learning_segments % learns models associated with each predicate
 
 You can then try a few different experiments.
 
+The one used for validation of the algorithm is:
+
+```
+levels
+```
+
+This will run the full set of experiments on randomly-generated levels.
+
 ### Visualize Actions
 
 You can show the current set of actions on levels 1-12 with:
