@@ -2,6 +2,8 @@
 
 Grounded Robot Instruction from Demonstration project by Chris Paxton
 
+MATLAB code for use with the Needle Master game!
+
 ### Goals
 
 We would like to answer the question: "how can we learn a grammar of re-usable robot actions that we can use to solve complex problems in new environments?"
@@ -20,6 +22,14 @@ learning_segments % learns models associated with each predicate
 ```
 
 You can then try a few different experiments.
+
+The one used for validation of the algorithm is:
+
+```
+levels
+```
+
+This will run the full set of experiments on randomly-generated levels.
 
 ### Visualize Actions
 
