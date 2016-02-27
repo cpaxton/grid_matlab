@@ -11,6 +11,7 @@ addpath('./utils');
 addpath('./utils/sampling');
 addpath('./utils/environment');
 addpath('./utils/tightfig');
+addpath('./utils/make_fig');
 addpath('./draw');
 addpath('./motion');
 addpath('./motion/samplers');
