@@ -4,9 +4,23 @@ Grounded Robot Instruction from Demonstration project. The goal of this project 
 
 This MATLAB code is for use with the Needle Master game available [here](https://play.google.com/store/apps/details?id=edu.jhu.lcsr.needlemaster).
 
-We would like to answer the question: "how can we learn a grammar of re-usable robot actions that we can use to solve complex problems in new environments?" In particular, we examine this problem in the case of Needle Master: a simple Android game.
-
 [![Gameplay Example](https://img.youtube.com/vi/GgIznhbk-5g/0.jpg)](https://www.youtube.com/watch?v=GgIznhbk-5g)
+
+More details are provided in the workshop paper (Towards Robot Task Planning From Probabilistic Models of Human Skills)[http://arxiv.org/abs/1602.04754].
+
+We would like to answer the question: "how can we learn a grammar of re-usable robot actions that we can use to solve complex problems in new environments?" Needle Master provides a simple test case for early versions of our algorithms.
+
+Please cite as:
+
+```
+@inproceedings{paxton2016towards,
+  title={Towards Robot Task Planning from Probabilistic Representations of Human Skills},
+  author={Paxton, Chris and Kobilarov, Marin and Hager, Gregory D.},
+  booktitle={AAAI 2016 Workshop on Planning in Hybrid Systems},
+  year={2016},
+  organization={AAAI}
+}
+```
 
 ## Environment Setup
 
