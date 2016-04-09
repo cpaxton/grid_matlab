@@ -1,11 +1,15 @@
 function [ ap ] = create_segments( bmm, trials, envs, predicates, MARGIN, NUM_LEVELS)
 %CREATE_SEGMENTS Break up demonstrations into smaller units based on a
 %provided model
-%   Detailed explanation goes here
+%   bmm: bernoulli mixture model, or mapping of predicates into individual
+%   action primitives.
 
 % create one cell for each of the different action primitives
+% action primitives will be stored in an output array of length k
 ap = cell(bmm.k,1);
 
+% if we do not provide a number of levels use a default argument
+% for now this is set to six
 if nargin < 6
     NUM_LEVELS = 6; % limit ourselves to the first 6 levels
 end
