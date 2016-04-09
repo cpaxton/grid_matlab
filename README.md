@@ -6,6 +6,8 @@ This MATLAB code is for use with the Needle Master game available [here](https:/
 
 We would like to answer the question: "how can we learn a grammar of re-usable robot actions that we can use to solve complex problems in new environments?" In particular, we examine this problem in the case of Needle Master: a simple Android game.
 
+[![Gameplay Example](https://img.youtube.com/vi/GgIznhbk-5g/0.jpg)](https://www.youtube.com/watch?v=GgIznhbk-5g)
+
 ## Environment Setup
 
 It is fairly simple to execute this code:
