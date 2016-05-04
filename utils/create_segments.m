@@ -1,11 +1,17 @@
 function [ ap ] = create_segments( bmm, trials, envs, predicates, MARGIN, NUM_LEVELS)
 %CREATE_SEGMENTS Break up demonstrations into smaller units based on a
-%provided model
-%   Detailed explanation goes here
+%provided model. This function creates a large amount of training data for
+%experiments, only a subset of which is actually used in the current
+%version of my experiments.
+%   bmm: bernoulli mixture model, or mapping of predicates into individual
+%   action primitives.
 
 % create one cell for each of the different action primitives
+% action primitives will be stored in an output array of length k
 ap = cell(bmm.k,1);
 
+% if we do not provide a number of levels use a default argument
+% for now this is set to six
 if nargin < 6
     NUM_LEVELS = 6; % limit ourselves to the first 6 levels
 end
@@ -24,6 +30,8 @@ for k=1:bmm.k
             idx = idx + 1;
             fprintf('action=%d env=%d trial=%d (seq=%d)\n',k,i,j,idx);
             
+            % assign labels to each of the current positions based on
+            % computed predicates
             labels = BernoulliAssign(bmm,predicates{i}{j}');
 
             if sum(labels==k) == 0
@@ -48,11 +56,11 @@ for k=1:bmm.k
             %% create training example
             for ex=1:length(segs)
                 
+                % options:
+                % these tell us which gate the user passed through when
+                % they had a choice of multiple gates
                 next_opt = opts{ex}(1,:);
                 prev_opt = opts{ex}(2,:);
-                
-                %assert(all(next_opt==next_opt(1)));
-                %assert(all(prev_opt==prev_opt(1)));
                 
                 next_opt = mode(next_opt);
                 prev_opt = mode(prev_opt);
@@ -62,34 +70,47 @@ for k=1:bmm.k
                     continue;
                 end
                 
+                % For ease of use I also put each segment into a normalized
+                % local coordinate frame. For right now, these only make a
+                % difference when visualizing data, and I may get rid of
+                % them at some future date.
                 origin_x = segs{ex}(1,1);
                 origin_y = segs{ex}(2,1);
                 origin_w = segs{ex}(3,1);
                 
+                % Compute the exit relative to each local coordinate frame.
                 exit = [envs{i}.width-origin_x;(envs{i}.height / 2)-origin_y;0];
                 exit = rotate_trajectory(exit,-origin_w);
-                samples(next_sample).orig_exit = [envs{i}.width;(envs{i}.height / 2);0];
+                samples(next_sample).exit = [envs{i}.width;(envs{i}.height / 2);0];
 
-                %effort_features = [abs(segs{ex}(5,:))];
+                % "effort features" are somewhat poorly named. They are the
+                % control inputs the user provided: forward motion and
+                % rotation.
                 effort_features = abs(segs{ex}(4:5,:));
                 
+                % providing the original data and computing trajectory
+                % segments for each action primitive example
                 samples(next_sample).originalData = segs{ex};
                 segs{ex}(1,:) = segs{ex}(1,:) - origin_x;
                 segs{ex}(2,:) = segs{ex}(2,:) - origin_y;
                 segs{ex} = rotate_trajectory(segs{ex},-origin_w);
                 
+                % rotation for each action primitive example, normalized
+                % and adjusted
                 w = segs{ex}(3,:);
                 w(w < 0) = w(w < 0) + (2*pi);
                 w(w > 2*pi) = w(w > 2*pi) - (2*pi);
                 segs{ex}(3,:) = w;
                 
+                % time for each action primitive example, likewise adjusted
                 t = (0:(size(segs{ex},2)-1)) / (size(segs{ex},2)-1);
                 exit_features = get_end_distance(segs{ex},exit);
                 
+                % apply dynamics
                 [nx,ny,nw] = needle_update(segs{ex}(1,:),segs{ex}(2,:),segs{ex}(3,:),segs{ex}(4,:),segs{ex}(5,:),envs{i});
-                
                 samples(next_sample).in_tissue = in_tissue([nx;ny;nw],envs{i}.surfaces);
                 samples(next_sample).trainingData = [nx;ny;nw];
+                
                 samples(next_sample).data = segs{ex};
                 samples(next_sample).predicates = segp{ex};
                 samples(next_sample).goals = goals{ex};
