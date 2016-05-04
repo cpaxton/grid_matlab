@@ -6,10 +6,13 @@ end
 
 all_labels = cell(num_levels,1);
 
+idx = 1;
 for i = 1:num_levels
     all_labels{i} = cell(length(trials{i}),1);
     for j = 1:length(trials{i})
-        all_labels{i}{j} = vec(1:length(trials{i}{j}.x));
+        
+        all_labels{i}{j} = vec(idx:(idx - 1 + length(trials{i}{j}.x)));
+        idx = idx + length(trials{i}{j}.x);
     end
 end
 
