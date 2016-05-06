@@ -1,4 +1,4 @@
-function [action_probabilities,trajs] = prob_plan_for_environment_hsmm(x0,env,models,T,T0)
+function [probabilities,chosen_trajs,labels] = prob_plan_for_environment_hsmm(x0,env,models,T,T0,max_actions)
 % PROB_PLAN_FOR_ENVIRONMENT with transition probabilities
 %   x0: start pt
 %   env: environment
@@ -22,7 +22,11 @@ end
 
 %% solve level one thing at a time
 
-MAX_ACTIONS = 3;
+if nargin >= 6
+    MAX_ACTIONS = max_actions;
+else
+    MAX_ACTIONS = 3;
+end
 NUM_ACTIONS = length(models);
 
 %% create options for gates
@@ -33,7 +37,10 @@ PREV_OPT = 1;
 
 %% run
 
-trajs = cell(MAX_ACTIONS,1);
+trajs = cell(MAX_ACTIONS,NUM_ACTIONS);
+chosen_trajs = cell(MAX_ACTIONS,1);
+labels = zeros(MAX_ACTIONS,1);
+probabilites = zeros(MAX_ACTIONS,1);
 
 hold on;
 draw_environment(env,false,true);
@@ -106,6 +113,9 @@ for i = 1:MAX_ACTIONS
     
     % move on
     [~,idx] = max(action_probabilities(i,:));
+    probabilities(i) = idx;
+    chosen_trajs{i} = trajs{i,idx};
+    labels(i) = idx;
     x0 = trajs{i,idx}(:,end);
     curT = T(idx,:);
     
@@ -114,4 +124,6 @@ for i = 1:MAX_ACTIONS
     [~,state] = compute_predicates( trajs{i,idx}, env, state );
     state = state(end); % this is the termination state after the trajectory
     % it determines which gates are next
+end
+
 end
