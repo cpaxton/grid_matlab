@@ -82,7 +82,6 @@ for iter = 1:N_ITER
             current = models{plan(i)};
             goal = models{plan(i+1)};
             config.num_primitives = current.num_primitives;
-            
 
             if next_gate(i) <= length(env.gates) && params(next_gate(i),j) > 0
                 config.n_samples = floor(params(next_gate(i),j) * N_SAMPLES);

@@ -7,7 +7,7 @@ function [ traj, Z, avg_p, avg_pg ] = prob_planning( x0, model, next_model, loca
 
 USE_GOAL = true;
 if ~isstruct(next_model)
-    fprintf('NOTE: Not using goal.\n');
+    %fprintf('NOTE: Not using goal.\n');
     USE_GOAL = false;
 end
 if nargin < 6
