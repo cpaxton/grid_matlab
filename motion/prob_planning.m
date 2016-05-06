@@ -114,6 +114,8 @@ while iter < start_iter + N_ITER
             params(:,sample) = samples(:,i);
             
             fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
+            % fa = reproduction_features_fixed_dim(traj(:,1:end-1),local_env)
+            
             len = size(fa,2);
             fa = [1000 * (1:len) / len; fa];
             
