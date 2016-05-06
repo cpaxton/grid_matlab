@@ -1,8 +1,14 @@
-function trajs = prob_plan_for_environment_hsmm(x0,env,models,T,T0)
+function [action_probabilities,trajs] = prob_plan_for_environment_hsmm(x0,env,models,T,T0)
+% PROB_PLAN_FOR_ENVIRONMENT with transition probabilities
+%   x0: start pt
+%   env: environment
+%   models: set of all actions
+%   T: transition matrix
+%   T0: initial transition matrix
 
 colors = 'rgbmcy';
 
-N_ITER = 20;
+N_ITER = 10;
 STEP_SIZE = 0.5;
 N_SAMPLES = 200;
 N_GEN_SAMPLES = 50*N_SAMPLES;
@@ -16,7 +22,7 @@ end
 
 %% solve level one thing at a time
 
-MAX_ACTIONS = 1;
+MAX_ACTIONS = 2;
 NUM_ACTIONS = length(models);
 
 %% create options for gates
@@ -32,7 +38,7 @@ trajs = cell(MAX_ACTIONS,1);
 hold on;
 draw_environment(env,false,true);
 
-params = zeros(MAX_ACTIONS,NUM_ACTIONS);
+action_probabilities = zeros(MAX_ACTIONS,NUM_ACTIONS);
 Zs= cell(MAX_ACTIONS,NUM_ACTIONS);
 
 fprintf('==============\n');
@@ -41,8 +47,12 @@ fprintf('==============\n');
 x = x0;
 curT = T0;
 
-next_gate = 1;
-prev_gate = 0;
+state = [];
+state.gates_done = 0;
+state.next_gate = 1;
+
+next_gate = state.next_gate;
+prev_gate = state.next_gate - 1;
 % for each step in plan
 for i = 1:MAX_ACTIONS
     
@@ -87,11 +97,21 @@ for i = 1:MAX_ACTIONS
             
             %x = traj(:,end);
             
-            trajs{i} = traj;
+            trajs{i,j} = traj;
         end
         param_p = param_p / sum(param_p) * curT(j);
-        params(i,:) = ((1-(STEP_SIZE))*params(i,:)) + ((STEP_SIZE)*param_p);
+        action_probabilities(i,:) = ((1-(STEP_SIZE))*action_probabilities(i,:)) + ((STEP_SIZE)*param_p);
         
-        params(i,:)
     end
+    
+    % move on
+    [~,idx] = max(action_probabilities(i,:));
+    x0 = trajs{i,idx}(:,end);
+    curT = T(idx,:);
+    
+    % update state
+    % trajs{i,idx} --- this is the trajectory we just executed
+    [~,state] = compute_predicates( trajs{i,idx}, env, state );
+    state = state(end); % this is the termination state after the trajectory
+    % it determines which gates are next
 end
