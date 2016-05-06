@@ -22,7 +22,7 @@ end
 
 %% solve level one thing at a time
 
-MAX_ACTIONS = 2;
+MAX_ACTIONS = 3;
 NUM_ACTIONS = length(models);
 
 %% create options for gates
