@@ -85,12 +85,12 @@ for i = 1:MAX_ACTIONS
             local_env.exit = [env.width;env.height / 2; 0];
             if next_gate <= length(env.gates)
                 local_env.gate = env.gates{next_gate}{NEXT_OPT};
-            elseif models{j}.use_gate
+            elseif isfield(models{j},'use_gate') && models{j}.use_gate
                 continue
             end
             if prev_gate > 0
                 local_env.prev_gate = env.gates{prev_gate}{PREV_OPT};
-            elseif models{j}.use_prev_gate
+            elseif isfield(models{j},'use_prev_gate') && models{j}.use_prev_gate
                 continue
             end
             fprintf('STEP: %d, model=%d, gate=%d, prev_gate=%d\n',i,j,next_gate,prev_gate);
