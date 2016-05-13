@@ -74,7 +74,10 @@ for i = 1:MAX_ACTIONS
             config = struct('n_iter',1, ...
                 'start_iter',iter, ...
                 'n_primitives',3, ...
-                'n_samples',N_SAMPLES*curT(j));
+                'n_samples',floor(N_SAMPLES*curT(j)));
+            
+            if config.n_samples == 0
+                continue
             
             %fprintf('--------------\n');
             
@@ -105,7 +108,7 @@ for i = 1:MAX_ACTIONS
             
             %x = traj(:,end);
             
-            trajs{i,j} = traj;
+            trajs{i,j} = traj
         end
         param_p = param_p / sum(param_p) * curT(j);
         action_probabilities(i,:) = ((1-(STEP_SIZE))*action_probabilities(i,:)) + ((STEP_SIZE)*param_p);
