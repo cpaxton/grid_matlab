@@ -43,6 +43,7 @@ labels = zeros(MAX_ACTIONS,1);
 probabilites = zeros(MAX_ACTIONS,1);
 
 hold on;
+env
 draw_environment(env,false,true);
 
 action_probabilities = zeros(MAX_ACTIONS,NUM_ACTIONS);
@@ -95,7 +96,7 @@ for i = 1:MAX_ACTIONS
             end
             fprintf('STEP: %d, model=%d, gate=%d, prev_gate=%d\n',i,j,next_gate,prev_gate);
             
-            [traj,Z,p,~] = prob_planning(x,current,0,local_env,0,env.surfaces,Zs{i,j},config);
+            [traj,Z,p,~] = prob_planning_hsmm(x,current,0,local_env,0,env.surfaces,Zs{i,j},config);
             %[traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i,j},config);
             Zs{i,j} = Z;
             param_p(j) = p;

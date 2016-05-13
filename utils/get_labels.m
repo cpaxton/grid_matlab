@@ -13,6 +13,6 @@ for i = 1:NUM_LEVELS
         
         % assign labels to each of the current positions based on
         % computed predicates
-        labels{i,j} = BernoulliAssign(bmm,predicates{i}{j}');
+        labels{i}{j} = BernoulliAssign(bmm,predicates{i}{j}');
     end
 end
