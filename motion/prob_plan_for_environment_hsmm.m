@@ -74,12 +74,12 @@ for i = 1:MAX_ACTIONS
             config = struct('n_iter',1, ...
                 'start_iter',iter, ...
                 'n_primitives',3, ...
-                'n_samples',floor(N_SAMPLES*curT(j)));
+                'n_samples',round(N_SAMPLES*curT(j)));
             
             if config.n_samples == 0
+                fprintf('Skipping impossible action %d...',j);
                 continue
-            
-            %fprintf('--------------\n');
+            end
             
             current = models{j};
             
