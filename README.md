@@ -37,11 +37,12 @@ The `init` command loads pre-existing data. Then, you can optionally run the `cr
 
 ## Experiments
 
-You can then try a few different experiments.
+First run `learning_segments` to create the action models. Then you can then try a few different experiments.
 
 The one used for validation of the algorithm is:
 
 ```
+learning_segments
 levels
 ```
 
