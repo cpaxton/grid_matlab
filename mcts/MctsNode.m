@@ -11,14 +11,18 @@ classdef MctsNode
         
         % initial world state
         % includes environment
+        % note that this is a constraint on optimization
         world
         
+        % list of nodes that follow this one
+        children
     end
     
     methods
         
         function obj = MctsNode(world)
             obj.world = world;
+            obj.children = [];
         end
         
         % choose a child
