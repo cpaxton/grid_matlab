@@ -14,6 +14,7 @@ USE_PARAM = false;
 USE_SURFACE_PROXIMITY = false;
 USE_IN_TISSUE = true;
 USE_IN_GATE = false;
+USE_TIME = true;
 SHOW_SEGMENTS_EXAMPLE = true;
 SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
@@ -53,19 +54,21 @@ models = analyze_primitives(ap,models);
 % create a model for each one
 for k=1:bmm.k
     
-    %if k ~= 2
-    %    continue
-    %end
-    
     %% which environmental features are important for this action?
     use_gate = true;
     use_prev_gate = true;
     use_exit = true;
-    %next_in = 7;
-    in = 1;
-    in_na = 1;
-    next_in = 2;
-    vars = {'time'};
+    if USE_TIME
+        vars = {'time'};
+        in = 1;
+        in_na = 1;
+        next_in = 2;
+    else
+        vars = {};
+        in = [];
+        in_na = [];
+        next_in = 1;
+    end
     if USE_IN_GATE
         in = [in next_in];
         vars{next_in} = 'in_gate';

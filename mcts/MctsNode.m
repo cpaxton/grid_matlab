@@ -9,10 +9,18 @@ classdef MctsNode
         % actor position
         x
         
+        % initial world state
+        % includes environment
+        world
         
     end
     
     methods
+        
+        function obj = MctsNode(world)
+            obj.env = world;
+        end
+        
     end
     
 end
