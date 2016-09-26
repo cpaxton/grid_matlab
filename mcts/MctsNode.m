@@ -4,7 +4,7 @@ classdef MctsNode
     
     properties (GetAccess = public, SetAccess = public)
         % associated mcts actions
-        actions
+        action
         
         % actor position
         x
@@ -18,7 +18,19 @@ classdef MctsNode
     methods
         
         function obj = MctsNode(world)
-            obj.env = world;
+            obj.world = world;
+        end
+        
+        % choose a child
+        function select()
+        end
+        
+        % create action
+        function expand()
+        end
+        
+        % simulate the game forward
+        function rollout()
         end
         
     end

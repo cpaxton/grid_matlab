@@ -13,6 +13,7 @@ addpath('./utils/environment');
 addpath('./utils/tightfig');
 addpath('./utils/make_fig');
 addpath('./draw');
+addpath('./mcts');
 addpath('./motion');
 addpath('./motion/samplers');
 addpath('./motion/helpers');
