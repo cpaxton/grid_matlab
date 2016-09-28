@@ -1,6 +1,6 @@
 classdef NeedleMasterWorld
     %NMWorld Creates and defines a needle master world.
-    %   Detailed explanation goes here
+    %   Main goal is to check termination and failure conditions
     
     properties
         env

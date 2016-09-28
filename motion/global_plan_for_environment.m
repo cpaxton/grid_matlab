@@ -117,7 +117,6 @@ for iter = 1:N_ITER
 
     avg_goal = log(mean(actions{good}.pg));
     
-    %if log(mean(actions{good}.pg)) > -7 && good < LEN
     if abs(last_avg_goal - avg_goal) < 0.1 && good < LEN
         fprintf('EXPANDING HORIZON!\n');
         good = good + 1;

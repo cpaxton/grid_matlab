@@ -28,10 +28,17 @@ classdef MctsNode
         parent
         
         % probability of choosing each action
-        action_distribution
+        prior_a
         
         % selection function
         f_select
+        
+        % trajectory distributions
+        mus
+        sigmas
+        
+        % node-action transition matrix (what do we do from here?)
+        T
     end
     
     methods
@@ -53,7 +60,9 @@ classdef MctsNode
                 obj.actions = [obj.actions; models{i}];
             end
             
-            obj.action_distribution = ones(size(obj.actions)) ... 
+            obj.prior_a = ones(size(obj.actions)) ... 
+                / length(obj.actions);
+            obj.T = ones(size(obj.actions)) ... 
                 / length(obj.actions);
         end
         
@@ -74,7 +83,10 @@ classdef MctsNode
         % - plus UCB on discrete choice
         % - if unvisited: prior and p(mean | a)
         function select_and_rollout(obj)
-            % -- 
+            % -- if # samples is high enough: update distribution
+            
+            % -- draw and continue
+            
         end
         
         % simulate the game forward
@@ -91,12 +103,13 @@ classdef MctsNode
             % call child.rollout()
         end
         
+        % res is -log likelihood
         function res = search_iter(obj)
             if ~obj.is_terminal
-                select_and_rollout()
+                obj.select_and_rollout()
                 res = obj.avg_reward;
             else
-                res = 1;
+                res = 0;
             end
         end
         
