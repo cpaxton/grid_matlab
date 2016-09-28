@@ -3,8 +3,12 @@ classdef MctsNode
     %   Also needs to evaluate the state of the game.
     
     properties (GetAccess = public, SetAccess = public)
+        
+        % constants
+        MAX_SAMPLES = 100;
+        
         % associated actions
-        actions
+        actions = [];
         
         % actor position
         x
@@ -13,6 +17,7 @@ classdef MctsNode
         % upper confidence bound for distribution plus subtree
         initialized = false
         avg_reward = 0;
+        num_samples = 0;
         visits = [];
         
         % initial world state
@@ -84,6 +89,9 @@ classdef MctsNode
         % - if unvisited: prior and p(mean | a)
         function select_and_rollout(obj)
             % -- if # samples is high enough: update distribution
+            if obj.num_samples > obj.MAX_SAMPLES
+                obj.update()
+            end
             
             % -- draw and continue
             
