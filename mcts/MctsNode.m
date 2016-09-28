@@ -4,7 +4,7 @@ classdef MctsNode
     
     properties (GetAccess = public, SetAccess = public)
         % associated mcts actions
-        action
+        actions
         
         % actor position
         x
@@ -16,13 +16,25 @@ classdef MctsNode
         
         % list of nodes that follow this one
         children
+        
+        % probability of choosing each action
+        action_distribution
     end
     
     methods
         
-        function obj = MctsNode(world)
+        function obj = MctsNode(world, models)
             obj.world = world;
             obj.children = [];
+            
+            % take in action models
+            for i = 1:length(models)
+                % check action to see if its possible from this state
+                obj.actions = [obj.actions; models{i}];
+            end
+            
+            obj.action_distribution = ones(size(obj.actions)) ... 
+                / length(obj.actions);
         end
         
         % choose a child
