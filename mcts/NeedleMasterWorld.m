@@ -15,7 +15,12 @@ classdef NeedleMasterWorld
         % -1 if failure
         % 1 if success
         function res = terminal(obj, pt, state)
-            
+           res = 0;
+           if check_collisions(pt, obj.env.obstacles) > 0
+              res = -1;
+           elseif pt(0) > obj.env.width
+               res = 1;
+           end
         end
     end
     
