@@ -9,12 +9,11 @@ classdef MctsNode
         % actor position
         x
         
-        % visits
+        % visits indicates numbers of CEM iterations performed
+        % upper confidence bound for distribution plus subtree
         initialized = false
-        num_visits = 0;
         avg_reward = 0;
-        sim_rewards = [];
-        sim_children = [];
+        visits = [];
         
         % initial world state
         % includes environment
@@ -43,9 +42,9 @@ classdef MctsNode
             if isa(parent, 'MctsNode')
                 obj.f_select = parent.f_select;
                 obj.parent = parent;
-                is_root = false;
+                obj.is_root = false;
             else
-                is_root = true;
+                obj.is_root = true;
             end
             
             % take in action models
@@ -58,11 +57,30 @@ classdef MctsNode
                 / length(obj.actions);
         end
         
+        % compute the expansion probabilities -- 
+        % - p(a)
+        % - p(mean | a)
+        % --> UCB on the above
+        function update(obj)
+            
+        end
+        
         % choose a child
-        function select(obj)
+        % select() also prunes the tree by doing full trajectory
+        % optimization and collision checks.
+        % -- 
+        % Approach:
+        % - compute upper confidence bound on action distribution
+        % - plus UCB on discrete choice
+        % - if unvisited: prior and p(mean | a)
+        function select_and_rollout(obj)
+            % -- 
         end
         
         % simulate the game forward
+        % rollouts only optimize over goal positions
+        % note that we still propogate info back, initialize and create
+        % nodes during rollouts
         function rollout(obj)
             % draw action(s)
         end
@@ -74,12 +92,12 @@ classdef MctsNode
         end
         
         function res = search_iter(obj)
-            if ~obj.is_terminal && obj.initialized
-                select()
-            elseif obj.initialized
-                expand_and_rollout()
+            if ~obj.is_terminal
+                select_and_rollout()
+                res = obj.avg_reward;
+            else
+                res = 1;
             end
-            res = obj.avg_reward;
         end
         
     end

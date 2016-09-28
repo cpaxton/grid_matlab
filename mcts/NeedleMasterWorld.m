@@ -10,6 +10,13 @@ classdef NeedleMasterWorld
         function obj = NeedleMasterWorld(env)
             obj.env = env;
         end
+        
+        % 0 if not terminal
+        % -1 if failure
+        % 1 if success
+        function res = terminal(obj, pt, state)
+            
+        end
     end
     
 end
