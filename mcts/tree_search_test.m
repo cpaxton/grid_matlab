@@ -11,3 +11,7 @@ actions = {models{1:4}};
 root = MctsNode(w0, actions, 0);
 root.f_select = f_select;
 
+% loop until termination:
+for i = 1:100
+    res = root.search_iter();
+end
