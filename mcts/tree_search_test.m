@@ -5,4 +5,9 @@ env = envs{2};
 
 w0 = NeedleMasterWorld(env);
 
-root = MctsNode(w0, models);
+f_select = @(node, action, p) p; 
+
+actions = {models{1:4}};
+root = MctsNode(w0, actions, 0);
+root.f_select = f_select;
+

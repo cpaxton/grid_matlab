@@ -3,11 +3,17 @@ classdef MctsNode
     %   Also needs to evaluate the state of the game.
     
     properties (GetAccess = public, SetAccess = public)
-        % associated mcts actions
+        % associated actions
         actions
         
         % actor position
         x
+        
+        % visits
+        num_visits = 0;
+        avg_reward = 0;
+        sim_rewards = [];
+        sim_children = [];
         
         % initial world state
         % includes environment
@@ -17,15 +23,29 @@ classdef MctsNode
         % list of nodes that follow this one
         children
         
+        is_terminal
+        is_root
+        parent
+        
         % probability of choosing each action
         action_distribution
+        
+        % selection function
+        f_select
     end
     
     methods
         
-        function obj = MctsNode(world, models)
+        function obj = MctsNode(world, models, parent)
             obj.world = world;
             obj.children = [];
+            if isa(parent, 'MctsNode')
+                obj.f_select = parent.f_select;
+                obj.parent = parent;
+                is_root = false;
+            else
+                is_root = true;
+            end
             
             % take in action models
             for i = 1:length(models)
@@ -41,7 +61,7 @@ classdef MctsNode
         function select()
         end
         
-        % create action
+        % create child
         function expand()
         end
         
