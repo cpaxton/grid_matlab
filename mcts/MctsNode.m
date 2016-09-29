@@ -5,26 +5,26 @@ classdef MctsNode
     properties (GetAccess = public, SetAccess = public)
         
         % constants
-        MAX_SAMPLES = 100;
-        config = struct('n_iter',1, ...
-            'start_iter',iter-last_reset, ...
+        config = struct('n_iter', 1, ...
+            'start_iter', 1, ...
             'n_primitives',3, ...
             'n_primitive_params', 3, ...
-            'n_samples',N_SAMPLES, ...
-            'step_size',STEP_SIZE, ...
-            'good',good_iters, ...
-            'show_figures',true);
+            'n_samples', 100, ...
+            'step_size', 0.75, ...
+            'good', 0, ...
+            'show_figures', true);
         
         % associated actions
         models = []; % defines models used for actions
         actions = []; % defines parameterized actions
         
         % actor position
-        x
+        x0
         
         % visits indicates numbers of CEM iterations performed
         % upper confidence bound for distribution plus subtree
-        initialized = false
+        initialized = false;
+        converged = false;
         avg_reward = 0;
         num_samples = 0;
         visits = [];
@@ -57,7 +57,8 @@ classdef MctsNode
     
     methods
         
-        function obj = MctsNode(world, models, parent)
+        function obj = MctsNode(x0, world, models, parent)
+            obj.x0 = x0;
             obj.world = world;
             obj.children = [];
             if isa(parent, 'MctsNode')
@@ -96,14 +97,13 @@ classdef MctsNode
         % - compute upper confidence bound on action distribution
         % - plus UCB on discrete choice
         % - if unvisited: prior and p(mean | a)
-        function select_and_rollout(obj)
-            % -- if # samples is high enough: update distribution
-            if obj.num_samples > obj.MAX_SAMPLES
-                obj.update()
+        function select(obj)
+            % -- if this is done, choose a child
+            if obj.converged
+                % select a child
+            else
+                obj.sample_and_rollout();
             end
-            
-            % -- draw and continue
-            
             
             % -- check to see if this action has converged
         end
@@ -116,8 +116,10 @@ classdef MctsNode
             % draw action(s)
         end
         
-        % create child
-        function expand_and_rollout(obj)
+        % draw n_samples trajectories
+        % sample from possible successor actions
+        % compute reward and propogate back
+        function sample_and_rollout(obj)
             % initialize new child
             % call child.rollout()
         end
@@ -125,7 +127,7 @@ classdef MctsNode
         % res is -log likelihood
         function res = search_iter(obj)
             if ~obj.is_terminal
-                obj.select_and_rollout()
+                obj.select()
                 res = obj.avg_reward;
             else
                 res = 0;
