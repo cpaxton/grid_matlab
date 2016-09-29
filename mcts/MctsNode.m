@@ -12,11 +12,18 @@ classdef MctsNode
             'n_samples', 100, ...
             'step_size', 0.75, ...
             'good', 0, ...
-            'show_figures', true);
+            'show_figures', true, ...
+            'max_depth', 10);
         
-        % associated actions
-        models = []; % defines models used for actions
-        actions = []; % defines parameterized actions
+        % associated action
+        models % defines the model used for actions
+        step % index in plan
+        action_idx % index of action in models()
+        prev_gate
+        next_gate
+        prev_gate_option = 1
+        next_gate_option = 1
+        depth = 0;
         
         % actor position
         x0
@@ -36,16 +43,11 @@ classdef MctsNode
         
         % list of nodes that follow this one
         children
-        
         is_terminal = false
         is_root = false
-        parent
         
         % probability of choosing each action
         prior_a
-        
-        % selection function
-        f_select
         
         % trajectory distributions
         mus
@@ -57,16 +59,70 @@ classdef MctsNode
     
     methods
         
-        function obj = MctsNode(x0, world, models, parent)
-            obj.x0 = x0;
+        function obj = initFromPlan(obj, plan, prev_gate, next_gate)
+            % create children:
+            % - same step
+            % - next step, all possible options for next_gate
+           
+            if obj.step > 0
+                done_plan = obj.step > length(plan) || plan(obj.step) > 4;
+            else
+                done_plan = false;
+            end
+            if obj.depth <= obj.config.max_depth && ~done_plan
+               
+                if obj.step > 0
+                    obj.children = [MctsNode(obj.world, ...
+                        obj.models, ...
+                        obj.step)];
+                    obj.children(1).action_idx = obj.action_idx;
+                    obj.children(1).next_gate = obj.next_gate;
+                    obj.children(1).prev_gate = obj.prev_gate;
+                    obj.children(1).next_gate_option = obj.next_gate_option;
+                    obj.children(1).prev_gate_option = obj.prev_gate_option;
+                end
+                next_step = obj.step + 1;
+                num = length(obj.children);
+                action_idx = plan(next_step);
+                child_next_gate = next_gate(next_step);
+                child_prev_gate = prev_gate(next_step);
+                if child_next_gate < length(obj.world.env.gates)
+                    for i = 1:length(obj.world.env.gates{child_next_gate})
+                        obj.children = [obj.children MctsNode(obj.world, ...
+                            obj.models, ...
+                            next_step)];
+                        obj.children(num+i).action_idx = action_idx;
+                        obj.children(num+i).next_gate = child_next_gate;
+                        obj.children(num+i).prev_gate = child_prev_gate;
+                        obj.children(num+i).next_gate_option = i;
+                        obj.children(num+i).prev_gate_option = obj.next_gate_option;
+                    end
+                end
+                
+                for i = 1:length(obj.children)
+                    obj.children(i).depth = obj.depth + 1;
+                    obj.children(i) = obj.children(i).initFromPlan(plan, next_gate, prev_gate);
+                end
+            else
+                obj.is_terminal = true;
+            end
+            
+            obj.T = ones(size(obj.children)) ... 
+                / length(obj.children);
+        end
+        
+        function obj = MctsNode(world, models, step)
             obj.world = world;
             obj.children = [];
-            if isa(parent, 'MctsNode')
-                obj.f_select = parent.f_select;
-                obj.parent = parent;
+            if step ~= 0
+                obj.step = step;
                 obj.is_root = false;
             else
+                obj.step = step + 1;
                 obj.is_root = true;
+                
+                [plan, prev_gate, next_gate] = get_symbolic_plan(world.env);
+                obj = obj.initFromPlan(plan, prev_gate, next_gate);
             end
             
             % take in action models
@@ -74,11 +130,6 @@ classdef MctsNode
                 % check action to see if its possible from this state
                 obj.models = [obj.models; models{i}];
             end
-            
-            obj.prior_a = ones(size(obj.actions)) ... 
-                / length(obj.actions);
-            obj.T = ones(size(obj.actions)) ... 
-                / length(obj.actions);
         end
         
         % compute the expansion probabilities -- 
@@ -97,12 +148,12 @@ classdef MctsNode
         % - compute upper confidence bound on action distribution
         % - plus UCB on discrete choice
         % - if unvisited: prior and p(mean | a)
-        function select(obj)
+        function select(obj, x)
             % -- if this is done, choose a child
             if obj.converged
                 % select a child
             else
-                obj.sample_and_rollout();
+                obj.sample_forward(x, ones(size(x)));
             end
             
             % -- check to see if this action has converged
@@ -119,14 +170,14 @@ classdef MctsNode
         % draw n_samples trajectories
         % sample from possible successor actions
         % compute reward and propogate back
-        function sample_and_rollout(obj)
+        function sample_forward(obj, x, px)
             % -- generate with traj_forwardp
         end
         
         % res is -log likelihood
-        function res = search_iter(obj)
+        function res = search_iter(obj, x)
             if ~obj.is_terminal
-                obj.select()
+                obj.select(x)
                 res = obj.avg_reward;
             else
                 res = 0;

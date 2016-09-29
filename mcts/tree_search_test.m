@@ -9,10 +9,9 @@ f_select = @(node, action, p) p;
 
 x0 = [190; 1000; 0; 0; 0];
 actions = {models{1:4}};
-root = MctsNode(x0, w0, actions, 0);
-root.f_select = f_select;
+root = MctsNode(w0, actions, 0);
 
 % loop until termination:
 for i = 1:100
-    res = root.search_iter();
+    res = root.search_iter(x0);
 end
