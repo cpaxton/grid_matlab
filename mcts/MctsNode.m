@@ -6,9 +6,13 @@ classdef MctsNode
         
         % constants
         MAX_SAMPLES = 100;
+        NUM_Z_DIM = 3;
+        NUM_STEPS = 10;
+        NUM_PRIMITIVES = 1;
         
         % associated actions
-        actions = [];
+        models = []; % defines models used for actions
+        actions = []; % defines parameterized actions
         
         % actor position
         x
@@ -62,7 +66,7 @@ classdef MctsNode
             % take in action models
             for i = 1:length(models)
                 % check action to see if its possible from this state
-                obj.actions = [obj.actions; models{i}];
+                obj.models = [obj.models; models{i}];
             end
             
             obj.prior_a = ones(size(obj.actions)) ... 

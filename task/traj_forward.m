@@ -28,7 +28,6 @@ else
     N_SAMPLES = config.n_samples;
     good = config.good;
 end
-SHOW_FIGURES = false;
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
 
@@ -87,7 +86,7 @@ end
 samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 params = zeros(size(samples,1),N_SAMPLES);
 
-if SHOW_FIGURES
+if config.show_figures
     %figure(iter); hold on;
 end
 
@@ -116,11 +115,17 @@ for i = 1:N_GEN_SAMPLES
         
         fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
         len = size(fa,2);
-        fa = [1000 * (1:len) / len; fa];
+        if model.use_time
+            fa = [1000 * (1:len) / len; fa];
+            fprintf('WARNING: time wrong');
+        end
         
         if USE_GOAL
             fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
-            fg = [0;fg];
+            if next_model.use_time
+                fg = [0;fg];
+                fprintf('WARNING: time wrong');
+            end
         end
         
         %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
@@ -143,7 +148,7 @@ for i = 1:N_GEN_SAMPLES
             pg(sample) = exp(p_action);
         end
         
-        if SHOW_FIGURES
+        if config.show_figures
             plot(traj(1,:),traj(2,:),'color',model.color);
         end
         

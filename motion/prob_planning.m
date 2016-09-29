@@ -87,17 +87,6 @@ while iter < start_iter + N_ITER
     samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
     params = zeros(size(samples,1),N_SAMPLES);
     
-    if SHOW_FIGURES
-        %figure(iter); %hold on;
-        %if model.use_gate
-        %    draw_gates({local_env.gate});
-        %end
-        %if model.use_prev_gate
-        %    draw_gates({local_env.prev_gate});
-        %end
-        %draw_surfaces(obstacles);
-    end
-    
     p = zeros(N_SAMPLES,1);
     pg = zeros(N_SAMPLES,1);
     
@@ -117,21 +106,25 @@ while iter < start_iter + N_ITER
             % fa = reproduction_features_fixed_dim(traj(:,1:end-1),local_env)
             
             len = size(fa,2);
-            fa = [1000 * (1:len) / len; fa];
+            if model.use_time
+                fa = [1000 * (1:len) / len; fa];
+                fprintf('WARNING: time wrong');
+            end
             
             if USE_GOAL
                 fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
-                fg = [0;fg];
+                if next_model.use_time
+                    fg = [0;fg];
+                    fprintf('WARNING: time wrong');
+                end
             end
             
             %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
             %p_action = log(min(exp(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))));%/len;
-            p_action = mean(compute_loglik(fa,model.Mu,model.Sigma,model,model.in));%/len;
-            
-            %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
+            p_action = mean(compute_loglik(fa, model.Mu, model.Sigma, model, model.in));
             
             if USE_GOAL
-                p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
+                p_goal = compute_loglik(fg,next_model.Mu,next_model.Sigma,next_model,next_model.in); %fg,next_model.Mu,next_model.Sigma);
                 %fprintf('%f / %f\n',p_action,p_goal);
                 
                 p(sample) =  exp(p_action + p_goal);

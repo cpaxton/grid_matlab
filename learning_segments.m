@@ -14,7 +14,7 @@ USE_PARAM = false;
 USE_SURFACE_PROXIMITY = false;
 USE_IN_TISSUE = true;
 USE_IN_GATE = false;
-USE_TIME = true;
+USE_TIME = false;
 SHOW_SEGMENTS_EXAMPLE = true;
 SHOW_SEGMENTS_GATES = true;
 SHOW_GATE_POINTS = true;
@@ -67,7 +67,7 @@ for k=1:bmm.k
         vars = {};
         in = [];
         in_na = [];
-        next_in = 1;
+        next_in = 2;
     end
     if USE_IN_GATE
         in = [in next_in];
@@ -189,6 +189,7 @@ for k=1:bmm.k
     models{k}.use_in_gate = USE_IN_GATE;
     models{k}.use_in_tissue = USE_IN_TISSUE;
     models{k}.use_surface_proximity = USE_SURFACE_PROXIMITY;
+    models{k}.use_time = USE_TIME;
     models{k}.in = in;
     models{k}.in_na = in_na;
     models{k}.var_names = vars;

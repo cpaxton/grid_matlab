@@ -109,7 +109,10 @@ for k=1:bmm.k
                 segs{ex}(3,:) = w;
                 
                 % time for each action primitive example, likewise adjusted
-                t = (0:(size(segs{ex},2)-1)) / (size(segs{ex},2)-1);
+                %t = (0:(size(segs{ex},2)-1)) / (size(segs{ex},2)-1);
+                %samples(next_sample).t = t*1000;
+                samples(next_sample).t = segt{ex} - trials{i}{j}.t(1);
+                
                 exit_features = get_end_distance(segs{ex},exit);
                 
                 % apply dynamics
@@ -157,7 +160,6 @@ for k=1:bmm.k
                 end
                 
                 samples(next_sample).env = i;
-                samples(next_sample).t = t*1000;
                 next_sample = next_sample + 1;
             end
         end

@@ -35,26 +35,9 @@ collisions = 0;
 
 %% setup Z
 if nargin < 7 || ~isstruct(Z)
-%     if model.in_gate
-%         xg = local_env.prev_gate.width;
-%         local_env.prev_gate.corners
-%         rg = 0;
-%     elseif model.use_gate
-%         %xg = x0(1:2)' - [(local_env.gate.x-(cos(local_env.gate.w)*local_env.gate.width)) local_env.gate.y];
-%         xg = x0(1:2)' - [local_env.gate.x local_env.gate.y];
-%         rg = atan2(local_env.gate.y-x0(2),local_env.gate.x-x0(1));
-%         if rg < -pi
-%             rg = rg + pi;
-%         elseif rg > pi
-%             rg = rg - pi;
-%         end
-%     else
-%         xg = x0(1) - local_env.exit(1);
-%         rg = 0;
-%     end
     movement_guess = model.movement_mean;
     rotation_guess = model.rotation_mean;
-    N_STEPS = 10; %ceil(200 / N_PRIMITIVES / movement_guess);
+    N_STEPS = 10;
     
     mu = normrnd(1,0.1,N_Z_DIM,1).*repmat([rotation_guess;movement_guess;N_STEPS],N_PRIMITIVES,1);
     cv = [model.movement_dev 0 0; 0 model.rotation_dev 0; 0 0 1];
@@ -86,17 +69,6 @@ while iter < start_iter + N_ITER
     
     samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
     params = zeros(size(samples,1),N_SAMPLES);
-    
-    if SHOW_FIGURES
-        %figure(iter); %hold on;
-        %if model.use_gate
-        %    draw_gates({local_env.gate});
-        %end
-        %if model.use_prev_gate
-        %    draw_gates({local_env.prev_gate});
-        %end
-        %draw_surfaces(obstacles);
-    end
     
     p = zeros(N_SAMPLES,1);
     pg = zeros(N_SAMPLES,1);
