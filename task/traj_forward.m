@@ -6,7 +6,7 @@ function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, ne
 %   Z is the initial distribution we will refine
 
 %% make sure this is a valid probability distribution
-assert(abs(sum(px0) -1) < 1e-8);
+assert(abs(sum(px0) - 1) < 1e-8);
 
 %% set up
 USE_GOAL = true;
@@ -14,7 +14,10 @@ if ~isstruct(next_model)
     fprintf('NOTE: Not using goal.\n');
     USE_GOAL = false;
 end
-obstacles = local_env.obstacles;
+
+x0
+px0
+model
 
 %% set number of iterations to run and other options
 if nargin < 8
@@ -105,7 +108,7 @@ for i = 1:N_GEN_SAMPLES
     x = x0(:,x_idx);
     traj = sample_seq(x,samples(:,i));
     
-    if check_collisions(traj,obstacles) == 0
+    if check_collisions(traj,local_env.obstacles) == 0
         
         sample = sample + 1;
         idx(sample) = x_idx;

@@ -11,6 +11,19 @@ classdef NeedleMasterWorld
             obj.env = env;
         end
         
+        function local_env = make_local_env(obj, prev_gate, next_gate, prev_gate_opt, next_gate_opt)
+            local_env = [];
+            local_env.exit = [obj.env.width; obj.env.height / 2; 0];
+            local_env.obstacles = obj.env.surfaces;
+            local_env.gates = obj.env.gates;
+            if next_gate > 0 && next_gate < length(obj.env.gates)
+                local_env.gate = obj.env.gates{next_gate}{next_gate_opt};
+            end
+            if prev_gate > 0 && prev_gate < length(obj.env.gates)
+                local_env.prev_gate = obj.env.gates{prev_gate}{prev_gate_opt};
+            end
+        end
+        
         % 0 if not terminal
         % -1 if failure
         % 1 if success
