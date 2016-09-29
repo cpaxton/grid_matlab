@@ -87,4 +87,10 @@ while iter < config.start_iter + N_ITER
     traj = sample_seq(x0,Z.mu);
 end
 
+if USE_GOAL
+    avg_p = mean(p .* pg);
+else
+    avg_p = mean(p);
+end
+avg_pg = mean(pg);
 plot(traj(1,:),traj(2,:),'color',model.color);

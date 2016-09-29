@@ -120,8 +120,7 @@ classdef MctsNode
         % sample from possible successor actions
         % compute reward and propogate back
         function sample_and_rollout(obj)
-            % initialize new child
-            % call child.rollout()
+            % -- generate with traj_forwardp
         end
         
         % res is -log likelihood

@@ -9,38 +9,7 @@ MAX_PRIMITIVES = 5;
 
 %% solve level one thing at a time
 env = envs{11};
-
-% plan ends with an "exit" action and goes to the final exit state
-plan = [1 5];
-ngates = length(env.gates);
-
-prev_gate = [];
-next_gate = [];
-
-if ngates > 0
-    
-    plan = [2 plan];
-    
-    prev_gate = ngates;
-    next_gate = ngates+1;
-    
-    if ngates > 1
-        for i = 1:(ngates-1)
-            plan = [2 3 plan];
-            ii = ngates - i;
-            prev_gate = [ii ii prev_gate];
-            next_gate = [ii+1 ii+1 next_gate ];
-        end
-    end
-    
-    % "approach" for the first gate
-    plan = [4 plan];
-    prev_gate = [0 prev_gate];
-    next_gate = [1 next_gate];
-end
-
-prev_gate = [prev_gate ngates ngates];
-next_gate = [next_gate ngates+1 ngates+1];
+[plan, prev_gate, next_gate] = get_symbolic_plan(env);
 
 trajs = cell(length(plan),1);
 
@@ -68,7 +37,7 @@ for iter = 1:N_ITER
     draw_environment(env);
     x = [190,800,0,0,0]';
     
-    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES);
+    config = struct('n_iter',1,'start_iter',iter,'n_primitives',3,'n_samples',N_SAMPLES,'show_figures',true);
     % randomly choose values for every sample drawn to set up environment
     
     for i = 1:good
@@ -113,7 +82,7 @@ for iter = 1:N_ITER
                 next_env.prev_gate = env.gates{prev_gate(i+1)}{j};
             end
 
-            [traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,env.surfaces,Zs{i,j},config);
+            [traj,Z,p,pg] = prob_planning(x,current,goal,local_env,next_env,Zs{i,j},config);
             Zs{i,j} = Z;
             param_p(j) = p;
 
