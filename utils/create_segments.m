@@ -38,14 +38,19 @@ for k=1:bmm.k
                 continue;
             end
             
-            seq = [trials{i}{j}.x; ...
+            
+            seq = [
+                trials{i}{j}.x; ...
                 trials{i}{j}.y; ...
                 trials{i}{j}.w; ...
-                trials{i}{j}.movement;
+                trials{i}{j}.movement; ...
                 trials{i}{j}.rotation];
             
             [segs, sst, sen] = split_seq(seq,labels,k,MARGIN);
             segp = split_seq(predicates{i}{j},labels,k,MARGIN);
+            
+            % USE TO CORRECT
+            segt = split_seq(trials{i}{j}.t,labels,k,MARGIN);
             
             %% compute the next frame for each time step
             [goals, opts] = next_goal(trials{i}{j},envs{i});
@@ -86,6 +91,7 @@ for k=1:bmm.k
                 % "effort features" are somewhat poorly named. They are the
                 % control inputs the user provided: forward motion and
                 % rotation.
+                
                 effort_features = abs(segs{ex}(4:5,:));
                 
                 % providing the original data and computing trajectory

@@ -24,7 +24,7 @@ predicates = cell(length(envs),1);
 for i=1:length(trials)
     predicates{i} = cell(size(trials{i}));
     for j=1:length(trials{i})
-        traj = [trials{i}{j}.x;trials{i}{j}.y;trials{i}{j}.w;trials{i}{j}.movement;trials{i}{j}.rotation];
+        traj = [trials{i}{j}.x; trials{i}{j}.y; trials{i}{j}.w; trials{i}{j}.movement; trials{i}{j}.rotation];
         Ptmp = traj_compute_predicates(traj,envs{i});
         predicates{i}{j} = Ptmp;
         fprintf('... done level %d, trial %d\n',i,j);
