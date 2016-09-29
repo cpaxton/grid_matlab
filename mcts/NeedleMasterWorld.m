@@ -16,10 +16,10 @@ classdef NeedleMasterWorld
             local_env.exit = [obj.env.width; obj.env.height / 2; 0];
             local_env.obstacles = obj.env.surfaces;
             local_env.gates = obj.env.gates;
-            if next_gate > 0 && next_gate < length(obj.env.gates)
+            if next_gate > 0 && next_gate <= length(obj.env.gates)
                 local_env.gate = obj.env.gates{next_gate}{next_gate_opt};
             end
-            if prev_gate > 0 && prev_gate < length(obj.env.gates)
+            if prev_gate > 0 && prev_gate <= length(obj.env.gates)
                 local_env.prev_gate = obj.env.gates{prev_gate}{prev_gate_opt};
             end
         end

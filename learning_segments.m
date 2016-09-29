@@ -64,7 +64,7 @@ for k=1:bmm.k
         in_na = 1;
         next_in = 2;
     else
-        vars = {};
+        vars = {'time'};
         in = [];
         in_na = [];
         next_in = 2;

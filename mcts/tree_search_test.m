@@ -12,6 +12,6 @@ actions = {models{1:4}};
 root = MctsNode(w0, actions, 0);
 
 % loop until termination:
-for i = 1:100
+for i = 1:2
     res = root.search_iter(x0);
 end
