@@ -6,7 +6,7 @@ classdef MctsNode
         
         % constants
         MAX_SAMPLES = 100;
-        NUM_Z_DIM = 3;
+        NUM_PRIMITIVE_PARAMS = 3;
         NUM_STEPS = 10;
         NUM_PRIMITIVES = 1;
         
@@ -99,6 +99,8 @@ classdef MctsNode
             
             % -- draw and continue
             
+            
+            % -- check to see if this action has converged
         end
         
         % simulate the game forward

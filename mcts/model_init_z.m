@@ -1,8 +1,9 @@
-function model_init_z(model, num_steps, num_primitives, num_z_dim)
+function Z = model_init_z(model, num_steps, num_primitives, num_primitive_params)
     movement_guess = model.movement_mean;
     rotation_guess = model.rotation_mean;
     
-    assert (num_z_dim == 3);
+    assert (num_primitive_params == 3);
+    num_z_dim = num_primitives * num_primitive_params;
     
     mu = normrnd(1,0.1,num_z_dim,1).*repmat([rotation_guess;movement_guess;num_steps],num_primitives,1);
     cv = [model.movement_dev 0 0; 0 model.rotation_dev 0; 0 0 1];
