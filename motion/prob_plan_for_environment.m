@@ -5,7 +5,7 @@ colors = 'rgbmcy';
 if nargin < 2
     use_goal = true;
 end
-disp('here')
+
 %% solve level one thing at a time
 
 if bmm.k <= 3
@@ -101,9 +101,9 @@ for i = 1:length(plan)-1
     end
     
     if use_goal
-        traj = prob_planning(x,current,goal,local_env,next_env,env.surfaces);
+        traj = prob_planning(x,current,goal,local_env,next_env);
     else
-        traj = prob_planning_no_goal(x,current,local_env,env.surfaces);
+        traj = prob_planning_no_goal(x,current,local_env);
     end
     
     plot(traj(1,:),traj(2,:),colors(plan(i)));
