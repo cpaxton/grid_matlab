@@ -72,21 +72,22 @@ classdef MctsNode
             if obj.depth <= obj.config.max_depth && ~done_plan
                
                 if obj.step > 0
-                    obj.children = [MctsNode(obj.world, ...
+                    obj.children = MctsNode(obj.world, ...
                         obj.models, ...
-                        obj.step)];
+                        obj.step);
                     obj.children(1).action_idx = obj.action_idx;
                     obj.children(1).next_gate = obj.next_gate;
                     obj.children(1).prev_gate = obj.prev_gate;
                     obj.children(1).next_gate_option = obj.next_gate_option;
                     obj.children(1).prev_gate_option = obj.prev_gate_option;
                 end
+                
                 next_step = obj.step + 1;
                 num = length(obj.children);
                 action_idx = plan(next_step);
                 child_next_gate = next_gate(next_step);
                 child_prev_gate = prev_gate(next_step);
-                if child_next_gate < length(obj.world.env.gates)
+                if child_next_gate <= length(obj.world.env.gates)
                     for i = 1:length(obj.world.env.gates{child_next_gate})
                         obj.children = [obj.children MctsNode(obj.world, ...
                             obj.models, ...
@@ -114,11 +115,10 @@ classdef MctsNode
         function obj = MctsNode(world, models, step)
             obj.world = world;
             obj.children = [];
+            obj.step = step;
             if step ~= 0
-                obj.step = step;
                 obj.is_root = false;
             else
-                obj.step = step + 1;
                 obj.is_root = true;
                 
                 [plan, prev_gate, next_gate] = get_symbolic_plan(world.env);
