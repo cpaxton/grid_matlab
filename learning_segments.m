@@ -9,7 +9,7 @@ MIN_CLUSTERS = 1;
 MAX_CLUSTERS = 5;
 USE_EFFORT = true;
 USE_XY = false;
-USE_DIFF = false;
+USE_DIFF = true;
 USE_PARAM = false;
 USE_SURFACE_PROXIMITY = false;
 USE_IN_TISSUE = true;
@@ -212,7 +212,11 @@ for k=1:bmm.k
     end
     
     if USE_DIFF
-        models{k}.in = [models{k}.in (models{k}.in(2:end)+next_in-2)];
+        if USE_TIME
+            models{k}.in = [models{k}.in (models{k}.in(2:end)+next_in-2)];
+        else
+            models{k}.in = [models{k}.in (models{k}.in(1:end)+next_in-2)];
+        end
     end
     
     lens = zeros(length(ap{k}),1);

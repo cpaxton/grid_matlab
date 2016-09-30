@@ -1,4 +1,4 @@
-function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, next_model, local_env, next_env, Z, config)
+function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, next_model, local_env, next_env, Z, config, N_SAMPLES)
 %TRAJ_FORWARD Generate forward samples of an action
 %   model is the skill we are using
 %   next_model is the following skill
@@ -15,10 +15,6 @@ if ~isstruct(next_model)
     USE_GOAL = false;
 end
 
-x0
-px0
-model
-
 %% set number of iterations to run and other options
 if nargin < 8
     start_iter = 1;
@@ -28,8 +24,11 @@ if nargin < 8
 else
     start_iter = config.start_iter;
     N_PRIMITIVES = config.n_primitives;
-    N_SAMPLES = config.n_samples;
     good = config.good;
+    
+    if nargin < 9
+        N_SAMPLES = config.n_samples;
+    end
 end
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;

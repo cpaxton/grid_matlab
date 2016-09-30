@@ -12,6 +12,10 @@ actions = {models{1:4}};
 root = MctsNode(w0, actions, 0);
 
 % loop until termination:
-for i = 1:2
+for i = 1:5
+    figure(i);
+    hold on;
+    draw_environment(env);
     res = root.search_iter(x0);
+    root.draw_all()
 end

@@ -7,7 +7,7 @@ classdef MctsNode
         % constants
         config = struct('n_iter', 1, ...
             'start_iter', 1, ...
-            'n_primitives',3, ...
+            'n_primitives', 1, ...
             'n_primitive_params', 3, ...
             'n_samples', 100, ...
             'step_size', 0.75, ...
@@ -25,6 +25,9 @@ classdef MctsNode
         next_gate_option = 1
         depth = 0;
         selection_metric = 1;
+        
+        ACTION_EXIT = 1;
+        ACTION_APPROACH = 4;
         
         compute_metric;
         
@@ -73,23 +76,24 @@ classdef MctsNode
             % - next step, all possible options for next_gate
            
             if obj.step > 0
-                done_plan = obj.step > length(plan) || plan(obj.step) > 4;
+                done_plan = obj.step > length(plan) || plan(obj.step) == obj.ACTION_EXIT;
             else
                 done_plan = false;
             end
+            
+            if obj.step > 0
+                obj.local_env = obj.world.make_local_env( ...
+                    obj.prev_gate, ...
+                    obj.next_gate, ...
+                    obj.prev_gate_option, ...
+                    obj.next_gate_option);
+                obj.Z = model_init_z(obj.models{obj.action_idx}, ...
+                    obj.config);
+            end
+            
             if obj.depth <= obj.config.max_depth && ~done_plan
-               
-                if obj.step > 0
                     
-                    
-                    obj.local_env = obj.world.make_local_env( ...
-                        obj.prev_gate, ...
-                        obj.next_gate, ...
-                        obj.prev_gate_option, ...
-                        obj.next_gate_option);
-                    obj.Z = model_init_z(obj.models{obj.action_idx}, ...
-                        obj.config);
-                    
+               if obj.step > 0
                     obj.children = MctsNode(obj.world, ...
                         obj.models, ...
                         obj.step);
@@ -174,7 +178,7 @@ classdef MctsNode
                 [~,i] = max(metrics);
                 obj.children(i) = obj.children(i).select(x);
             else
-                obj = obj.sample_forward(x, ones(size(x,2),1));
+                obj = obj.sample_forward(x, ones(size(x,2),1), obj.config.n_samples);
             end
             obj.selection_metric = obj.compute_metric(obj);
             
@@ -192,23 +196,35 @@ classdef MctsNode
         % draw n_samples trajectories
         % sample from possible successor actions
         % compute reward and propogate back
-        function obj = sample_forward(obj, x, px)
+        function obj = sample_forward(obj, x, px, nsamples)
             % -- generate with traj_forward
             [ trajs, params, Z, p, pa, pg, idx ] = traj_forward(x, px, ...
                 obj.models{obj.action_idx}, ...
                 0, obj.local_env, 0, ...
-                obj.Z, obj.config);
+                obj.Z, obj.config, nsamples);
             obj.samples = trajs;
-            obj.p = p;
+            obj.p = pa;
             obj.params = params;
+            
+            obj.depth
+            
+            xsample = zeros(5,length(trajs));
+            psample = px .* pa;
+            psample = psample / sum(psample);
+            for j = 1:length(trajs)
+                xsample(:,j) = trajs{j}(:,end);
+            end
+            if ~obj.is_terminal
+               obj.children(1) = obj.sample_forward(xsample, psample, nsamples); 
+            end
         end
         
         % descend through the tree from this node
         % display generated trajectories
         function draw_all(obj)
-            for i = 1:length(samples)
-                plot(samples{i}(1,:), ...
-                    samples{i}(2,:), ...
+            for i = 1:length(obj.samples)
+                plot(obj.samples{i}(1,:), ...
+                    obj.samples{i}(2,:), ...
                     obj.models{obj.action_idx}.color);
             end
             for i = 1:length(obj.children)
