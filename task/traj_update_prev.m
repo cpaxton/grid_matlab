@@ -1,4 +1,4 @@
-function [ Z, good ] = traj_update_prev( params, p, idx, prev_p, Z, config )
+function [ Z ] = traj_update_prev( params, p, idx, prev_p, Z, config )
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -6,4 +6,4 @@ function [ Z, good ] = traj_update_prev( params, p, idx, prev_p, Z, config )
 params = params(:,idx);
 p = p(idx) .* prev_p;
 
-[Z,good] = traj_update(params,p,Z,config);
+Z = traj_update(params,p,Z,config);

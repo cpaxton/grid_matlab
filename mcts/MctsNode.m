@@ -13,7 +13,7 @@ classdef MctsNode
             'step_size', 0.5, ...
             'good', 12, ...
             'show_figures', true, ...
-            'max_depth', 15, ...
+            'max_depth', 1, ...
             'weighted_sample_starts', true);
         
         % associated action
@@ -227,9 +227,6 @@ classdef MctsNode
                 obj.models{obj.action_idx}, ...
                 0, obj.local_env, 0, ...
                 obj.Z, obj.config, nsamples);
-            obj.idx = [obj.idx; idx];
-            obj.p = [obj.p; p];
-            obj.params = [obj.params params];
             
             xsample = zeros(5,length(trajs));
             psample = px(idx) .* p;
@@ -242,24 +239,28 @@ classdef MctsNode
                 child_metrics = [obj.children.selection_metric];
                 child_metrics = cumsum(child_metrics / sum(child_metrics));
                 prev = 0;
+                pc = zeros(obj.config.n_samples,1);
+                idxc = zeros(obj.config.n_samples,1);
                 for i = 1:length(obj.children)
                     c_nsamples = ceil(nsamples * child_metrics(i)) - prev;
-                    pc = zeros(obj.config.n_samples,1);
-                    idxc = zeros(obj.config.n_samples,1);
                     if c_nsamples > 0
                         [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples);
                         pc(prev+1:prev+c_nsamples) = pi;
                         idxc(prev+1:prev+c_nsamples) = idxi;
                     end
                     
-                    % look at these
-                    pc;
-                    idxc;
-                    
                     prev = c_nsamples + prev;
                 end
+                size(idxi)
+                size(idx)
+                obj.idx = [obj.idx; idx(idxi)];
+                obj.p = [obj.p; p(idxi)];
+                obj.params = [obj.params params(:,idxi)];
+            else
+                obj.idx = [obj.idx; idx];
+                obj.p = [obj.p; p];
+                obj.params = [obj.params params];
             end
-            
             
             if length(obj.params) >= obj.config.n_samples
                 obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
@@ -267,7 +268,7 @@ classdef MctsNode
                 obj.expected_p = mean(p);
                 fprintf('[%d at %d] %f\n',obj.action_idx,obj.depth,-log(mean(p)));
                 obj.visits = obj.visits + 1;
-                
+
                 obj.p = [];
                 obj.params = [];
             end

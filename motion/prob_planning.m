@@ -24,7 +24,8 @@ if nargin < 8
         'n_samples',100, ...
         'step_size',0.75, ...
         'good',1, ...
-        'show_figures',false);
+        'show_figures',false, ...
+        'weighted_sample_starts',true);
 else
     N_ITER = config.n_iter;
     start_iter = config.start_iter;
@@ -78,8 +79,7 @@ while iter < config.start_iter + N_ITER
        p = p .* pg;
     end
     
-    [Z,good] = traj_update(traj_params,p,Z,config);
-    config.good = good;
+    [Z] = traj_update(traj_params,p,Z,config);
     
     fprintf('... done iter %d. avg p = %f, avg obj = %f\n',iter,log(mean(p)),log(mean(pg)));
     iter = iter + 1;

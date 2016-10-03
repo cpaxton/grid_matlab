@@ -76,16 +76,16 @@ trajs = cell(N_SAMPLES,1);
 
 iter = start_iter;
 
-model_normalizer = 0.1*(0.1^good)*eye(size(model.Sigma,1));
-for i = 1:model.nbStates
-    model.Sigma(:,:,1) = model.Sigma(:,:,1) + model_normalizer;
-end
-if USE_GOAL
-    goal_normalizer = (0.1^good)*eye(size(next_model.Sigma,1));
-    for i = 1:next_model.nbStates
-        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
-    end
-end
+%model_normalizer = 0.1*(0.1^good)*eye(size(model.Sigma,1));
+%for i = 1:model.nbStates
+%    model.Sigma(:,:,1) = model.Sigma(:,:,1) + model_normalizer;
+%end
+%if USE_GOAL
+%    goal_normalizer = (0.1^good)*eye(size(next_model.Sigma,1));
+%    for i = 1:next_model.nbStates
+%        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
+%    end
+%end
 
 samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 params = zeros(size(samples,1),N_SAMPLES);
@@ -103,7 +103,6 @@ pg = zeros(N_SAMPLES,1);
 cpx0 = cumsum(px0);
 sample = 0;
 for i = 1:N_GEN_SAMPLES
-    p_z = log(mvnpdf(samples(:,i),Z.mu,Z.sigma));
     
     x_idx = min(find(rand() < cpx0));
     x = x0(:,x_idx);

@@ -1,4 +1,4 @@
-function [ Z, good ] = traj_update( params, p, Z, config )
+function [ Z ] = traj_update( params, p, Z, config )
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,14 +13,6 @@ else
     good = config.good;
 end
 N_Z_DIM = size(Z.mu,1);
-
-%% good?
-avg_p = mean(p);
-if avg_p < 1e-10
-    good = 1;
-else
-    good = 1;%good + 1;
-end
 
 %% update z
 
