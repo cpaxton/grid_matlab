@@ -10,10 +10,10 @@ classdef MctsNode
             'n_primitives', 1, ...
             'n_primitive_params', 3, ...
             'n_samples', 100, ...
-            'step_size', 0.75, ...
-            'good', 0, ...
+            'step_size', 0.5, ...
+            'good', 12, ...
             'show_figures', true, ...
-            'max_depth', 1, ...
+            'max_depth', 15, ...
             'weighted_sample_starts', true);
         
         % associated action
@@ -47,6 +47,7 @@ classdef MctsNode
         p = [];
         params = [];
         idx = [];
+        expected_p = 1;
         
         % initial world state
         % includes environment
@@ -165,7 +166,7 @@ classdef MctsNode
             obj.step = step;
             obj.models = models;
             
-            obj.compute_metric = @(obj) metric_prior_probability(obj,2);
+            obj.compute_metric = @(obj) metric_probability(obj);
             
             if step ~= 0
                 obj.is_root = false;
@@ -226,38 +227,52 @@ classdef MctsNode
                 obj.models{obj.action_idx}, ...
                 0, obj.local_env, 0, ...
                 obj.Z, obj.config, nsamples);
-            obj.idx = idx;
-            obj.p = [obj.p p];
+            obj.idx = [obj.idx; idx];
+            obj.p = [obj.p; p];
             obj.params = [obj.params params];
             
             xsample = zeros(5,length(trajs));
-            psample = px(obj.idx) .* obj.p;
+            psample = px(idx) .* p;
             psample = psample / sum(psample);
             for j = 1:length(trajs)
                 xsample(:,j) = trajs{j}(:,end);
             end
+            
             if ~obj.is_terminal
                 child_metrics = [obj.children.selection_metric];
                 child_metrics = cumsum(child_metrics / sum(child_metrics));
                 prev = 0;
                 for i = 1:length(obj.children)
                     c_nsamples = ceil(nsamples * child_metrics(i)) - prev;
-                    prev = c_nsamples + prev;
+                    pc = zeros(obj.config.n_samples,1);
+                    idxc = zeros(obj.config.n_samples,1);
                     if c_nsamples > 0
                         [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples);
+                        pc(prev+1:prev+c_nsamples) = pi;
+                        idxc(prev+1:prev+c_nsamples) = idxi;
                     end
+                    
+                    % look at these
+                    pc;
+                    idxc;
+                    
+                    prev = c_nsamples + prev;
                 end
             end
             
+            
             if length(obj.params) >= obj.config.n_samples
-                %obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
+                obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
                 %obj.Z = traj_update(params, p, obj.Z, obj.config);
-                -log(p)'
-                fprintf('.... %f\n',-log(mean(p)));
+                obj.expected_p = mean(p);
+                fprintf('[%d at %d] %f\n',obj.action_idx,obj.depth,-log(mean(p)));
+                obj.visits = obj.visits + 1;
                 
                 obj.p = [];
                 obj.params = [];
             end
+            
+            obj.selection_metric = obj.compute_metric(obj);
         end
         
         % descend through the tree from this node
@@ -294,7 +309,7 @@ classdef MctsNode
         end
         
         % res is -log likelihood
-        function res = search_iter(obj, x)
+        function [obj, res] = search_iter(obj, x)
             if ~obj.is_terminal
                 obj = obj.select(x);
                 res = obj.avg_reward;
