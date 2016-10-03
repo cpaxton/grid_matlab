@@ -12,7 +12,7 @@ actions = {models{1:4}};
 root = MctsNode(w0, actions, 0);
 
 % loop until termination:
-for i = 1:5
+for i = 1:50
     fprintf('=============================\n');
     fprintf('ITER %d\n',i);
     figure(i); clf; hold on;

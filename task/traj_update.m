@@ -31,7 +31,7 @@ end
 dsigma = STEP_SIZE*(Z.sigma - sigma);
 
 Z  = struct('mu',mu,'sigma',Z.sigma-dsigma);
-noise = 10^(-(good+iter));
+noise = 0;%10^(-(good+iter));
 %noise = 10^(-(iter));
 Z.sigma = Z.sigma + (noise*eye(N_Z_DIM));
 

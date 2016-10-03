@@ -239,8 +239,8 @@ classdef MctsNode
                 child_metrics = [obj.children.selection_metric];
                 child_metrics = cumsum(child_metrics / sum(child_metrics));
                 prev = 0;
-                pc = zeros(obj.config.n_samples,1);
-                idxc = zeros(obj.config.n_samples,1);
+                pc = zeros(nsamples,1);
+                idxc = zeros(nsamples,1);
                 for i = 1:length(obj.children)
                     c_nsamples = ceil(nsamples * child_metrics(i)) - prev;
                     if c_nsamples > 0
@@ -251,8 +251,9 @@ classdef MctsNode
                     
                     prev = c_nsamples + prev;
                 end
-                size(idxi)
-                size(idx)
+                                
+                assert(length(idxc) == length(idx))
+
                 obj.idx = [obj.idx; idx(idxi)];
                 obj.p = [obj.p; p(idxi)];
                 obj.params = [obj.params params(:,idxi)];
