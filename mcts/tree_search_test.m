@@ -12,7 +12,9 @@ actions = {models{1:4}};
 root = MctsNode(w0, actions, 0);
 
 % loop until termination:
-for i = 1:25
+for i = 1:5
+    fprintf('=============================\n');
+    fprintf('ITER %d\n',i);
     figure(i); clf; hold on;
     draw_environment(env);
     [root, res] = root.search_iter(x0);
