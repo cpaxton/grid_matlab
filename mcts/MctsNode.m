@@ -13,7 +13,8 @@ classdef MctsNode
             'step_size', 0.75, ...
             'good', 0, ...
             'show_figures', true, ...
-            'max_depth', 10);
+            'max_depth', 1, ...
+            'weighted_sample_starts', true);
         
         % associated action
         models % defines the model used for actions
@@ -45,6 +46,7 @@ classdef MctsNode
         samples = {};
         p = [];
         params = [];
+        idx = [];
         
         % initial world state
         % includes environment
@@ -74,13 +76,12 @@ classdef MctsNode
             % create children:
             % - same step
             % - next step, all possible options for next_gate
-           
+            
             if obj.step > 0
                 done_plan = obj.step > length(plan) || plan(obj.step) == obj.ACTION_EXIT;
             else
                 done_plan = false;
             end
-            
             if obj.step > 0
                 obj.local_env = obj.world.make_local_env( ...
                     obj.prev_gate, ...
@@ -92,8 +93,8 @@ classdef MctsNode
             end
             
             if obj.depth <= obj.config.max_depth && ~done_plan
-                    
-               if obj.step > 0
+                
+                if obj.step > 0
                     obj.children = MctsNode(obj.world, ...
                         obj.models, ...
                         obj.step);
@@ -120,18 +121,41 @@ classdef MctsNode
                         obj.children(num+i).next_gate_option = i;
                         obj.children(num+i).prev_gate_option = obj.next_gate_option;
                     end
+                    if child_prev_gate <= length(obj.world.env.gates) && child_prev_gate > 0
+                        for i = 1:length(obj.world.env.gates{child_prev_gate})
+                            obj.children = [obj.children MctsNode(obj.world, ...
+                                obj.models, ...
+                                next_step)];
+                            obj.children(num+i).action_idx = action_idx;
+                            obj.children(num+i).next_gate = child_next_gate;
+                            obj.children(num+i).prev_gate = child_prev_gate;
+                            obj.children(num+i).next_gate_option = i;
+                            obj.children(num+i).prev_gate_option = obj.next_gate_option;
+                        end
+                    end
+                elseif child_prev_gate <= length(obj.world.env.gates) && child_prev_gate > 0
+                    for i = 1:length(obj.world.env.gates{child_prev_gate})
+                        obj.children = [obj.children MctsNode(obj.world, ...
+                            obj.models, ...
+                            next_step)];
+                        obj.children(num+i).action_idx = action_idx;
+                        obj.children(num+i).next_gate = child_next_gate;
+                        obj.children(num+i).prev_gate = child_prev_gate;
+                        obj.children(num+i).next_gate_option = i;
+                        obj.children(num+i).prev_gate_option = obj.next_gate_option;
+                    end
                 end
                 
                 for i = 1:length(obj.children)
                     obj.children(i).depth = obj.depth + 1;
                     obj.children(i).selection_metric = obj.children(i).compute_metric(obj.children(i));
-                    obj.children(i) = obj.children(i).initFromPlan(plan, next_gate, prev_gate);
+                    obj.children(i) = obj.children(i).initFromPlan(plan, prev_gate, next_gate);
                 end
             else
                 obj.is_terminal = true;
             end
             
-            obj.T = ones(size(obj.children)) ... 
+            obj.T = ones(size(obj.children)) ...
                 / length(obj.children);
         end
         
@@ -154,7 +178,7 @@ classdef MctsNode
             end
         end
         
-        % compute the expansion probabilities -- 
+        % compute the expansion probabilities --
         % - p(a)
         % - p(mean | a)
         % --> UCB on the above
@@ -165,7 +189,7 @@ classdef MctsNode
         % choose a child
         % select() also prunes the tree by doing full trajectory
         % optimization and collision checks.
-        % -- 
+        % --
         % Approach:
         % - compute upper confidence bound on action distribution
         % - plus UCB on discrete choice
@@ -196,26 +220,43 @@ classdef MctsNode
         % draw n_samples trajectories
         % sample from possible successor actions
         % compute reward and propogate back
-        function obj = sample_forward(obj, x, px, nsamples)
+        function [obj, p, idx] = sample_forward(obj, x, px, nsamples)
             % -- generate with traj_forward
-            [ trajs, params, Z, p, pa, pg, idx ] = traj_forward(x, px, ...
+            [ trajs, params, ~, ~, p, ~, idx ] = traj_forward(x, px, ...
                 obj.models{obj.action_idx}, ...
                 0, obj.local_env, 0, ...
                 obj.Z, obj.config, nsamples);
-            obj.samples = trajs;
-            obj.p = pa;
-            obj.params = params;
-            
-            obj.depth
+            obj.idx = idx;
+            obj.p = [obj.p p];
+            obj.params = [obj.params params];
             
             xsample = zeros(5,length(trajs));
-            psample = px .* pa;
+            psample = px(obj.idx) .* obj.p;
             psample = psample / sum(psample);
             for j = 1:length(trajs)
                 xsample(:,j) = trajs{j}(:,end);
             end
             if ~obj.is_terminal
-               obj.children(1) = obj.sample_forward(xsample, psample, nsamples); 
+                child_metrics = [obj.children.selection_metric];
+                child_metrics = cumsum(child_metrics / sum(child_metrics));
+                prev = 0;
+                for i = 1:length(obj.children)
+                    c_nsamples = ceil(nsamples * child_metrics(i)) - prev;
+                    prev = c_nsamples + prev;
+                    if c_nsamples > 0
+                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples);
+                    end
+                end
+            end
+            
+            if length(obj.params) >= obj.config.n_samples
+                %obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
+                %obj.Z = traj_update(params, p, obj.Z, obj.config);
+                -log(p)'
+                fprintf('.... %f\n',-log(mean(p)));
+                
+                obj.p = [];
+                obj.params = [];
             end
         end
         
@@ -243,13 +284,13 @@ classdef MctsNode
         end
         
         function show_all(obj)
-           draw_environment(obj.world.env,0,1);
-           obj.draw_all();
+            draw_environment(obj.world.env,0,1);
+            obj.draw_all();
         end
         
         function show_best(obj)
-           draw_environment(obj.world.env,0,1);
-           obj.draw_best();
+            draw_environment(obj.world.env,0,1);
+            obj.draw_best();
         end
         
         % res is -log likelihood

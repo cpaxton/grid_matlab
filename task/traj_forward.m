@@ -11,7 +11,7 @@ assert(abs(sum(px0) - 1) < 1e-8);
 %% set up
 USE_GOAL = true;
 if ~isstruct(next_model)
-    fprintf('NOTE: Not using goal.\n');
+    %fprintf('NOTE: Not using goal.\n');
     USE_GOAL = false;
 end
 
@@ -21,10 +21,12 @@ if nargin < 8
     N_PRIMITIVES = model.num_primitives;
     N_SAMPLES = 100;
     good = 1;
+    WEIGHTED_SAMPLE_STARTS = true;
 else
     start_iter = config.start_iter;
     N_PRIMITIVES = config.n_primitives;
     good = config.good;
+    WEIGHTED_SAMPLE_STARTS = config.weighted_sample_starts;
     
     if nargin < 9
         N_SAMPLES = config.n_samples;
