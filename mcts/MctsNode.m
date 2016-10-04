@@ -17,7 +17,7 @@ classdef MctsNode
             'show_figures', true, ...
             'max_depth', 5, ...
             'rollout_depth', 3, ...
-            'weighted_sample_starts', false);
+            'weighted_sample_starts', true);
         
         % associated action
         models % defines the model used for actions
@@ -119,11 +119,12 @@ classdef MctsNode
                 action_idx = plan(next_step);
                 child_next_gate = next_gate(next_step);
                 child_prev_gate = prev_gate(next_step);
-                obj.config.max_primitives = obj.models{action_idx}.num_primitives + 3;
+                obj.config.max_primitives = obj.models{action_idx}.num_primitives + 1;
                 for j = 1:obj.config.max_primitives
                     if child_next_gate <= length(obj.world.env.gates)
                         for i = 1:length(obj.world.env.gates{child_next_gate})
-                            idx = (i - 1) * obj.config.max_primitives + j;
+                            %idx = (i - 1) * obj.config.max_primitives + j;
+                            idx = length(obj.children) + 1;
                             obj.children = [obj.children MctsNode(obj.world, ...
                                 obj.models, ...
                                 next_step)];
@@ -136,7 +137,8 @@ classdef MctsNode
                         end
                     elseif child_prev_gate <= length(obj.world.env.gates) && child_prev_gate > 0
                         for i = 1:length(obj.world.env.gates{child_prev_gate})
-                            idx = (i - 1) * obj.config.max_primitives + j;
+                            %idx = (i - 1) * obj.config.max_primitives + j;
+                            idx = length(obj.children) + 1;
                             obj.children = [obj.children MctsNode(obj.world, ...
                                 obj.models, ...
                                 next_step)];
@@ -253,7 +255,7 @@ classdef MctsNode
                 for i = 1:length(obj.children)
                     c_nsamples = min(nsamples, ceil(nsamples * child_metrics(i))) - prev;
                     if c_nsamples > 0
-                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples, depth - 1);
+                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample, psample, c_nsamples, depth - 1);
                         pc(prev+1:prev+c_nsamples) = pi;
                         idxc(prev+1:prev+c_nsamples) = idxi;
                     end
@@ -276,8 +278,6 @@ classdef MctsNode
             obj.expected_p_max = max(obj.p);
             obj.expected_p_var = std(obj.p);
             if length(obj.params) >= obj.config.n_samples
-                mean(obj.p)
-                mean(obj.params')
                 obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
                 %obj.Z = traj_update(params, p, obj.Z, obj.config);
 

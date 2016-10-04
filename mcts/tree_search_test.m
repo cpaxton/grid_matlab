@@ -1,7 +1,7 @@
 
 
 %% Create tree search for environment
-env = envs{2};
+env = envs{11};
 
 w0 = NeedleMasterWorld(env);
 
