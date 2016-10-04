@@ -16,7 +16,7 @@ classdef MctsNode
             'good', 12, ...
             'show_figures', true, ...
             'max_depth', 5, ...
-            'rollout_depth', 1, ...
+            'rollout_depth', 3, ...
             'weighted_sample_starts', false);
         
         % associated action
@@ -119,7 +119,7 @@ classdef MctsNode
                 action_idx = plan(next_step);
                 child_next_gate = next_gate(next_step);
                 child_prev_gate = prev_gate(next_step);
-                obj.config.max_primitives = obj.models{action_idx}.num_primitives + 1;
+                obj.config.max_primitives = obj.models{action_idx}.num_primitives + 3;
                 for j = 1:obj.config.max_primitives
                     if child_next_gate <= length(obj.world.env.gates)
                         for i = 1:length(obj.world.env.gates{child_next_gate})
