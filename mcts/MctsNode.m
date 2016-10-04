@@ -15,7 +15,8 @@ classdef MctsNode
             'step_size', 0.75, ...
             'good', 12, ...
             'show_figures', true, ...
-            'max_depth', 3, ...
+            'max_depth', 5, ...
+            'rollout_depth', 1, ...
             'weighted_sample_starts', false);
         
         % associated action
@@ -28,11 +29,13 @@ classdef MctsNode
         next_gate_option = 1
         depth = 0;
         selection_metric = 1;
+        rollout_metric = 1;
         
         ACTION_EXIT = 1;
         ACTION_APPROACH = 4;
         
         compute_metric;
+        compute_rollout_metric;
         
         % actor position
         x0
@@ -150,6 +153,7 @@ classdef MctsNode
                 for i = 1:length(obj.children)
                     obj.children(i).depth = obj.depth + 1;
                     obj.children(i).selection_metric = obj.children(i).compute_metric(obj.children(i));
+                    obj.children(i).rollout_metric = obj.children(i).compute_rollout_metric(obj.children(i));
                     obj.children(i) = obj.children(i).initFromPlan(plan, prev_gate, next_gate);
                 end
             else
@@ -167,6 +171,7 @@ classdef MctsNode
             obj.models = models;
             
             obj.compute_metric = @(obj) metric_probability_max(obj);
+            obj.compute_rollout_metric = @(obj) metric_probability(obj);
             
             if step ~= 0
                 obj.is_root = false;
@@ -201,13 +206,14 @@ classdef MctsNode
                 fprintf('[%d at %d w %d] passing\n',obj.action_idx,obj.depth,obj.config.n_primitives);
                 
                 % select a child
-                metrics = [obj.children.selection_metric]
+                metrics = [obj.children.selection_metric];
                 [~,i] = max(metrics);
                 obj.children(i) = obj.children(i).select(x);
             else
-                obj = obj.sample_forward(x, ones(size(x,2),1), obj.config.n_samples);
+                obj = obj.sample_forward(x, ones(size(x,2),1), obj.config.n_samples, obj.config.rollout_depth);
             end
             obj.selection_metric = obj.compute_metric(obj);
+            obj.rollout_metric = obj.compute_rollout_metric(obj);
             
             % -- check to see if this action has converged
         end
@@ -223,7 +229,7 @@ classdef MctsNode
         % draw n_samples trajectories
         % sample from possible successor actions
         % compute reward and propogate back
-        function [obj, p, idx] = sample_forward(obj, x, px, nsamples)
+        function [obj, p, idx] = sample_forward(obj, x, px, nsamples, depth)
             % -- generate with traj_forward
             [ trajs, params, ~, ~, p, ~, idx ] = traj_forward(x, px, ...
                 obj.models{obj.action_idx}, ...
@@ -237,7 +243,7 @@ classdef MctsNode
                 xsample(:,j) = trajs{j}(:,end);
             end
             
-            if ~obj.is_terminal
+            if ~obj.is_terminal && depth > 0
                 child_metrics = [obj.children.selection_metric];
                 child_metrics = cumsum(child_metrics / sum(child_metrics));
                 prev = 0;
@@ -246,7 +252,7 @@ classdef MctsNode
                 for i = 1:length(obj.children)
                     c_nsamples = ceil(nsamples * child_metrics(i)) - prev;
                     if c_nsamples > 0
-                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples);
+                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples, depth - 1);
                         pc(prev+1:prev+c_nsamples) = pi;
                         idxc(prev+1:prev+c_nsamples) = idxi;
                     end
@@ -265,7 +271,7 @@ classdef MctsNode
                 assert(length(idxc) == nsamples)
                 
                 obj.idx = [obj.idx; idx(idxc)];
-                obj.p = [obj.p; p(idxc)];
+                obj.p = [obj.p; p(idxc) .* pc];
                 obj.params = [obj.params params(:,idxc)];
             else
                 obj.idx = [obj.idx; idx];
@@ -287,6 +293,7 @@ classdef MctsNode
             end
             
             obj.selection_metric = obj.compute_metric(obj);
+            obj.rollout_metric = obj.compute_rollout_metric(obj);
         end
         
         % descend through the tree from this node
