@@ -139,10 +139,10 @@ for iter = 1:N_ITER
             if i == good
                 p = actions{i}.pa .* actions{i}.pg;
                 actions{i}.p = p;
-                [Z,good_iter] = traj_update(actions{i}.traj_params,p,Zs{i},config);
+                Z = traj_update(actions{i}.traj_params,p,Zs{i},config);
             else
                 p = actions{i}.pa; % .* p; % assuming independent actions
-                [Z,good_iter] = traj_update_prev(actions{i}.traj_params,p,actions{i+1}.idx,actions{i+1}.p,Zs{i},config);
+                Z = traj_update_prev(actions{i}.traj_params,p,actions{i+1}.idx,actions{i+1}.p,Zs{i},config);
             end
             
             Zs{i} = Z;
