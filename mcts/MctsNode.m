@@ -206,7 +206,8 @@ classdef MctsNode
                 fprintf('[%d at %d w %d] passing\n',obj.action_idx,obj.depth,obj.config.n_primitives);
                 
                 % select a child
-                metrics = [obj.children.selection_metric];
+                '--- METRICS ---'
+                metrics = [obj.children.selection_metric]
                 [~,i] = max(metrics);
                 obj.children(i) = obj.children(i).select(x);
             else
@@ -244,13 +245,13 @@ classdef MctsNode
             end
             
             if ~obj.is_terminal && depth > 0
-                child_metrics = [obj.children.selection_metric];
+                child_metrics = [obj.children.rollout_metric];
                 child_metrics = cumsum(child_metrics / sum(child_metrics));
                 prev = 0;
                 pc = zeros(nsamples,1);
                 idxc = zeros(nsamples,1);
                 for i = 1:length(obj.children)
-                    c_nsamples = ceil(nsamples * child_metrics(i)) - prev;
+                    c_nsamples = min(nsamples, ceil(nsamples * child_metrics(i))) - prev;
                     if c_nsamples > 0
                         [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample,psample, c_nsamples, depth - 1);
                         pc(prev+1:prev+c_nsamples) = pi;
@@ -258,14 +259,6 @@ classdef MctsNode
                     end
                     
                     prev = c_nsamples + prev;
-                end
-                
-                if length(idxc) ~= nsamples
-                    (nsamples * child_metrics(i))
-                    prev
-                    nsamples
-                    idxc
-                    length(idxc)
                 end
                 
                 assert(length(idxc) == nsamples)
@@ -279,13 +272,16 @@ classdef MctsNode
                 obj.params = [obj.params params];
             end
             
+            obj.expected_p = mean(obj.p);
+            obj.expected_p_max = max(obj.p);
+            obj.expected_p_var = std(obj.p);
             if length(obj.params) >= obj.config.n_samples
+                mean(obj.p)
+                mean(obj.params')
                 obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
                 %obj.Z = traj_update(params, p, obj.Z, obj.config);
-                obj.expected_p = mean(p);
-                obj.expected_p_max = max(p);
-                obj.expected_p_var = std(p);
-                fprintf('[%d at %d w %d] %f\n',obj.action_idx,obj.depth,obj.config.n_primitives,-log(mean(p)));
+
+                fprintf('[%d at %d w %d] %f\n',obj.action_idx,obj.depth,obj.config.n_primitives,-log(mean(obj.p)));
                 obj.visits = obj.visits + 1;
                 
                 obj.p = [];

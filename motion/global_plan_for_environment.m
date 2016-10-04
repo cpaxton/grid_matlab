@@ -133,8 +133,6 @@ for iter = 1:N_ITER
         %% backward pass
         for i = good:-1:1
             
-            config.good = good_iters;
-            
             % if good: update p appropriately
             if i == good
                 p = actions{i}.pa .* actions{i}.pg;
@@ -146,7 +144,6 @@ for iter = 1:N_ITER
             end
             
             Zs{i} = Z;
-            good_iters = min(good_iter,good_iters);
         end
         
         
