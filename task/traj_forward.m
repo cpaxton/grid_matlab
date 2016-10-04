@@ -6,6 +6,17 @@ function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, ne
 %   Z is the initial distribution we will refine
 
 %% make sure this is a valid probability distribution
+
+if any(isnan(px0))
+    p = zeros(size(px0));
+    pa = zeros(size(px0));
+    pg = zeros(size(px0));
+    trajs = {};
+    params = [];
+    idx = 1:length(px0);
+    return
+end
+
 assert(abs(sum(px0) - 1) < 1e-8);
 
 %% set up
@@ -34,6 +45,7 @@ else
 end
 N_Z_DIM = 3*N_PRIMITIVES;
 N_GEN_SAMPLES = 50*N_SAMPLES;
+next_sample = 1;
 
 idx = zeros(N_SAMPLES,1);
 
@@ -90,9 +102,9 @@ iter = start_iter;
 samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 params = zeros(size(samples,1),N_SAMPLES);
 
-if config.show_figures
-    %figure(iter); hold on;
-end
+%if config.show_figures
+%    %figure(iter); hold on;
+%end
 
 %% INITIALIZE EMPTY VARIABLES
 p = zeros(N_SAMPLES,1);
@@ -104,7 +116,11 @@ cpx0 = cumsum(px0);
 sample = 0;
 for i = 1:N_GEN_SAMPLES
     
-    x_idx = min(find(rand() < cpx0));
+    if WEIGHTED_SAMPLE_STARTS
+        x_idx = min(find(rand() < cpx0));
+    else
+        x_idx = mod(i, length(cpx0)) + 1;
+    end
     x = x0(:,x_idx);
     traj = sample_seq(x,samples(:,i));
     

@@ -15,8 +15,8 @@ classdef MctsNode
             'step_size', 0.75, ...
             'good', 12, ...
             'show_figures', true, ...
-            'max_depth', 15, ...
-            'weighted_sample_starts', true);
+            'max_depth', 3, ...
+            'weighted_sample_starts', false);
         
         % associated action
         models % defines the model used for actions
@@ -50,6 +50,8 @@ classdef MctsNode
         params = [];
         idx = [];
         expected_p = 1;
+        expected_p_var = 0;
+        expected_p_max = 1;
         
         % initial world state
         % includes environment
@@ -114,6 +116,7 @@ classdef MctsNode
                 action_idx = plan(next_step);
                 child_next_gate = next_gate(next_step);
                 child_prev_gate = prev_gate(next_step);
+                obj.config.max_primitives = obj.models{action_idx}.num_primitives + 1;
                 for j = 1:obj.config.max_primitives
                     if child_next_gate <= length(obj.world.env.gates)
                         for i = 1:length(obj.world.env.gates{child_next_gate})
@@ -163,7 +166,7 @@ classdef MctsNode
             obj.step = step;
             obj.models = models;
             
-            obj.compute_metric = @(obj) metric_probability(obj);
+            obj.compute_metric = @(obj) metric_probability_max(obj);
             
             if step ~= 0
                 obj.is_root = false;
@@ -198,7 +201,7 @@ classdef MctsNode
                 fprintf('[%d at %d w %d] passing\n',obj.action_idx,obj.depth,obj.config.n_primitives);
                 
                 % select a child
-                metrics = [obj.children.selection_metric];
+                metrics = [obj.children.selection_metric]
                 [~,i] = max(metrics);
                 obj.children(i) = obj.children(i).select(x);
             else
@@ -274,6 +277,8 @@ classdef MctsNode
                 obj.Z = traj_update(obj.params, obj.p, obj.Z, obj.config);
                 %obj.Z = traj_update(params, p, obj.Z, obj.config);
                 obj.expected_p = mean(p);
+                obj.expected_p_max = max(p);
+                obj.expected_p_var = std(p);
                 fprintf('[%d at %d w %d] %f\n',obj.action_idx,obj.depth,obj.config.n_primitives,-log(mean(p)));
                 obj.visits = obj.visits + 1;
                 
