@@ -17,7 +17,8 @@ classdef MctsNode
             'show_figures', true, ...
             'max_depth', 5, ...
             'rollout_depth', 3, ...
-            'weighted_sample_starts', true);
+            'weighted_sample_starts', false, ...
+            'fixed_num_primitives', true);
         
         % associated action
         models % defines the model used for actions
@@ -33,6 +34,7 @@ classdef MctsNode
         
         ACTION_EXIT = 1;
         ACTION_APPROACH = 4;
+        ACTION_FINISH = 5;
         
         compute_metric;
         compute_rollout_metric;
@@ -86,7 +88,7 @@ classdef MctsNode
             % - next step, all possible options for next_gate
             
             if obj.step > 0
-                done_plan = obj.step > length(plan) || plan(obj.step) == obj.ACTION_EXIT;
+                done_plan = obj.step > length(plan) || plan(obj.step) == obj.ACTION_FINISH;
             else
                 done_plan = false;
             end
@@ -119,8 +121,14 @@ classdef MctsNode
                 action_idx = plan(next_step);
                 child_next_gate = next_gate(next_step);
                 child_prev_gate = prev_gate(next_step);
-                obj.config.max_primitives = obj.models{action_idx}.num_primitives + 1;
-                for j = 1:obj.config.max_primitives
+                if obj.config.fixed_num_primitives
+                    min_primitives = obj.models{action_idx}.num_primitives;
+                    obj.config.max_primitives = obj.models{action_idx}.num_primitives;
+                else
+                    min_primitives = 1;
+                    obj.config.max_primitives = obj.models{action_idx}.num_primitives + 1;
+                end
+                for j = min_primitives:obj.config.max_primitives
                     if child_next_gate <= length(obj.world.env.gates)
                         for i = 1:length(obj.world.env.gates{child_next_gate})
                             %idx = (i - 1) * obj.config.max_primitives + j;
@@ -256,6 +264,7 @@ classdef MctsNode
                     c_nsamples = min(nsamples, ceil(nsamples * child_metrics(i))) - prev;
                     if c_nsamples > 0
                         [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample, psample, c_nsamples, depth - 1);
+                        size(prev+1:prev+c_nsamples)
                         pc(prev+1:prev+c_nsamples) = pi;
                         idxc(prev+1:prev+c_nsamples) = idxi;
                     end
