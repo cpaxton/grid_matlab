@@ -136,14 +136,14 @@ for i = 1:N_GEN_SAMPLES
         len = size(fa,2);
         if model.use_time
             fa = [1000 * (1:len) / len; fa];
-            fprintf('WARNING: time wrong');
+            %fprintf('WARNING: time wrong');
         end
         
         if USE_GOAL
             fg = traj_get_reproduction_features(traj(:,end),next_model,next_env);
             if next_model.use_time
                 fg = [0;fg];
-                fprintf('WARNING: time wrong');
+                %fprintf('WARNING: time wrong');
             end
         end
         
