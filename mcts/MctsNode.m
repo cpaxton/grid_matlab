@@ -18,7 +18,7 @@ classdef MctsNode
             'max_depth', 5, ...
             'rollout_depth', 3, ...
             'weighted_sample_starts', false, ...
-            'fixed_num_primitives', true);
+            'fixed_num_primitives', false);
         
         % associated action
         models % defines the model used for actions
@@ -121,7 +121,10 @@ classdef MctsNode
                 action_idx = plan(next_step);
                 child_next_gate = next_gate(next_step);
                 child_prev_gate = prev_gate(next_step);
-                if obj.config.fixed_num_primitives
+                if obj.config.allow_repeat
+                    min_primitives = 1;
+                    obj.config.max_primitives = 1;
+                elseif obj.config.fixed_num_primitives
                     min_primitives = obj.models{action_idx}.num_primitives;
                     obj.config.max_primitives = obj.models{action_idx}.num_primitives;
                 else
@@ -129,6 +132,7 @@ classdef MctsNode
                     obj.config.max_primitives = obj.models{action_idx}.num_primitives + 1;
                 end
                 for j = min_primitives:obj.config.max_primitives
+                    fprintf (' -- adding children at %d: %d primitives\n', obj.depth, j);
                     if child_next_gate <= length(obj.world.env.gates)
                         for i = 1:length(obj.world.env.gates{child_next_gate})
                             %idx = (i - 1) * obj.config.max_primitives + j;
@@ -144,19 +148,19 @@ classdef MctsNode
                             obj.children(num+idx).config.n_primitives = j;
                         end
                     elseif child_prev_gate <= length(obj.world.env.gates) && child_prev_gate > 0
-                        for i = 1:length(obj.world.env.gates{child_prev_gate})
-                            %idx = (i - 1) * obj.config.max_primitives + j;
-                            idx = length(obj.children) + 1;
-                            obj.children = [obj.children MctsNode(obj.world, ...
-                                obj.models, ...
-                                next_step)];
-                            obj.children(num+idx).action_idx = action_idx;
-                            obj.children(num+idx).next_gate = child_next_gate;
-                            obj.children(num+idx).prev_gate = child_prev_gate;
-                            obj.children(num+idx).next_gate_option = i;
-                            obj.children(num+idx).prev_gate_option = obj.next_gate_option;
-                            obj.children(num+idx).config.n_primitives = j;
-                        end
+                        %for i = 1:length(obj.world.env.gates{child_prev_gate})
+                        %idx = (i - 1) * obj.config.max_primitives + j;
+                        idx = length(obj.children) + 1;
+                        obj.children = [obj.children MctsNode(obj.world, ...
+                            obj.models, ...
+                            next_step)];
+                        obj.children(idx).action_idx = action_idx;
+                        obj.children(idx).next_gate = child_next_gate;
+                        obj.children(idx).prev_gate = child_prev_gate;
+                        obj.children(idx).next_gate_option = length(obj.world.env.gates);
+                        obj.children(idx).prev_gate_option = obj.next_gate_option;
+                        obj.children(idx).config.n_primitives = j;
+                        %end
                     end
                 end
                 
