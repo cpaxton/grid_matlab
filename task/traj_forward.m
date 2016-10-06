@@ -33,12 +33,13 @@ end
 %% make sure this is a valid probability distribution
 
 if any(isnan(px0))
+    fprintf('WARNING: invalid probabilities. This branch is dead.\n');
     p = zeros(N_SAMPLES, 1);
     pa = zeros(N_SAMPLES, 1);
     pg = zeros(N_SAMPLES, 1);
     trajs = {};
     params = [];
-    idx = 1:N_SAMPLES;
+    idx = (1:N_SAMPLES)';
     return
 end
 
@@ -89,23 +90,8 @@ trajs = cell(N_SAMPLES,1);
 
 iter = start_iter;
 
-%model_normalizer = 0.1*(0.1^good)*eye(size(model.Sigma,1));
-%for i = 1:model.nbStates
-%    model.Sigma(:,:,1) = model.Sigma(:,:,1) + model_normalizer;
-%end
-%if USE_GOAL
-%    goal_normalizer = (0.1^good)*eye(size(next_model.Sigma,1));
-%    for i = 1:next_model.nbStates
-%        next_model.Sigma(:,:,1) = next_model.Sigma(:,:,1) + goal_normalizer;
-%    end
-%end
-
 samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 params = zeros(size(samples,1),N_SAMPLES);
-
-%if config.show_figures
-%    %figure(iter); hold on;
-%end
 
 %% INITIALIZE EMPTY VARIABLES
 p = zeros(N_SAMPLES,1);

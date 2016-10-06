@@ -9,14 +9,14 @@ classdef MctsNode
             'start_iter', 1, ...
             'n_primitives', 1, ...
             'max_primitives', 5, ...
-            'allow_repeat', false, ...
+            'allow_repeat', true, ...
             'n_primitive_params', 3, ...
             'n_samples', 100, ...
             'step_size', 0.75, ...
             'good', 12, ...
             'show_figures', true, ...
             'max_depth', 10, ...
-            'rollout_depth', 5, ...
+            'rollout_depth', 3, ...
             'weighted_sample_starts', false, ...
             'fixed_num_primitives', false);
         
@@ -246,21 +246,21 @@ classdef MctsNode
         % compute reward and propogate back
         function [obj, p, idx] = sample_forward(obj, x, px, nsamples, depth)
             % -- generate with traj_forward
-            'nsamples'
-            nsamples
             [ trajs, params, ~, ~, p, ~, idx ] = traj_forward(x, px, ...
                 obj.models{obj.action_idx}, ...
                 0, obj.local_env, 0, ...
                 obj.Z, obj.config, nsamples);
-            size(p)
-            
-            xsample = zeros(5,length(trajs));
-            size(px(idx))
-            size(p)
+
             psample = px(idx) .* p;
             psample = psample / sum(psample);
-            for j = 1:length(trajs)
-                xsample(:,j) = trajs{j}(:,end);
+            xsample = zeros(5, length(trajs));
+            if length(trajs) == 0
+                p = zeros(size(p));
+                return
+            else
+                for j = 1:length(trajs)
+                    xsample(:,j) = trajs{j}(:,end);
+                end
             end
             
             if ~obj.is_terminal && depth > 0
@@ -283,13 +283,16 @@ classdef MctsNode
                 assert(length(idxc) == nsamples)
                 
                 obj.idx = [obj.idx; idx(idxc)];
-                obj.p = [obj.p; p(idxc) .* pc];
+                p = p(idxc) .* pc;
+                obj.p = [obj.p; p];
                 obj.params = [obj.params params(:,idxc)];
             else
                 obj.idx = [obj.idx; idx];
                 obj.p = [obj.p; p];
                 obj.params = [obj.params params];
             end
+            
+            assert(size(obj.idx,1) >= size(obj.idx, 2));
             
             obj.expected_p = mean(obj.p);
             obj.expected_p_max = max(obj.p);
