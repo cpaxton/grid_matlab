@@ -15,8 +15,8 @@ classdef MctsNode
             'step_size', 0.75, ...
             'good', 12, ...
             'show_figures', true, ...
-            'max_depth', 5, ...
-            'rollout_depth', 3, ...
+            'max_depth', 10, ...
+            'rollout_depth', 5, ...
             'weighted_sample_starts', false, ...
             'fixed_num_primitives', false);
         
@@ -246,12 +246,17 @@ classdef MctsNode
         % compute reward and propogate back
         function [obj, p, idx] = sample_forward(obj, x, px, nsamples, depth)
             % -- generate with traj_forward
+            'nsamples'
+            nsamples
             [ trajs, params, ~, ~, p, ~, idx ] = traj_forward(x, px, ...
                 obj.models{obj.action_idx}, ...
                 0, obj.local_env, 0, ...
                 obj.Z, obj.config, nsamples);
+            size(p)
             
             xsample = zeros(5,length(trajs));
+            size(px(idx))
+            size(p)
             psample = px(idx) .* p;
             psample = psample / sum(psample);
             for j = 1:length(trajs)
@@ -268,7 +273,6 @@ classdef MctsNode
                     c_nsamples = min(nsamples, ceil(nsamples * child_metrics(i))) - prev;
                     if c_nsamples > 0
                         [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample, psample, c_nsamples, depth - 1);
-                        size(prev+1:prev+c_nsamples)
                         pc(prev+1:prev+c_nsamples) = pi;
                         idxc(prev+1:prev+c_nsamples) = idxi;
                     end

@@ -5,20 +5,6 @@ function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, ne
 %   env is a representation of the local environment
 %   Z is the initial distribution we will refine
 
-%% make sure this is a valid probability distribution
-
-if any(isnan(px0))
-    p = zeros(size(px0));
-    pa = zeros(size(px0));
-    pg = zeros(size(px0));
-    trajs = {};
-    params = [];
-    idx = 1:length(px0);
-    return
-end
-
-assert(abs(sum(px0) - 1) < 1e-8);
-
 %% set up
 USE_GOAL = true;
 if ~isstruct(next_model)
@@ -43,8 +29,23 @@ else
         N_SAMPLES = config.n_samples;
     end
 end
+
+%% make sure this is a valid probability distribution
+
+if any(isnan(px0))
+    p = zeros(N_SAMPLES, 1);
+    pa = zeros(N_SAMPLES, 1);
+    pg = zeros(N_SAMPLES, 1);
+    trajs = {};
+    params = [];
+    idx = 1:N_SAMPLES;
+    return
+end
+
+assert(abs(sum(px0) - 1) < 1e-8);
+
 N_Z_DIM = 3*N_PRIMITIVES;
-N_GEN_SAMPLES = 50*N_SAMPLES;
+N_GEN_SAMPLES = 5*N_SAMPLES;
 next_sample = 1;
 
 idx = zeros(N_SAMPLES,1);
@@ -119,7 +120,7 @@ for i = 1:N_GEN_SAMPLES
     if WEIGHTED_SAMPLE_STARTS
         x_idx = min(find(rand() < cpx0));
     else
-        x_idx = mod(i, length(cpx0)) + 1;
+        x_idx = mod(i-1, length(cpx0))+1;
     end
     x = x0(:,x_idx);
     traj = sample_seq(x,samples(:,i));
