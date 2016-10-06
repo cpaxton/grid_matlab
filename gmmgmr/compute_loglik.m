@@ -21,8 +21,10 @@ else
     use_inv_sigma_nt = false;
 end
 
-Data = Data - repmat(model.norm_mean(idx),1,size(Data,2));
-Data = Data ./ repmat(model.norm_std(idx),1,size(Data,2));
+if model.normalize
+    Data = Data - repmat(model.norm_mean(idx),1,size(Data,2));
+    Data = Data ./ repmat(model.norm_std(idx),1,size(Data,2));
+end
 
 for i=1:(model.nbStates)
 

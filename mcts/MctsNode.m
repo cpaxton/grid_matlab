@@ -15,8 +15,8 @@ classdef MctsNode
             'step_size', 0.75, ...
             'good', 12, ...
             'show_figures', true, ...
-            'max_depth', 10, ...
-            'rollout_depth', 3, ...
+            'max_depth', 3, ...
+            'rollout_depth', 1, ...
             'weighted_sample_starts', true, ...
             'fixed_num_primitives', false);
         
@@ -51,6 +51,7 @@ classdef MctsNode
         num_samples = 0;
         visits = 0;
         samples = {};
+        ends = [];
         p = [];
         params = [];
         idx = [];
@@ -253,13 +254,13 @@ classdef MctsNode
 
             psample = px(idx) .* p;
             psample = psample / sum(psample);
-            xsample = zeros(5, length(trajs));
+            obj.ends = zeros(5, length(trajs));
             if length(trajs) == 0
                 p = zeros(size(p));
                 return
             else
                 for j = 1:length(trajs)
-                    xsample(:,j) = trajs{j}(:,end);
+                    obj.ends(:,j) = trajs{j}(:,end);
                 end
             end
             
@@ -272,7 +273,7 @@ classdef MctsNode
                 for i = 1:length(obj.children)
                     c_nsamples = min(nsamples, ceil(nsamples * child_metrics(i))) - prev;
                     if c_nsamples > 0
-                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(xsample, psample, c_nsamples, depth - 1);
+                        [obj.children(i), pi, idxi] = obj.children(i).sample_forward(obj.ends, psample, c_nsamples, depth - 1);
                         pc(prev+1:prev+c_nsamples) = pi;
                         idxc(prev+1:prev+c_nsamples) = idxi;
                     end
@@ -344,6 +345,17 @@ classdef MctsNode
             draw_environment(obj.world.env,0,1);
             obj.draw_best();
         end
+        
+        function print(obj)
+            obj.print_helper('-');
+        end
+        
+        function print_helper(obj,str)
+            fprintf('%saction=%d depth=%d nprims=%d s=%f r=%f \n',str,obj.action_idx,obj.depth,obj.config.n_primitives,obj.selection_metric,obj.rollout_metric);
+            for i = 1:length(obj.children)
+                obj.children(i).print_helper([str '-']);
+            end
+        end    
         
         % res is -log likelihood
         function [obj, res] = search_iter(obj, x)

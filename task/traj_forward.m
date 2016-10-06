@@ -135,8 +135,7 @@ for i = 1:N_GEN_SAMPLES
         end
         
         %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
-        p_action = mean(compute_loglik(fa,model.Mu,model.Sigma,model,model.in));%/len;
-        %p_action = sum(compute_loglik(fa,model.Mu,model.Sigma,model,model.in))/len;
+        p_action = mean(compute_loglik(fa,model.Mu,model.Sigma,model,model.in));
         
         if USE_GOAL
             p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in);

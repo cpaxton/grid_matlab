@@ -21,6 +21,7 @@ SHOW_GATE_POINTS = true;
 SHOW_DATA_LOGLIKELIHOOD = false;
 SHOW_RESULTS = false;
 SKIP_IMG = true;
+NORMALIZE = true;
 
 %DELETE_MOVEMENT_ROTATION = true;
 NUM_LEVELS = 12;
@@ -190,6 +191,7 @@ for k=1:bmm.k
     models{k}.use_in_tissue = USE_IN_TISSUE;
     models{k}.use_surface_proximity = USE_SURFACE_PROXIMITY;
     models{k}.use_time = USE_TIME;
+    models{k}.normalize = NORMALIZE;
     models{k}.in = in;
     models{k}.in_na = in_na;
     models{k}.var_names = vars;
@@ -255,8 +257,11 @@ for k=1:bmm.k
     
     models{k}.norm_mean = norm_mean;
     models{k}.norm_std = norm_std;
-    trainingData = trainingData - repmat(norm_mean,1,size(trainingData,2));
-    trainingData = trainingData ./ repmat(norm_std,1,size(trainingData,2));
+    
+    if models{k}.normalize
+        trainingData = trainingData - repmat(norm_mean,1,size(trainingData,2));
+        trainingData = trainingData ./ repmat(norm_std,1,size(trainingData,2));
+    end
     
     max_clusters = min(size(trainingData,2), MAX_CLUSTERS);
     
