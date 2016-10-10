@@ -7,6 +7,7 @@ classdef MctsNode
         % constants
         config = struct('n_iter', 1, ...
             'start_iter', 1, ...
+            'elite_set', 4, ... % if > 1, use elite set instead of weights
             'n_primitives', 1, ...
             'max_primitives', 5, ...
             'allow_repeat', true, ...
@@ -17,7 +18,7 @@ classdef MctsNode
             'show_figures', true, ...
             'max_depth', 3, ...
             'rollout_depth', 1, ...
-            'weighted_sample_starts', true, ...
+            'weighted_sample_starts', true, ... % sample from best or rollout all
             'fixed_num_primitives', false);
         
         % associated action
@@ -30,6 +31,7 @@ classdef MctsNode
         next_gate_option = 1
         depth = 0;
         selection_metric = 1;
+        refinement_metric = 1;
         rollout_metric = 1;
         
         ACTION_EXIT = 1;
@@ -221,15 +223,15 @@ classdef MctsNode
                 fprintf('[%d at %d w %d] passing\n',obj.action_idx,obj.depth,obj.config.n_primitives);
                 
                 % select a child
-                '--- METRICS ---'
-                metrics = [obj.children.selection_metric]
-                [~,i] = max(metrics);
+                [~,i] = max([obj.children.selection_metric]);
                 obj.children(i) = obj.children(i).select(x);
+                
+                obj.refinement_metric = obj.compute_metric(obj);
+                obj.selection_metric = max(obj.refinement_metric, max(obj.children.refinement_metric));
+                obj.rollout_metric = obj.compute_rollout_metric(obj);
             else
                 obj = obj.sample_forward(x, ones(size(x,2),1), obj.config.n_samples, obj.config.rollout_depth);
             end
-            obj.selection_metric = obj.compute_metric(obj);
-            obj.rollout_metric = obj.compute_rollout_metric(obj);
             
             % -- check to see if this action has converged
         end
@@ -287,10 +289,18 @@ classdef MctsNode
                 p = p(idxc) .* pc;
                 obj.p = [obj.p; p];
                 obj.params = [obj.params params(:,idxc)];
+                
+                obj.refinement_metric = obj.compute_metric(obj);
+                obj.selection_metric = max(obj.refinement_metric, max(obj.children.refinement_metric));
+                obj.rollout_metric = obj.compute_rollout_metric(obj);
             else
                 obj.idx = [obj.idx; idx];
                 obj.p = [obj.p; p];
                 obj.params = [obj.params params];
+                
+                obj.refinement_metric = obj.compute_metric(obj);
+                obj.selection_metric = obj.refinement_metric;
+                obj.rollout_metric = obj.compute_rollout_metric(obj);
             end
             
             assert(size(obj.idx,1) >= size(obj.idx, 2));
@@ -308,9 +318,6 @@ classdef MctsNode
                 obj.p = [];
                 obj.params = [];
             end
-            
-            obj.selection_metric = obj.compute_metric(obj);
-            obj.rollout_metric = obj.compute_rollout_metric(obj);
         end
         
         % descend through the tree from this node
