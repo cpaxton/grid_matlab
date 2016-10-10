@@ -254,6 +254,7 @@ classdef MctsNode
                 0, obj.local_env, 0, ...
                 obj.Z, obj.config, nsamples);
 
+            obj.samples = trajs;
             psample = px(idx) .* p;
             psample = psample / sum(psample);
             obj.ends = zeros(5, length(trajs));
@@ -323,10 +324,11 @@ classdef MctsNode
         % descend through the tree from this node
         % display generated trajectories
         function draw_all(obj)
+                obj.samples
             for i = 1:length(obj.samples)
                 plot(obj.samples{i}(1,:), ...
                     obj.samples{i}(2,:), ...
-                    obj.models{obj.action_idx}.color);
+                    'color', obj.models{obj.action_idx}.color);
             end
             for i = 1:length(obj.children)
                 obj.children(i).draw_all();
