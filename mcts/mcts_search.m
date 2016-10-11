@@ -26,6 +26,7 @@ while false
         
         if ~current_node.initialized
             % draw a set of samples for this node
+            current_node = initialize_node(current_node);
         end
         
         %% DOUBLE PROGRESSIVE WIDENING FUNCTION
@@ -42,7 +43,7 @@ while false
     end
 end
 
-%% At the end:
+%% After the end:
 % descend once through the tree along the most-visited branch
 % end result will be our approximately optimal task and motion plan
 
