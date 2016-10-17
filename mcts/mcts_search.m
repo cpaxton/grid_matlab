@@ -11,11 +11,15 @@ CHILD_OP = 1;
 CHILD_ACTION = 2;
 
 current_node = root;
-current_idx = 0;
+current_idx = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
 while false
+    
+    % reset current node
+    current_node = root;
+    current_idx = 1;
 
     % store a trace through the tree out to max depth
     trace = zeros(config.max_depth, 2);

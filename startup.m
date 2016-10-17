@@ -15,6 +15,7 @@ addpath('./utils/make_fig');
 addpath('./draw');
 addpath('./mcts');
 addpath('./mcts/metrics');
+addpath('./mcts/mcts_utils');
 addpath('./motion');
 addpath('./motion/samplers');
 addpath('./motion/helpers');
