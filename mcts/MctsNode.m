@@ -27,6 +27,16 @@ classdef MctsNode
         compute_metric;
         compute_rollout_metric;
         
+        % for search
+        trajs = {}
+        traj_child_node = []
+        traj_child_traj = []
+        traj_raw_p = []
+        traj_params = []
+        traj_p = []
+        traj_visits = []
+        traj_score = []
+        
         % actor position
         x0
         Z
@@ -55,6 +65,7 @@ classdef MctsNode
         
         % list of nodes that follow this one
         children
+        parents = []
         is_terminal = false
         is_root = false
         

@@ -11,5 +11,5 @@ config = make_default_mcts_config();
 nodes = nodes_from_plan(plan, prev_gate, next_gate, w0, models, config);
 
 %% Run search test
-nodes = mcts_search(nodes, config);
+nodes = mcts_search(nodes, x0, w0, config);
 mcts_extract(nodes, 1);
