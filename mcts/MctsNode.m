@@ -183,8 +183,8 @@ classdef MctsNode
                 obj.is_root = true;
                 obj.converged = true;
                 
-                [plan, prev_gate, next_gate] = get_symbolic_plan(world.env);
-                obj = obj.initFromPlan(plan, prev_gate, next_gate);
+                %[plan, prev_gate, next_gate] = get_symbolic_plan(world.env);
+                %obj = obj.initFromPlan(plan, prev_gate, next_gate);
             end
         end 
         
