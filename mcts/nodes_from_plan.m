@@ -67,7 +67,7 @@ if nodes(idx).depth <= nodes(idx).config.max_depth && ~done_plan
 
         nodes = [nodes MctsNode(nodes(idx).world, ...
             nodes(idx).models, ...
-            nodes(idx).step)];
+            next_step)];
         nodes(idx).children = [nodes(idx).children length(nodes)];
                 nodes(end).action_idx = action_idx;
                 nodes(end).next_gate = child_next_gate;
@@ -79,7 +79,7 @@ if nodes(idx).depth <= nodes(idx).config.max_depth && ~done_plan
         elseif child_prev_gate <= length(nodes(idx).world.env.gates) && child_prev_gate > 0
         	nodes = [nodes MctsNode(nodes(idx).world, ...
                     nodes(idx).models, ...
-                    nodes(idx).step)];
+                    next_step)];
             nodes(idx).children = [nodes(idx).children length(nodes)];
             nodes(end).action_idx = action_idx;
             nodes(end).next_gate = child_next_gate;

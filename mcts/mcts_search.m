@@ -11,6 +11,7 @@ CHILD_OP = 1;
 CHILD_ACTION = 2;
 
 current_idx = 1;
+current_traj = 0;
 
 count = 0;
 
@@ -25,30 +26,66 @@ while count < 1
     
     % reset current node
     current_idx = 1;
+    current_traj = 0;
+    x = x0;
 
     % store a trace through the tree out to max depth
     trace = zeros(nodes(1).config.max_depth, 2);
     
     % descend through the tree
     % choose child with best value, or use DPW to create a new child
-    while false && ~nodes(current_idx).is_terminal
+    while ~nodes(current_idx).is_terminal
         
         if ~nodes(current_idx).initialized
-            % draw a set of samples for this node
-            nodes(current_idx) = initialize_node(nodes(current_idx), nodes, config);
+            % draw a set of samples for this node's children to choose the
+            % best one
+            n_children = length(nodes(current_idx).children);
+            for i = 1:length(nodes(current_idx).children)
+                nodes(nodes(current_idx).children(i)) = initialize_node(...
+                    nodes(nodes(current_idx).children(i)),...
+                    x, ...
+                    config.init_samples / n_children);
+            end
+            
+            nodes(current_idx).initialized = true;
         end
         
         %% DOUBLE PROGRESSIVE WIDENING FUNCTION
         % greedily choose child, or add a trajectory
         if true
+            
+            best_node = 0;
+            best_score = 0;
+            best_traj = 0;
+            best_x = [];
+            
             % greedily choose best existing child according to UCT
-            next_idx = 1;
+            for i = 1:length(nodes(current_idx).children)
+                % choose best child
+                child_idx = nodes(current_idx).children(i);
+                for j = 1:length(nodes(child_idx).trajs)
+                    if nodes(child_idx).traj_score(j) > best_score
+                        best_score = nodes(child_idx).traj_score(j);
+                        best_node = nodes(current_idx).children(i);
+                        best_traj = j;
+                        best_x = nodes(child_idx).trajs{j}(:,end);
+                    end
+                end
+            end
         else
             % create child by creating new random sample
         end
         
         %% update current node
-        current_idx = next_idx;
+        current_idx = best_node;
+        current_traj = best_traj;
+        x = best_x;
+        
+        %% draw
+        if config.draw_figures
+            draw_nodes(nodes)
+        end
+
     end
     
     count = count + 1;
