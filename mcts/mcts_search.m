@@ -19,7 +19,7 @@ count = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 3
+while count <= 5
     
     if config.draw_figures
         figure(count+1); clf; hold on;
@@ -64,6 +64,10 @@ while count <= 3
                     config, ...
                     parent_node, ...
                     parent_traj);
+                
+                if parent_node > 0
+                    nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + config.init_samples / n_children;
+                end
             end
             
             nodes(current_idx).initialized = true;

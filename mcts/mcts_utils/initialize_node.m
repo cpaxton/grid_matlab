@@ -14,10 +14,11 @@ if ~node.is_root
     node.traj_parent_node = [node.traj_parent_node; ones(size(p))*parent_node];
     node.traj_visits = [node.traj_visits; zeros(size(p))];
     node.traj_p_sum = [node.traj_p_sum; zeros(size(p))];
+    node.traj_children = [node.traj_children; zeros(size(p))];
     
     if config.initialization == 'pw'
         traj_score = ones(size(p)) * Inf;
-    else
+    elseif config.initialization == 'h'
         traj_score = p;
     end
     node.traj_score = [node.traj_score; traj_score];

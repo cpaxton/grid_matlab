@@ -37,6 +37,7 @@ classdef MctsNode
         traj_p_sum = []
         traj_visits = []
         traj_score = []
+        traj_children = []
         
         % actor position
         x0
