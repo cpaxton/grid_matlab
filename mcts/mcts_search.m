@@ -10,6 +10,7 @@ function [ nodes ] = mcts_search( nodes, x0, w0, config )
 CHILD_NODE = 1;
 CHILD_TRAJ = 2;
 CHILD_P = 3;
+CHILD_VISITS = 4;
 
 current_idx = 1;
 current_traj = 0;
@@ -31,7 +32,7 @@ while count <= 1
     x = x0;
 
     % store a trace through the tree out to max depth
-    trace = zeros(nodes(1).config.max_depth, 3);
+    trace = zeros(nodes(1).config.max_depth, 4);
     depth = 1;
     
     % descend through the tree
@@ -42,19 +43,32 @@ while count <= 1
         if ~nodes(current_idx).initialized
             % draw a set of samples for this node's children to choose the
             % best one
+            
+            if depth == 1
+                parent_node = 0;
+                parent_traj = 0;
+            else
+                parent_node = trace(depth - 1, CHILD_NODE);
+                parent_traj = trace(depth - 1, CHILD_TRAJ);
+            end
+            
             n_children = length(nodes(current_idx).children);
             for i = 1:length(nodes(current_idx).children)
                 nodes(nodes(current_idx).children(i)) = initialize_node(...
                     nodes(nodes(current_idx).children(i)),...
                     x, ...
                     config.init_samples / n_children, ...
-                    config);
+                    config, ...
+                    parent_node, ...
+                    parent_traj);
             end
             
             nodes(current_idx).initialized = true;
+        elseif ~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0
+            % draw a new set of samples for this trajectory's children
         end
         
-        %% DOUBLE PROGRESSIVE WIDENING FUNCTION
+        %% PROGRESSIVE WIDENING FUNCTION
         % greedily choose child, or add a trajectory
         if true
             
@@ -63,6 +77,7 @@ while count <= 1
             best_traj = 0;
             best_x = [];
             best_p = 0;
+            best_visits = 0;
             
             % greedily choose best existing child according to UCT
             for i = 1:length(nodes(current_idx).children)
@@ -73,8 +88,10 @@ while count <= 1
                         best_score = nodes(child_idx).traj_score(j);
                         best_node = nodes(current_idx).children(i);
                         best_traj = j;
+                        nodes(child_idx).trajs
                         best_x = nodes(child_idx).trajs{j}(:,end);
                         best_p = nodes(child_idx).traj_raw_p(j);
+                        best_visits = nodes(child_idx).traj_visits(j);
                     end
                 end
             end
@@ -85,6 +102,7 @@ while count <= 1
         trace(depth, CHILD_NODE) = best_node;
         trace(depth, CHILD_TRAJ) = best_traj;
         trace(depth, CHILD_P) = best_p;
+        trace(depth, CHILD_VISITS) = best_visits;
         
         %% update current node
         current_idx = best_node;
@@ -93,7 +111,7 @@ while count <= 1
         
         %% draw
         if config.draw_figures
-            draw_nodes(nodes)
+            draw_nodes(nodes);
         end
         
         depth = depth + 1;
@@ -105,7 +123,7 @@ while count <= 1
 
     end
     trace
-    config.backup(count, nodes, trace, depth)
+    nodes = config.backup(count, nodes, trace, depth);
     count = count + 1;
 end
 

@@ -29,8 +29,8 @@ classdef MctsNode
         
         % for search
         trajs = {}
-        traj_child_node = []
-        traj_child_traj = []
+        traj_parent_node = []
+        traj_parent_traj = []
         traj_raw_p = []
         traj_params = []
         traj_p = []

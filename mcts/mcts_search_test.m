@@ -12,4 +12,9 @@ nodes = nodes_from_plan(plan, prev_gate, next_gate, w0, models, config);
 
 %% Run search test
 nodes = mcts_search(nodes, x0, w0, config);
-mcts_extract(nodes, 1);
+traj = mcts_extract(nodes, 1);
+
+figure(1); clf; hold on;
+draw_environment(w0.env);
+draw_nodes(nodes);
+plot(traj(1,:), traj(2,:), '*', 'color', 'r');
