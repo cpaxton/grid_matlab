@@ -14,11 +14,11 @@ CHILD_P = 3;
 current_idx = 1;
 current_traj = 0;
 
-count = 0;
+count = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count < 1
+while count <= 1
     
     if config.draw_figures
         figure(count+1); clf; hold on;
@@ -36,7 +36,8 @@ while count < 1
     
     % descend through the tree
     % choose child with best value, or use DPW to create a new child
-    while ~nodes(current_idx).is_terminal
+    % NOTE: for now assuming all trajectories are the same length
+    while true %~nodes(current_idx).is_terminal
         
         if ~nodes(current_idx).initialized
             % draw a set of samples for this node's children to choose the
@@ -85,8 +86,6 @@ while count < 1
         trace(depth, CHILD_TRAJ) = best_traj;
         trace(depth, CHILD_P) = best_p;
         
-        config.backup(nodes, trace)
-        
         %% update current node
         current_idx = best_node;
         current_traj = best_traj;
@@ -99,15 +98,14 @@ while count < 1
         
         depth = depth + 1;
         
-        trace
-        
         if depth > nodes(1).config.max_depth
             break
         end
         
 
     end
-    
+    trace
+    config.backup(count, nodes, trace, depth)
     count = count + 1;
 end
 
