@@ -127,6 +127,7 @@ while count <= 20
         
 
     end
+    trace
     nodes = config.backup(count, nodes, trace, depth);
     count = count + 1;
 end

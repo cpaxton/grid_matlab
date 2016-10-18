@@ -1,6 +1,6 @@
 %% Create environment and set up
-rng(100);
-env = envs{11};
+rng(101);
+env = envs{3};
 w0 = NeedleMasterWorld(env);
 
 x0 = [600; 800; 0; 0; 0];
