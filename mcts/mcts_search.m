@@ -48,7 +48,7 @@ while count <= 5
         else
             parent_node = trace(depth - 1, CHILD_NODE);
             parent_traj = trace(depth - 1, CHILD_TRAJ);
-            num_children = 0;
+            num_children = nodes(parent_node).traj_children(parent_traj);
         end
         
         if ~nodes(current_idx).initialized ...
