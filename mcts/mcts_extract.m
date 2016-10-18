@@ -37,8 +37,8 @@ while true
         end
    end
    fprintf('\tbest parent node = %d, traj = %d, visited %d times\n', best_prev_node, best_prev_traj, best_num_visits);
-   prev_node = best_node_idx
-   prev_traj = best_traj_idx
+   prev_node = best_node_idx;
+   prev_traj = best_traj_idx;
    idx = best_node_idx;
    traj = [traj nodes(best_node_idx).trajs{best_traj_idx}];
    depth = depth + 1;

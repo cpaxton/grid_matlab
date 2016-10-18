@@ -14,6 +14,7 @@ CHILD_VISITS = 4;
 
 current_idx = 1;
 current_traj = 0;
+root_num_children = 0;
 
 count = 1;
 
@@ -43,9 +44,11 @@ while count <= 5
         if depth == 1
             parent_node = 0;
             parent_traj = 0;
+            num_children = root_num_children;
         else
             parent_node = trace(depth - 1, CHILD_NODE);
             parent_traj = trace(depth - 1, CHILD_TRAJ);
+            num_children = 0;
         end
         
         if ~nodes(current_idx).initialized ...
@@ -67,6 +70,8 @@ while count <= 5
                 
                 if parent_node > 0
                     nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + config.init_samples / n_children;
+                else
+                    root_num_children = root_num_children + config.init_samples / n_children;
                 end
             end
             
