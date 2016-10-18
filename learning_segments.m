@@ -318,16 +318,10 @@ for k=1:bmm.k
         fprintf(' - num free params = %d\n',free_params);
         fprintf(' - num training examples = %d\n', size(trainingData,2));
         
-        %[a, b] = aicbic(ll,free_params,size(trainingData,2));
-        %fprintf(' - aic = %f\n', a);
-        if use_loglik && -1*ll < best_ab
+        if -1*ll < best_ab
             best_ab = -1*ll;
             best_model = tmp_model;
             best_num = j;
-        %elseif ~use_loglik && a < best_ab
-        %    best_ab = a;
-        %    best_model = tmp_model;
-        %    best_num = j;
         end
         
     end

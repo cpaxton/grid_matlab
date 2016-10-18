@@ -117,7 +117,7 @@ for iter = 1:N_ITER
             end
             
             Zs{i} = Z;
-            good_iters = min(good_iter,good_iters);
+            good_iters = min(good,good_iters);
         end
         
         

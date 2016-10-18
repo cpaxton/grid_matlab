@@ -19,7 +19,7 @@ count = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 20
+while count <= 3
     
     if config.draw_figures
         figure(count+1); clf; hold on;

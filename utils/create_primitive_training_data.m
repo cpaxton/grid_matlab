@@ -4,7 +4,7 @@ trainingData = [];
 
 for i = 1:length(ap)
     
-    data = traj_get_reproduction_features(ap(i).data,model,ap(i).local_env);
+    data = traj_get_reproduction_features(ap(i).originalData,model,ap(i).local_env);
     len = size(data,2);
     data = [1000 * (1:len) / len; data];
     %fprintf('WARNING: time wrong');
