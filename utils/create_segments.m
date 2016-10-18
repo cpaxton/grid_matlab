@@ -129,8 +129,14 @@ for k=1:bmm.k
                 samples(next_sample).end = sen{ex};
                 samples(next_sample).effort_features = effort_features;
                 
+                local_env = [];
+                local_env.exit = [envs{i}.width-origin_x;(envs{i}.height / 2)-origin_y;0];
+                local_env.obstacles = envs{i}.surfaces;
+                local_env.gates = envs{i}.gates;
+                
                 if  goals{ex}(sst{ex}) <= length(envs{i}.gates)
                     samples(next_sample).orig_gate = envs{i}.gates{goals{ex}(sst{ex})}{next_opt};
+                    local_env.gate = envs{i}.gates{goals{ex}(sst{ex})}{next_opt};
                     samples(next_sample).gate = relative_gate(origin_x, ...
                         origin_y, -origin_w, ...
                         envs{i}.gates{goals{ex}(sst{ex})}{next_opt});
@@ -147,6 +153,7 @@ for k=1:bmm.k
                 
                 if goals{ex}(sst{ex}) > 1
                     samples(next_sample).orig_prev_gate = envs{i}.gates{goals{ex}(sst{ex})-1}{prev_opt};
+                    local_env.prev_gate = envs{i}.gates{goals{ex}(sst{ex})-1}{prev_opt};
                     samples(next_sample).prev_gate = relative_gate(origin_x, ...
                         origin_y, -origin_w, ...
                         envs{i}.gates{goals{ex}(sst{ex})-1}{prev_opt});
@@ -159,6 +166,7 @@ for k=1:bmm.k
                     samples(next_sample).has_prev_gate = false;
                 end
                 
+                samples(next_sample).local_env = local_env;
                 samples(next_sample).env = i;
                 next_sample = next_sample + 1;
             end
