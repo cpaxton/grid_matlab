@@ -19,7 +19,7 @@ count = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 10
+while count <= 20
     
     if config.draw_figures
         figure(count+1); clf; hold on;
@@ -40,19 +40,20 @@ while count <= 10
     % NOTE: for now assuming all trajectories are the same length
     while true %~nodes(current_idx).is_terminal
         
-        trace
+        if depth == 1
+            parent_node = 0;
+            parent_traj = 0;
+        else
+            parent_node = trace(depth - 1, CHILD_NODE);
+            parent_traj = trace(depth - 1, CHILD_TRAJ);
+        end
+        
         if ~nodes(current_idx).initialized ...
                 || (~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0)
             % draw a set of samples for this node's children to choose the
             % best one
             
-            if depth == 1
-                parent_node = 0;
-                parent_traj = 0;
-            else
-                parent_node = trace(depth - 1, CHILD_NODE);
-                parent_traj = trace(depth - 1, CHILD_TRAJ);
-            end
+            fprintf('Expanding from node %d, traj %d\n', parent_node, parent_traj);
             
             n_children = length(nodes(current_idx).children);
             for i = 1:length(nodes(current_idx).children)
@@ -84,12 +85,12 @@ while count <= 10
                 % choose best child
                 child_idx = nodes(current_idx).children(i);
                 for j = 1:length(nodes(child_idx).trajs)
-                    nodes(child_idx).traj_score
-                    if nodes(child_idx).traj_score(j) > best_score
+                    new_parent_traj = nodes(child_idx).traj_parent_traj(j);
+                    if nodes(child_idx).traj_score(j) > best_score ...
+                            && new_parent_traj == parent_traj;
                         best_score = nodes(child_idx).traj_score(j);
                         best_node = nodes(current_idx).children(i);
                         best_traj = j;
-                        nodes(child_idx).trajs
                         best_x = nodes(child_idx).trajs{j}(:,end);
                         best_p = nodes(child_idx).traj_raw_p(j);
                         best_visits = nodes(child_idx).traj_visits(j);
@@ -99,6 +100,8 @@ while count <= 10
         else
             % create child by creating new random sample
         end
+        
+        fprintf('Selected child %d in node %d\n', best_traj, best_node);
         
         trace(depth, CHILD_NODE) = best_node;
         trace(depth, CHILD_TRAJ) = best_traj;
@@ -113,6 +116,7 @@ while count <= 10
         %% draw
         if config.draw_figures
             draw_nodes(nodes);
+            plot(x(1),x(2),'*','color','black');
         end
         
         depth = depth + 1;
@@ -123,7 +127,6 @@ while count <= 10
         
 
     end
-    trace
     nodes = config.backup(count, nodes, trace, depth);
     count = count + 1;
 end

@@ -1,4 +1,5 @@
 %% Create environment and set up
+rng(100);
 env = envs{11};
 w0 = NeedleMasterWorld(env);
 
