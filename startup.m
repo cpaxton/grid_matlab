@@ -16,6 +16,7 @@ addpath('./draw');
 addpath('./mcts');
 addpath('./mcts/metrics');
 addpath('./mcts/mcts_utils');
+addpath('./mcts/pw');
 addpath('./motion');
 addpath('./motion/samplers');
 addpath('./motion/helpers');

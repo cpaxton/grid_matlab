@@ -7,8 +7,9 @@ function [ nodes ] = mcts_search( nodes, x0, w0, config )
 %% Definitions
 % Define location where we store the high-level option and the specific
 % trajectory associated with that option in each rollout/simulation.
-CHILD_OP = 1;
-CHILD_ACTION = 2;
+CHILD_NODE = 1;
+CHILD_TRAJ = 2;
+CHILD_P = 3;
 
 current_idx = 1;
 current_traj = 0;
@@ -30,7 +31,8 @@ while count < 1
     x = x0;
 
     % store a trace through the tree out to max depth
-    trace = zeros(nodes(1).config.max_depth, 2);
+    trace = zeros(nodes(1).config.max_depth, 3);
+    depth = 1;
     
     % descend through the tree
     % choose child with best value, or use DPW to create a new child
@@ -44,7 +46,8 @@ while count < 1
                 nodes(nodes(current_idx).children(i)) = initialize_node(...
                     nodes(nodes(current_idx).children(i)),...
                     x, ...
-                    config.init_samples / n_children);
+                    config.init_samples / n_children, ...
+                    config);
             end
             
             nodes(current_idx).initialized = true;
@@ -58,6 +61,7 @@ while count < 1
             best_score = 0;
             best_traj = 0;
             best_x = [];
+            best_p = 0;
             
             % greedily choose best existing child according to UCT
             for i = 1:length(nodes(current_idx).children)
@@ -69,12 +73,19 @@ while count < 1
                         best_node = nodes(current_idx).children(i);
                         best_traj = j;
                         best_x = nodes(child_idx).trajs{j}(:,end);
+                        best_p = nodes(child_idx).traj_raw_p(j);
                     end
                 end
             end
         else
             % create child by creating new random sample
         end
+        
+        trace(depth, CHILD_NODE) = best_node;
+        trace(depth, CHILD_TRAJ) = best_traj;
+        trace(depth, CHILD_P) = best_p;
+        
+        config.backup(nodes, trace)
         
         %% update current node
         current_idx = best_node;
@@ -85,6 +96,15 @@ while count < 1
         if config.draw_figures
             draw_nodes(nodes)
         end
+        
+        depth = depth + 1;
+        
+        trace
+        
+        if depth > nodes(1).config.max_depth
+            break
+        end
+        
 
     end
     
