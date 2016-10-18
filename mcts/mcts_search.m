@@ -19,7 +19,7 @@ count = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 1
+while count <= 10
     
     if config.draw_figures
         figure(count+1); clf; hold on;
@@ -40,7 +40,9 @@ while count <= 1
     % NOTE: for now assuming all trajectories are the same length
     while true %~nodes(current_idx).is_terminal
         
-        if ~nodes(current_idx).initialized
+        trace
+        if ~nodes(current_idx).initialized ...
+                || (~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0)
             % draw a set of samples for this node's children to choose the
             % best one
             
@@ -64,8 +66,6 @@ while count <= 1
             end
             
             nodes(current_idx).initialized = true;
-        elseif ~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0
-            % draw a new set of samples for this trajectory's children
         end
         
         %% PROGRESSIVE WIDENING FUNCTION
@@ -84,6 +84,7 @@ while count <= 1
                 % choose best child
                 child_idx = nodes(current_idx).children(i);
                 for j = 1:length(nodes(child_idx).trajs)
+                    nodes(child_idx).traj_score
                     if nodes(child_idx).traj_score(j) > best_score
                         best_score = nodes(child_idx).traj_score(j);
                         best_node = nodes(current_idx).children(i);

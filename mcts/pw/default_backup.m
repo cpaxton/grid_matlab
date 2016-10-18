@@ -14,7 +14,7 @@ for i = (max_depth-1):-1:1
     
     nodes(node_idx).traj_p_sum(traj_idx) = nodes(node_idx).traj_p_sum(traj_idx) + score;
     nodes(node_idx).traj_visits(traj_idx) = nodes(node_idx).traj_visits(traj_idx) + 1;
-    nodes(node_idx).traj_score = compute_score(nodes(node_idx).traj_p_sum(traj_idx), nodes(node_idx).traj_visits(traj_idx), iter);
+    nodes(node_idx).traj_score(traj_idx) = compute_score(nodes(node_idx).traj_p_sum(traj_idx), nodes(node_idx).traj_visits(traj_idx), iter);
 end
 
 end
