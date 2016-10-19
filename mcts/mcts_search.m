@@ -144,8 +144,6 @@ while count <= 200
         plot(xs(1,:),xs(2,:),'*','color','black');
     end
     
-    xs
-    trace
     nodes = config.backup(count, nodes, trace, depth);
     count = count + 1;
 end
