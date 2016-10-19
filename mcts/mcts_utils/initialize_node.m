@@ -7,7 +7,7 @@ if ~node.is_root
         node.Z, node.config, n_samples);
     
     node.trajs = {node.trajs{:} trajs{:}};
-    node.traj_params = [node.traj_params; params];
+    node.traj_params = [node.traj_params params];
     node.traj_raw_p = [node.traj_raw_p; p];
     node.traj_p = [node.traj_p; p];
     node.traj_parent_traj = [node.traj_parent_traj; ones(size(p))*parent_traj];
@@ -22,6 +22,8 @@ if ~node.is_root
         traj_score = p;
     end
     node.traj_score = [node.traj_score; traj_score];
+    
+    node.initialized = true;
 end
 
 end

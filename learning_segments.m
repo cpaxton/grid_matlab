@@ -54,7 +54,8 @@ models = analyze_primitives(ap,models);
 %% loop over the different actions
 % create a model for each one
 for k=1:bmm.k
-    
+    % iterate over all models
+
     %% which environmental features are important for this action?
     use_gate = true;
     use_prev_gate = true;

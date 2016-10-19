@@ -11,6 +11,7 @@ CHILD_NODE = 1;
 CHILD_TRAJ = 2;
 CHILD_P = 3;
 CHILD_VISITS = 4;
+CHILD_TERMINAL = 5;
 
 current_idx = 1;
 current_traj = 0;
@@ -18,14 +19,13 @@ root_num_children = 0;
 
 count = 1;
 
+xs = zeros(5, nodes(1).config.max_depth);
+
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 15
+while count <= 200
     
-    if config.draw_figures
-        figure(count+1); clf; hold on;
-        draw_environment(w0.env);
-    end
+    fprintf('=============\n');
     
     % reset current node
     current_idx = 1;
@@ -33,7 +33,7 @@ while count <= 15
     x = x0;
 
     % store a trace through the tree out to max depth
-    trace = zeros(nodes(1).config.max_depth, 4);
+    trace = zeros(nodes(1).config.max_depth, 5);
     depth = 1;
     
     % descend through the tree
@@ -42,7 +42,7 @@ while count <= 15
     while true %~nodes(current_idx).is_terminal
         
         if depth == 1
-            parent_node = 0;
+            parent_node = 1;
             parent_traj = 0;
             num_children = root_num_children;
             num_visits = count;
@@ -53,41 +53,53 @@ while count <= 15
             num_visits = nodes(parent_node).traj_visits(parent_traj);
         end
         
-        if ~nodes(current_idx).initialized ...
-                || (~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0)
-            % draw a set of samples for this node's children to choose the
-            % best one
-            
-            fprintf('Expanding from node %d, traj %d\n', parent_node, parent_traj);
-            
-            n_children = length(nodes(current_idx).children);
-            for i = 1:length(nodes(current_idx).children)
-                nodes(nodes(current_idx).children(i)) = initialize_node(...
-                    nodes(nodes(current_idx).children(i)),...
-                    x, ...
-                    config.init_samples / n_children, ...
-                    config, ...
-                    parent_node, ...
-                    parent_traj);
-                
-                if parent_node > 0
-                    nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + config.init_samples / n_children;
-                else
-                    root_num_children = root_num_children + config.init_samples / n_children;
-                end
-            end
-            
-            nodes(current_idx).initialized = true;
-        elseif config.expand(num_visits, num_children)
+%         if ~nodes(current_idx).initialized ...
+%                 || (~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0)
+%             % draw a set of samples for this node's children to choose the
+%             % best one
+%             
+%             fprintf('Expanding from node %d, traj %d\n', parent_node, parent_traj);
+%             
+%             n_children = length(nodes(current_idx).children);
+%             for i = 1:length(nodes(current_idx).children)
+%                 nodes(nodes(current_idx).children(i)) = initialize_node(...
+%                     nodes(nodes(current_idx).children(i)),...
+%                     x, ...
+%                     config.init_samples / n_children, ...
+%                     config, ...
+%                     parent_node, ...
+%                     parent_traj);
+%                 
+%                 if parent_node > 1
+%                     nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + config.init_samples / n_children;
+%                 else
+%                     root_num_children = root_num_children + config.init_samples / n_children;
+%                 end
+%             end
+%             
+%             nodes(current_idx).initialized = true;
+%         else
+        if num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
             child = config.choose_child(nodes, parent_node);
+            
+            if nodes(child).is_terminal
+                break
+            end 
+            
             nodes(child) = initialize_node(...
-                nodes(nodes(current_idx).children(child)),...
+                nodes(child),...
                 x, ...
                 1, ...
                 config, ...
                 parent_node, ...
                 parent_traj);
+            
+            if parent_node > 1
+                nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + 1;
+            else
+                root_num_children = root_num_children + 1;
+            end
         end
         
         %% PROGRESSIVE WIDENING FUNCTION
@@ -128,26 +140,34 @@ while count <= 15
         trace(depth, CHILD_TRAJ) = best_traj;
         trace(depth, CHILD_P) = best_p;
         trace(depth, CHILD_VISITS) = best_visits;
+        trace(depth, CHILD_TERMINAL) = nodes(best_node).is_terminal;
         
         %% update current node
         current_idx = best_node;
         current_traj = best_traj;
+
+        xs(:,depth) = x;
         x = best_x;
-        
-        %% draw
-        if config.draw_figures
-            draw_nodes(nodes);
-            plot(x(1),x(2),'*','color','black');
-        end
         
         depth = depth + 1;
         
-        if depth > nodes(1).config.max_depth
+        if depth > nodes(1).config.max_depth || nodes(current_idx).is_terminal
             break
         end
         
 
     end
+    
+    %% draw
+    if config.draw_figures && mod(count,20) == 0
+        figure(round(count/20)+1); clf; hold on;
+        draw_environment(w0.env);
+        draw_environment(w0.env);
+        draw_nodes(nodes);
+        plot(xs(1,:),xs(2,:),'*','color','black');
+    end
+    
+    xs
     trace
     nodes = config.backup(count, nodes, trace, depth);
     count = count + 1;

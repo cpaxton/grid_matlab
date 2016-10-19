@@ -130,7 +130,7 @@ for k=1:bmm.k
                 samples(next_sample).effort_features = effort_features;
                 
                 local_env = [];
-                local_env.exit = [envs{i}.width-origin_x;(envs{i}.height / 2)-origin_y;0];
+                local_env.exit = [envs{i}.width;envs{i}.height/2;0];
                 local_env.obstacles = envs{i}.surfaces;
                 local_env.gates = envs{i}.gates;
                 
