@@ -40,12 +40,12 @@ while true
    prev_node = best_node_idx;
    prev_traj = best_traj_idx;
    idx = best_node_idx;
+   
+   if best_node_idx == 0 || nodes(idx).is_terminal || depth > nodes(1).config.max_depth
+    break
+   end
    traj = [traj nodes(best_node_idx).trajs{best_traj_idx}];
    depth = depth + 1;
-   
-   if nodes(idx).is_terminal || depth > nodes(1).config.max_depth
-       break
-   end
 end
 
 end
