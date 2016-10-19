@@ -23,7 +23,7 @@ xs = zeros(5, nodes(1).config.max_depth);
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 200
+while count <= 20
     
     fprintf('=============\n');
     
