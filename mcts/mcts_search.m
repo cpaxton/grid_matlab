@@ -55,24 +55,38 @@ while count <= 200
         
         if num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
-            child = config.choose_child(nodes, parent_node);
             
-            if nodes(child).is_terminal
-                break
-            end 
-            
-            nodes(child) = initialize_node(...
-                nodes(child),...
-                x, ...
-                1, ...
-                config, ...
-                parent_node, ...
-                parent_traj);
-            
-            if parent_node > 1
-                nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + 1;
+            if num_visits == 0
+                samples = config.init_samples;
             else
-                root_num_children = root_num_children + 1;
+                samples = 1;
+            end
+            
+            done = false;
+            for i = 1:samples
+                child = config.choose_child(nodes, parent_node);
+                
+                if nodes(child).is_terminal
+                    done = true;
+                    break
+                end
+                
+                nodes(child) = initialize_node(...
+                    nodes(child),...
+                    x, ...
+                    1, ...
+                    config, ...
+                    parent_node, ...
+                    parent_traj);
+                
+                if parent_node > 1
+                    nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + 1;
+                else
+                    root_num_children = root_num_children + 1;
+                end 
+            end
+            if done
+                break
             end
         end
         
