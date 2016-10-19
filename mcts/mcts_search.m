@@ -91,6 +91,7 @@ while count <= config.num_iter
                 end 
             end
             if done
+                trace(depth,CHILD_TERMINAL) = true;
                 break;
             end
         end
@@ -143,8 +144,6 @@ while count <= config.num_iter
         
         if nodes(current_idx).is_terminal
             trace(depth,CHILD_TERMINAL) = true;
-            break
-        elseif depth > nodes(1).config.max_depth
             break
         end
 

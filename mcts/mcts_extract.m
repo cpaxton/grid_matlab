@@ -41,7 +41,7 @@ while true
    prev_traj = best_traj_idx;
    idx = best_node_idx;
    
-   if best_node_idx == 0 || nodes(idx).is_terminal || depth > nodes(1).config.max_depth
+   if best_node_idx == 0 || nodes(idx).is_terminal
     break
    end
    traj = [traj nodes(best_node_idx).trajs{best_traj_idx}];

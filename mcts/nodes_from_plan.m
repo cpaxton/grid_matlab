@@ -30,9 +30,10 @@ if nodes(idx).step > 0
 end
 
 %% if we can still descend farther into the tree
-if nodes(idx).depth <= nodes(idx).config.max_depth && ~done_plan
+%if nodes(idx).depth <= nodes(idx).config.max_depth && ~done_plan
+if ~done_plan
     
-    if nodes(idx).step > 0 && nodes(idx).config.allow_repeat
+    if nodes(idx).step > 0 && nodes(idx).config.allow_repeat && nodes(idx).depth < nodes(idx).config.max_depth
         % create new node and append it
         nodes = [nodes MctsNode(nodes(idx).world, ...
             nodes(idx).models, ...
