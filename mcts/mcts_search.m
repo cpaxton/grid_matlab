@@ -53,32 +53,6 @@ while count <= 200
             num_visits = nodes(parent_node).traj_visits(parent_traj);
         end
         
-%         if ~nodes(current_idx).initialized ...
-%                 || (~nodes(current_idx).is_root && trace(depth-1,CHILD_VISITS) == 0)
-%             % draw a set of samples for this node's children to choose the
-%             % best one
-%             
-%             fprintf('Expanding from node %d, traj %d\n', parent_node, parent_traj);
-%             
-%             n_children = length(nodes(current_idx).children);
-%             for i = 1:length(nodes(current_idx).children)
-%                 nodes(nodes(current_idx).children(i)) = initialize_node(...
-%                     nodes(nodes(current_idx).children(i)),...
-%                     x, ...
-%                     config.init_samples / n_children, ...
-%                     config, ...
-%                     parent_node, ...
-%                     parent_traj);
-%                 
-%                 if parent_node > 1
-%                     nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + config.init_samples / n_children;
-%                 else
-%                     root_num_children = root_num_children + config.init_samples / n_children;
-%                 end
-%             end
-%             
-%             nodes(current_idx).initialized = true;
-%         else
         if num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
             child = config.choose_child(nodes, parent_node);
@@ -151,10 +125,13 @@ while count <= 200
         
         depth = depth + 1;
         
-        if depth > nodes(1).config.max_depth || nodes(current_idx).is_terminal
+        if nodes(current_idx).is_terminal
+            trace(depth,CHILD_TERMINAL) = true
+            fprintf ('---a-s-sadfasdf\n');
+            break
+        elseif depth > nodes(1).config.max_depth
             break
         end
-        
 
     end
     
