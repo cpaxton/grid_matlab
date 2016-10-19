@@ -23,9 +23,9 @@ xs = zeros(5, nodes(1).config.max_depth);
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 20
+while count <= config.num_iter
     
-    fprintf('=============\n');
+    %fprintf('=============\n');
     
     % reset current node
     current_idx = 1;
@@ -86,7 +86,7 @@ while count <= 20
                 end 
             end
             if done
-                break
+                break;
             end
         end
         
@@ -118,7 +118,7 @@ while count <= 20
             end
         end
         
-        fprintf('Selected child %d in node %d\n', best_traj, best_node);
+        %fprintf('Selected child %d in node %d\n', best_traj, best_node);
         
         trace(depth, CHILD_NODE) = best_node;
         trace(depth, CHILD_TRAJ) = best_traj;
@@ -136,8 +136,7 @@ while count <= 20
         depth = depth + 1;
         
         if nodes(current_idx).is_terminal
-            trace(depth,CHILD_TERMINAL) = true
-            fprintf ('---a-s-sadfasdf\n');
+            trace(depth,CHILD_TERMINAL) = true;
             break
         elseif depth > nodes(1).config.max_depth
             break
@@ -146,7 +145,7 @@ while count <= 20
     end
     
     %% draw
-    if config.draw_figures && mod(count,20) == 0
+    if config.draw_figures && mod(count,config.draw_step) == 0
         figure(round(count/20)+1); clf; hold on;
         draw_environment(w0.env);
         draw_environment(w0.env);
