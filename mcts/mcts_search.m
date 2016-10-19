@@ -56,10 +56,15 @@ while count <= config.num_iter
         if num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
             
+            new_config = config;
+            
             if num_visits == 0
                 samples = config.init_samples;
             else
                 samples = 1;
+                
+                % disable greedy expansion when sampling a new node
+                new_config.greedy_expansion = false;
             end
             
             done = false;
@@ -106,8 +111,9 @@ while count <= config.num_iter
             child_idx = nodes(current_idx).children(i);
             for j = 1:length(nodes(child_idx).trajs)
                 new_parent_traj = nodes(child_idx).traj_parent_traj(j);
-                if nodes(child_idx).traj_score(j) > best_score ...
+                if nodes(child_idx).traj_score(j) >= best_score ...
                         && new_parent_traj == parent_traj;
+
                     best_score = nodes(child_idx).traj_score(j);
                     best_node = nodes(current_idx).children(i);
                     best_traj = j;

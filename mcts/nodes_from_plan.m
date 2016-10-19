@@ -1,11 +1,11 @@
-function [nodes] = nodes_from_plan(plan, prev_gate, next_gate, world, models, config)
+function [nodes] = nodes_from_plan(plan, prev_gate, next_gate, world, models, action_config)
 
 nodes = MctsNode(world, models, 0);
 nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, 1);
 
 end
 
-function nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, idx, config)
+function nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, idx)
 
 %nodes(idx)
 %nodes(idx).selection_metric = config.compute_metric(nodes(idx));
