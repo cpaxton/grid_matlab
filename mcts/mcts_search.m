@@ -20,7 +20,7 @@ count = 1;
 
 %% Main loop: iterate until budget is exhausted
 % while not done
-while count <= 5
+while count <= 15
     
     if config.draw_figures
         figure(count+1); clf; hold on;
@@ -45,10 +45,12 @@ while count <= 5
             parent_node = 0;
             parent_traj = 0;
             num_children = root_num_children;
+            num_visits = count;
         else
             parent_node = trace(depth - 1, CHILD_NODE);
             parent_traj = trace(depth - 1, CHILD_TRAJ);
             num_children = nodes(parent_node).traj_children(parent_traj);
+            num_visits = nodes(parent_node).traj_visits(parent_traj);
         end
         
         if ~nodes(current_idx).initialized ...
@@ -76,6 +78,16 @@ while count <= 5
             end
             
             nodes(current_idx).initialized = true;
+        elseif config.expand(num_visits, num_children)
+            % choose a child
+            child = config.choose_child(nodes, parent_node);
+            nodes(child) = initialize_node(...
+                nodes(nodes(current_idx).children(child)),...
+                x, ...
+                1, ...
+                config, ...
+                parent_node, ...
+                parent_traj);
         end
         
         %% PROGRESSIVE WIDENING FUNCTION
