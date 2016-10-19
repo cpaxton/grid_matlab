@@ -84,7 +84,9 @@ if nodes(idx).depth <= nodes(idx).config.max_depth && ~done_plan
             nodes(end).action_idx = action_idx;
             nodes(end).next_gate = child_next_gate;
             nodes(end).prev_gate = child_prev_gate;
-            nodes(end).next_gate_option = length(nodes(idx).world.env.gates);
+            if child_next_gate <= length(nodes(idx).world.env.gates)
+                nodes(end).next_gate_option = length(nodes(idx).world.env.gates{child_next_gate});
+            end
             nodes(end).prev_gate_option = nodes(idx).next_gate_option;
             nodes(end).config.n_primitives = j;
         end

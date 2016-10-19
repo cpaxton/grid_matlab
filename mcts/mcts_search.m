@@ -76,36 +76,32 @@ while count <= 200
             end
         end
         
-        %% PROGRESSIVE WIDENING FUNCTION
+        %% ROLLOUT
         % greedily choose child, or add a trajectory
-        if true
             
-            best_node = 0;
-            best_score = 0;
-            best_traj = 0;
-            best_x = [];
-            best_p = 0;
-            best_visits = 0;
-            
-            % greedily choose best existing child according to UCT
-            for i = 1:length(nodes(current_idx).children)
-                % choose best child
-                child_idx = nodes(current_idx).children(i);
-                for j = 1:length(nodes(child_idx).trajs)
-                    new_parent_traj = nodes(child_idx).traj_parent_traj(j);
-                    if nodes(child_idx).traj_score(j) > best_score ...
-                            && new_parent_traj == parent_traj;
-                        best_score = nodes(child_idx).traj_score(j);
-                        best_node = nodes(current_idx).children(i);
-                        best_traj = j;
-                        best_x = nodes(child_idx).trajs{j}(:,end);
-                        best_p = nodes(child_idx).traj_raw_p(j);
-                        best_visits = nodes(child_idx).traj_visits(j);
-                    end
+        best_node = 0;
+        best_score = 0;
+        best_traj = 0;
+        best_x = [];
+        best_p = 0;
+        best_visits = 0;
+
+        % greedily choose best existing child according to UCT
+        for i = 1:length(nodes(current_idx).children)
+            % choose best child
+            child_idx = nodes(current_idx).children(i);
+            for j = 1:length(nodes(child_idx).trajs)
+                new_parent_traj = nodes(child_idx).traj_parent_traj(j);
+                if nodes(child_idx).traj_score(j) > best_score ...
+                        && new_parent_traj == parent_traj;
+                    best_score = nodes(child_idx).traj_score(j);
+                    best_node = nodes(current_idx).children(i);
+                    best_traj = j;
+                    best_x = nodes(child_idx).trajs{j}(:,end);
+                    best_p = nodes(child_idx).traj_raw_p(j);
+                    best_visits = nodes(child_idx).traj_visits(j);
                 end
             end
-        else
-            % create child by creating new random sample
         end
         
         fprintf('Selected child %d in node %d\n', best_traj, best_node);
