@@ -1,6 +1,7 @@
 function [nodes] = nodes_from_plan(plan, prev_gate, next_gate, world, models, action_config)
 
 nodes = MctsNode(world, models, 0);
+nodes.config = action_config;
 nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, 1);
 
 end
@@ -94,6 +95,7 @@ if ~done_plan
     end
     
     for i = 1:length(nodes(idx).children)
+        nodes(nodes(idx).children(i)).config = nodes(idx).config;
         fprintf(' - child of %d: idx = %d\n', idx, nodes(idx).children(i));
         nodes(nodes(idx).children(i)).depth = nodes(idx).depth + 1;
         nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, nodes(idx).children(i));

@@ -6,12 +6,13 @@ w0 = NeedleMasterWorld(env);
 
 %x0 = [600; 800; 0; 0; 0];
 x0 = [190; 1000; 0; 0; 0];
-actions = {models{1:5}};
 config = make_default_mcts_config();
+action_config = make_default_action_config();
+%action_config = make_fixed_action_config();
 
 %% get a  list of nodes
 [plan, prev_gate, next_gate] = get_symbolic_plan(w0.env);
-nodes = nodes_from_plan(plan, prev_gate, next_gate, w0, models, config);
+nodes = nodes_from_plan(plan, prev_gate, next_gate, w0, models, action_config);
 
 %% Run search test
 nodes = mcts_search(nodes, x0, w0, config);
