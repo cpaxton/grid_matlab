@@ -90,7 +90,15 @@ trajs = cell(N_SAMPLES,1);
 
 iter = start_iter;
 
-samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
+if strcmp(config.draw,'mvn')
+    samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
+elseif strcmp(config.draw,'uniform')
+    samples = uniform_sample(Z.mu,Z.sigma,N_GEN_SAMPLES)
+else
+    fprintf('Draw option not recognized.\n');
+    assert(false);
+end
+
 params = zeros(size(samples,1),N_SAMPLES);
 
 %% INITIALIZE EMPTY VARIABLES
