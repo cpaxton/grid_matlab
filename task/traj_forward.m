@@ -93,7 +93,7 @@ iter = start_iter;
 if strcmp(config.draw,'mvn')
     samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 elseif strcmp(config.draw,'uniform')
-    samples = uniform_sample(Z.mu,Z.sigma,N_GEN_SAMPLES)
+    samples = uniform_sample(Z.mu,Z.sigma,N_GEN_SAMPLES);
 else
     fprintf('Draw option not recognized.\n');
     assert(false);
