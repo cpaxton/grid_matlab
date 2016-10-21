@@ -2,8 +2,8 @@ function config = make_default_mcts_config()
     C = 2;
     alpha = 0.5;
     %compute_score = @(sum, nb, p, t) pw_compute_score(sum, nb, p, t, C, alpha);
-    %compute_score = @(sum, nb, p, t) uct_compute_score(sum, nb, p, t, 1.0);
-    compute_score = @(sum, nb, p, t) prior_compute_score(sum, nb, p, t, 0.1); 
+    compute_score = @(sum, nb, p, t) uct_compute_score(sum, nb, p, t, 0.0);
+    %compute_score = @(sum, nb, p, t) prior_compute_score(sum, nb, p, t, 0.1); 
     config = struct('update', 0, ...
                     'dist', 0, ...
                     'select', 0, ...
