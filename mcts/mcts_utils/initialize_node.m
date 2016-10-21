@@ -2,24 +2,26 @@ function node = initialize_node(node, x, n_samples, config, parent_node, parent_
 
 if ~node.is_root
     if ~config.greedy_expansion
-        [ trajs, params, ~, ~, p, ~, ~ ] = traj_forward(x, 1, ...
+        [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             0, node.local_env, 0, ...
             node.Z, node.config, n_samples);
     else
-        [ trajs, params, ~, ~, p, ~, ~ ] = traj_forward(x, 1, ...
+        [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             0, node.local_env, 0, ...
             node.Z, node.config, config.num_greedy_samples * n_samples);
-        [p,sort_idx] = sort(p,'descend');
-        p = p(1:n_samples);
+        [raw_p,sort_idx] = sort(raw_p,'descend');
+        raw_p = raw_p(1:n_samples);
         trajs = {trajs{sort_idx(1:n_samples)}};
         params = params(:,sort_idx(1:n_samples));
     end
+    %p = log(raw_p);
+    p = raw_p;
     
     node.trajs = {node.trajs{:} trajs{:}};
     node.traj_params = [node.traj_params params];
-    node.traj_raw_p = [node.traj_raw_p; p];
+    node.traj_raw_p = [node.traj_raw_p; raw_p];
     node.traj_p = [node.traj_p; p];
     node.traj_parent_traj = [node.traj_parent_traj; ones(size(p))*parent_traj];
     node.traj_parent_node = [node.traj_parent_node; ones(size(p))*parent_node];
