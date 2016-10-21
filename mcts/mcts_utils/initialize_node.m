@@ -16,8 +16,8 @@ if ~node.is_root
         trajs = {trajs{sort_idx(1:n_samples)}};
         params = params(:,sort_idx(1:n_samples));
     end
-    %p = log(raw_p);
-    p = raw_p;
+    p = log(raw_p);
+    %p = raw_p;
     
     node.trajs = {node.trajs{:} trajs{:}};
     node.traj_params = [node.traj_params params];

@@ -10,8 +10,6 @@ CHILD_P = 3;
 %score = exp(mean(log(trace(1:(max_depth-1),CHILD_P))));
 score = mean(trace(1:(max_depth-1),CHILD_P));
 
-'---- BACKUP ----'
-
 for i = 1:(max_depth-1)
     node_idx = trace(i, CHILD_NODE);
     traj_idx = trace(i, CHILD_TRAJ);
@@ -28,7 +26,6 @@ for i = 1:(max_depth-1)
     nodes(node_idx).traj_visits(traj_idx) = nodes(node_idx).traj_visits(traj_idx) + 1;
     nodes(node_idx).traj_score(traj_idx) = compute_score(nodes(node_idx).traj_p_sum(traj_idx), nodes(node_idx).traj_visits(traj_idx), nodes(node_idx).traj_p(traj_idx), parent_visits);
     
-    nodes(node_idx).traj_score(traj_idx)
 end
 
 end

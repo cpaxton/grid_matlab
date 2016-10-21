@@ -112,8 +112,10 @@ while count <= config.num_iter
             child_idx = nodes(current_idx).children(i);
             for j = 1:length(nodes(child_idx).trajs)
                 new_parent_traj = nodes(child_idx).traj_parent_traj(j);
+                new_parent_node = nodes(child_idx).traj_parent_node(j);
                 if nodes(child_idx).traj_score(j) >= best_score ...
-                        && new_parent_traj == parent_traj;
+                        && new_parent_traj == parent_traj ...
+                        && new_parent_node == parent_node;
 
                     best_score = nodes(child_idx).traj_score(j);
                     best_node = nodes(current_idx).children(i);
@@ -158,10 +160,7 @@ while count <= config.num_iter
         plot(xs(1,:),xs(2,:),'*','color','black');
     end
     
-    [nodes(current_idx).traj_score nodes(current_idx).traj_visits]
     nodes = config.backup(count, nodes, trace, depth);
-    [nodes(current_idx).traj_score nodes(current_idx).traj_visits nodes(current_idx).traj_p]
-    [nodes(2).traj_score nodes(2).traj_visits nodes(2).traj_p]
     count = count + 1;
 end
 

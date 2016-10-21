@@ -7,7 +7,7 @@ traj = [];
 
 depth = 1;
 
-prev_node = 0;
+prev_node = 1;
 prev_traj = 0;
 
 while true
@@ -24,7 +24,8 @@ while true
             num_visits = nodes(child_idx).traj_visits(j);
             traj_idx = j;
             if ~isempty(num_visits) && num_visits > best_num_visits ...
-                    && prev_traj == nodes(child_idx).traj_parent_traj(traj_idx)
+                    && prev_traj == nodes(child_idx).traj_parent_traj(traj_idx) ...
+                    && prev_node == nodes(child_idx).traj_parent_node(traj_idx);
                 
                 fprintf('\t\t --- traj = %d\n', traj_idx);
                 
