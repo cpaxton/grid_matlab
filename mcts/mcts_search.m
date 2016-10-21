@@ -100,7 +100,7 @@ while count <= config.num_iter
         % greedily choose child, or add a trajectory
             
         best_node = 0;
-        best_score = 0;
+        best_score = -Inf;
         best_traj = 0;
         best_x = [];
         best_p = 0;
