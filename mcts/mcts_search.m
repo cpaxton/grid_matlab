@@ -158,7 +158,10 @@ while count <= config.num_iter
         plot(xs(1,:),xs(2,:),'*','color','black');
     end
     
+    [nodes(current_idx).traj_score nodes(current_idx).traj_visits]
     nodes = config.backup(count, nodes, trace, depth);
+    [nodes(current_idx).traj_score nodes(current_idx).traj_visits nodes(current_idx).traj_p]
+    [nodes(2).traj_score nodes(2).traj_visits nodes(2).traj_p]
     count = count + 1;
 end
 
