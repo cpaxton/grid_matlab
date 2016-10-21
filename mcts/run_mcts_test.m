@@ -1,4 +1,4 @@
-function run_mcts_test(env, models)
+function [traj, nodes] = run_mcts_test(env, models)
 
 %% Create environment and set up
 rng(101);
