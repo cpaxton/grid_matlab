@@ -50,6 +50,7 @@ if ~done_plan
         nodes(end).prev_gate_option = nodes(idx).prev_gate_option;
     end
     
+    extra_children
     if isempty(extra_children)
         next_step = nodes(idx).step + 1;
         num = length(nodes(idx).children);
@@ -95,6 +96,17 @@ if ~done_plan
                 end
                 nodes(end).prev_gate_option = nodes(idx).next_gate_option;
                 nodes(end).config.n_primitives = j;
+            else
+                nodes = [nodes MctsNode(nodes(idx).world, ...
+                    nodes(idx).models, ...
+                    next_step)];
+                nodes(idx).children = [nodes(idx).children length(nodes)];
+                nodes(end).action_idx = action_idx;
+                nodes(end).next_gate = 0;
+                nodes(end).prev_gate = 0;
+                nodes(end).next_gate_option = 1;
+                nodes(end).prev_gate_option = nodes(idx).next_gate_option;
+                nodes(end).config.n_primitives = 1;
             end
         end
         

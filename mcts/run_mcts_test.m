@@ -1,4 +1,8 @@
-function [traj, nodes] = run_mcts_test(env, models)
+function [traj, nodes] = run_mcts_test(env, models, fig)
+
+if nargin < 3
+    fig = 1;
+end
 
 %% Create environment and set up
 rng(101);
@@ -18,7 +22,7 @@ nodes = nodes_from_plan(plan, prev_gate, next_gate, w0, models, action_config);
 nodes = mcts_search(nodes, x0, w0, config);
 traj = mcts_extract(nodes, 1);
 
-figure(1); clf; hold on;
+figure(fig); clf; hold on;
 draw_environment(w0.env);
 draw_nodes(nodes);
 if config.highlight_extracted_path
