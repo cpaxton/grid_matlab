@@ -90,8 +90,12 @@ while count <= config.num_iter
                     root_num_children = root_num_children + 1;
                 end 
             end
+            
             if done
                 trace(depth,CHILD_TERMINAL) = true;
+                break;
+            elseif num_visits == 0 && ~config.rollouts
+                %fprintf('Terminating after adding new branch\n');
                 break;
             end
         end

@@ -21,6 +21,6 @@ traj = mcts_extract(nodes, 1);
 figure(1); clf; hold on;
 draw_environment(w0.env);
 draw_nodes(nodes);
-plot(traj(1,:), traj(2,:), '*', 'color', 'r');
+%plot(traj(1,:), traj(2,:), '*', 'color', 'r');
 
 end
