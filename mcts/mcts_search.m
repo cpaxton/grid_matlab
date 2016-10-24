@@ -53,7 +53,13 @@ while count <= config.num_iter
             num_visits = nodes(parent_node).traj_visits(parent_traj);
         end
         
-        if num_visits < 1 || config.expand(num_visits, num_children)
+        if num_visits == 0 && ~config.rollouts
+                % Assess the future probability from this point using one
+                % of our existing models rather than doing a full rollout.
+                % Basically we want to maximize the probability of arriving
+                % in a goal region after this one.
+                break;
+        elseif num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
             
             new_config = config;
@@ -94,9 +100,6 @@ while count <= config.num_iter
             if done
                 trace(depth,CHILD_TERMINAL) = true;
                 break;
-            elseif num_visits == 0 && ~config.rollouts
-                %fprintf('Terminating after adding new branch\n');
-                break;
             end
         end
         
@@ -125,7 +128,7 @@ while count <= config.num_iter
                     best_node = nodes(current_idx).children(i);
                     best_traj = j;
                     best_x = nodes(child_idx).trajs{j}(:,end);
-                    best_p = nodes(child_idx).traj_raw_p(j);
+                    best_p = nodes(child_idx).traj_p(j);
                     best_visits = nodes(child_idx).traj_visits(j);
                 end
             end

@@ -16,9 +16,10 @@ function config = make_default_mcts_config()
                     'init_samples', 1, ... number of samples to use when creating a new node
                     'greedy_expansion', true, ... do greedy expansion to improve rollouts
                     'num_greedy_samples', 10, ... randomly sample this many and choose the best
-                    'num_iter', 10, ... max number of iterations to perform
-                    'draw_step', 1, ... show output image every X iterations
+                    'num_iter', 100, ... max number of iterations to perform
+                    'draw_step', 200, ... show output image every X iterations
                     'initialization', 'pw', ... pw or h -- pw initializes to Inf, h to probability
-                    'rollouts', false  ... should we roll out trajectories to the end at all, or just stop and use goal probs as our rollouts?
+                    'rollouts', true,  ... should we roll out trajectories to the end at all, or just stop and use goal probs as our rollouts?
+                    'highlight_extracted_path', true ... highlight the chosen path
                     );
 end
