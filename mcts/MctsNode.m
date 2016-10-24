@@ -58,6 +58,7 @@ classdef MctsNode
         expected_p = 1;
         expected_p_var = 0;
         expected_p_max = 1;
+        goals = [];
         
         % initial world state
         % includes environment
@@ -67,7 +68,6 @@ classdef MctsNode
         
         % list of nodes that follow this one
         children
-        parents = []
         is_terminal = false
         is_root = false
         

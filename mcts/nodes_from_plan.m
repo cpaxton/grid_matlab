@@ -50,7 +50,6 @@ if ~done_plan
         nodes(end).prev_gate_option = nodes(idx).prev_gate_option;
     end
     
-    extra_children
     if isempty(extra_children)
         next_step = nodes(idx).step + 1;
         num = length(nodes(idx).children);
@@ -116,6 +115,10 @@ if ~done_plan
         % pass down the next steps in the plan
         new_extra_children = extra_children;
     end
+    
+    % we carry the goals forward so that the transition points are always
+    % the same.
+    nodes(idx).goals = new_extra_children;
     
     for i = 1:length(nodes(idx).children)
         nodes(nodes(idx).children(i)).config = nodes(idx).config;
