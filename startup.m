@@ -34,3 +34,6 @@ addpath('./EXTERNAL/subaxis');
 addpath('./EXTERNAL');
 addpath('./segmentation');
 addpath('./task');
+addpath('./EXTERNAL/gpml-matlab-v4.0-2016-10-19/');
+
+gpml_startup
