@@ -132,7 +132,7 @@ else
 end
 
 nodes(idx).child_visits = zeros(size(nodes(idx).children));
-nodes(idx).child_score = zeros(size(nodes(idx).children));
+nodes(idx).child_score = ones(size(nodes(idx).children)) * Inf;
 nodes(idx).child_p_sum = zeros(size(nodes(idx).children));
 
 nodes(idx).T = ones(size(nodes(idx).children)) ...
