@@ -68,6 +68,9 @@ classdef MctsNode
         
         % list of nodes that follow this one
         children
+        child_visits
+        child_score
+        child_p_sum
         is_terminal = false
         is_root = false
         

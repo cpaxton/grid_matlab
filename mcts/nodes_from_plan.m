@@ -131,6 +131,10 @@ else
     nodes(idx).is_terminal = true;
 end
 
+nodes(idx).child_visits = zeros(size(nodes(idx).children));
+nodes(idx).child_score = zeros(size(nodes(idx).children));
+nodes(idx).child_p_sum = zeros(size(nodes(idx).children));
+
 nodes(idx).T = ones(size(nodes(idx).children)) ...
     / length(nodes(idx).children);
 end

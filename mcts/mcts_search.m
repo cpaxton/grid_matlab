@@ -12,6 +12,7 @@ CHILD_TRAJ = 2;
 CHILD_P = 3;
 CHILD_VISITS = 4;
 CHILD_TERMINAL = 5;
+CHILD_IDX = 6;
 
 current_idx = 1;
 current_traj = 0;
@@ -33,7 +34,7 @@ while count <= config.num_iter
     x = x0;
 
     % store a trace through the tree out to max depth
-    trace = zeros(nodes(1).config.max_depth, 5);
+    trace = zeros(nodes(1).config.max_depth, 6);
     depth = 1;
     
     % descend through the tree
@@ -112,6 +113,7 @@ while count <= config.num_iter
         best_x = [];
         best_p = 0;
         best_visits = 0;
+        best_child_idx = 0;
 
         % greedily choose best existing child according to UCT
         for i = 1:length(nodes(current_idx).children)
@@ -130,6 +132,7 @@ while count <= config.num_iter
                     best_x = nodes(child_idx).trajs{j}(:,end);
                     best_p = nodes(child_idx).traj_p(j);
                     best_visits = nodes(child_idx).traj_visits(j);
+                    best_child_idx = i;
                 end
             end
         end
@@ -141,6 +144,12 @@ while count <= config.num_iter
         trace(depth, CHILD_P) = best_p;
         trace(depth, CHILD_VISITS) = best_visits;
         trace(depth, CHILD_TERMINAL) = nodes(best_node).is_terminal;
+        if depth > 1
+            % Our trace only starts recording after the root, so we can
+            % skip the first entry rather than putting a "1" next to other
+            % entries in the tree
+            trace(depth - 1, CHILD_IDX) = best_child_idx;
+        end
         
         %% update current node
         current_idx = best_node;
