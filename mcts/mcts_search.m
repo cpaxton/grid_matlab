@@ -59,6 +59,7 @@ while count <= config.num_iter
                 % of our existing models rather than doing a full rollout.
                 % Basically we want to maximize the probability of arriving
                 % in a goal region after this one.
+                [trace, depth] = fake_rollout(nodes, current_idx, trace, depth, parent_node, parent_traj);
                 break;
         elseif num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
@@ -83,8 +84,12 @@ while count <= config.num_iter
                     break
                 end
                 
+                goal = 0;
+                %goal = nodes(nodes(child).goals(1));
+                
                 nodes(child) = initialize_node(...
                     nodes(child),...
+                    goal, ...
                     x, ...
                     1, ...
                     config, ...

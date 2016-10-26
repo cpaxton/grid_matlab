@@ -1,15 +1,23 @@
-function node = initialize_node(node, x, n_samples, config, parent_node, parent_traj)
+function node = initialize_node(node, goal, x, n_samples, config, parent_node, parent_traj)
+
+if isstruct(goal)
+    goal_model = goal.models{goal.action_idx};
+    goal_env = goal.local_env;
+else
+    goal_model = 0;
+    goal_env = 0;
+end
 
 if ~node.is_root
     if ~config.greedy_expansion
         [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
-            0, node.local_env, 0, ...
+            goal_model, node.local_env, goal_env, ...
             node.Z, node.config, n_samples);
     else
         [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
-            0, node.local_env, 0, ...
+            goal_model, node.local_env, goal_env, ...
             node.Z, node.config, config.num_greedy_samples * n_samples);
         [raw_p,sort_idx] = sort(raw_p,'descend');
         raw_p = raw_p(1:n_samples);

@@ -10,8 +10,10 @@ depth = 1;
 prev_node = 1;
 prev_traj = 0;
 
+fprintf('Extracting:\n');
 while true
-    fprintf(' - extraction at %d\n', idx);
+   % fprintf(' - extraction at %d\n', idx);
+   
    % find best trajectory from this state
    % follow it to the appropriate child option
    best_num_visits = 0;
@@ -19,7 +21,7 @@ while true
    best_traj_idx = 0;
    for i = 1:length(nodes(idx).children)
         child_idx = nodes(idx).children(i);
-        fprintf('\t -- child = %d:\n', child_idx);
+        %fprintf('\t -- child = %d:\n', child_idx);
         for j = 1:length(nodes(child_idx).traj_visits)
             num_visits = nodes(child_idx).traj_visits(j);
             traj_idx = j;
@@ -27,7 +29,7 @@ while true
                     && prev_traj == nodes(child_idx).traj_parent_traj(traj_idx) ...
                     && prev_node == nodes(child_idx).traj_parent_node(traj_idx);
                 
-                fprintf('\t\t --- traj = %d\n', traj_idx);
+                %fprintf('\t\t --- traj = %d\n', traj_idx);
                 
                 best_num_visits = num_visits;
                 best_node_idx = child_idx;

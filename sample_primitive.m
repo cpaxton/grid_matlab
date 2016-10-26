@@ -24,6 +24,7 @@ for i = 2:len
    x(1:3,i) = dynamics(x(1:3,i-1),[vi;ui]);
    x(4:5,i-1) = [vi;ui];
 end
+x(4:5,i) = [vi,ui];
 
 %x = x(:,2:end);
 
