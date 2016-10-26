@@ -54,6 +54,11 @@ while count <= config.num_iter
             num_visits = nodes(parent_node).traj_visits(parent_traj);
         end
         
+        if nodes(current_idx).is_terminal
+            fprintf('ERROR: unhandled terminal node!\n');
+            break;
+        end
+        
         if num_visits == 0 && ~config.rollouts
                 % Assess the future probability from this point using one
                 % of our existing models rather than doing a full rollout.
@@ -81,7 +86,6 @@ while count <= config.num_iter
                 
                 if nodes(child).is_terminal
                     done = true;
-                    break
                 end
                 
                 goal = 0;
@@ -105,7 +109,6 @@ while count <= config.num_iter
             
             if done
                 trace(depth,CHILD_TERMINAL) = true;
-                break;
             end
         end
         
@@ -124,7 +127,7 @@ while count <= config.num_iter
         for i = 1:length(nodes(current_idx).children)
             % choose best child
             child_idx = nodes(current_idx).children(i);
-            for j = 1:length(nodes(child_idx).trajs)
+            for j = 1:length(nodes(child_idx).traj_score)
                 new_parent_traj = nodes(child_idx).traj_parent_traj(j);
                 new_parent_node = nodes(child_idx).traj_parent_node(j);
                 if nodes(child_idx).traj_score(j) >= best_score ...
@@ -149,11 +152,16 @@ while count <= config.num_iter
         trace(depth, CHILD_P) = best_p;
         trace(depth, CHILD_VISITS) = best_visits;
         trace(depth, CHILD_TERMINAL) = nodes(best_node).is_terminal;
+        
         if depth > 1
             % Our trace only starts recording after the root, so we can
             % skip the first entry rather than putting a "1" next to other
             % entries in the tree
             trace(depth - 1, CHILD_IDX) = best_child_idx;
+        end
+        
+        if nodes(best_node).is_terminal
+            break;
         end
         
         %% update current node
@@ -165,11 +173,6 @@ while count <= config.num_iter
         
         depth = depth + 1;
         
-        if nodes(current_idx).is_terminal
-            trace(depth,CHILD_TERMINAL) = true;
-            break
-        end
-
     end
     
     %% draw

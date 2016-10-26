@@ -11,7 +11,14 @@ end
 start_t = 1;
 
 if ~node.is_root
-    if ~config.greedy_expansion
+    if node.is_terminal
+        trajs = cell(1,n_samples);
+        for i = 1:n_samples
+            trajs{i} = x;
+        end
+        params = [];
+        raw_p = ones(n_samples,1) * traj_probability(x, node.models{node.action_idx}, node.local_env);
+    elseif ~config.greedy_expansion
         [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             goal_model, node.local_env, goal_env, ...
