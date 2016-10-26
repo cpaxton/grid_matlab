@@ -6,7 +6,12 @@ for i = 1:length(ap)
     
     data = traj_get_reproduction_features(ap(i).originalData,model,ap(i).local_env);
     len = size(data,2);
-    data = [1000 * (1:len) / len; data];
+    if model.use_avg_len
+        max_t = ceil(model.len_mean);
+    else
+        max_t = len;
+    end
+    data = [1000 * (1:len) / max_t; data];
     %fprintf('WARNING: time wrong');
     
     trainingData = [trainingData data];

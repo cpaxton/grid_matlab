@@ -1,6 +1,5 @@
 function [models] = analyze_primitives(ap,models)
 % ANALYZE_PRIMITIVES
-%
 
 for k=1:length(models)
     tmp = [];
@@ -22,6 +21,11 @@ for k=1:length(models)
    models{k}.len_std = std(lens);
    models{k}.len_min = min(lens);
    models{k}.len_max = max(lens);
+
+   models{k}.steps_mean = mean(lens / 4);
+   models{k}.steps_std = std(lens / 4);
+
+   
 end
 
 end

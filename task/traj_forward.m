@@ -119,7 +119,8 @@ for i = 1:N_GEN_SAMPLES
     x = x0(:,x_idx);
     traj = sample_seq(x,samples(:,i));
     
-    if check_collisions(traj,local_env.obstacles) == 0
+    %if check_collisions(traj,local_env.obstacles) == 0
+        [obs, colliding] = check_collisions(traj,local_env.obstacles);
         
         sample = sample + 1;
         idx(sample) = x_idx;
@@ -129,8 +130,13 @@ for i = 1:N_GEN_SAMPLES
         
         fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
         len = size(fa,2);
+        if model.use_avg_len
+            max_t = ceil(model.len_mean);
+        else
+            max_t = len;
+        end
         if model.use_time
-            fa = [1000 * (1:len) / len; fa];
+            fa = [1000 * (1:len) / max_t; fa];
             %fprintf('WARNING: time wrong');
         end
         
@@ -143,7 +149,12 @@ for i = 1:N_GEN_SAMPLES
         end
         
         %% THIS BLOCK IS WHERE WE COMPUTE THE LIKELIHOODS
-        p_action = mean(compute_loglik(fa,model.Mu,model.Sigma,model,model.in));
+        
+        p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
+        if obs > 0
+            p_action_traj(colliding) =  -1000;
+        end
+        p_action = mean(p_action_traj);
         
         if USE_GOAL
             p_goal = compute_loglik(fg,next_model.Mu,(next_model.Sigma),next_model,next_model.in);
@@ -164,7 +175,7 @@ for i = 1:N_GEN_SAMPLES
         if sample == N_SAMPLES
             break
         end
-    end
+    %end
 end
 end
 
@@ -172,15 +183,19 @@ end
 % detect a "bad" trajectory
 % these are trajectories that lead to an immediate failure, such as hitting
 % an obstacle
-function obs = check_collisions(traj,obstacles)
+function [obs, colliding] = check_collisions(traj,obstacles)
 obs = 0;
+colliding = zeros(1, length(traj));
 for i = 1:length(obstacles)
     if ~obstacles{i}.isDeepTissue
         continue
-    elseif any(inpolygon(traj(1,:),traj(2,:),obstacles{i}.bounds(1,:),obstacles{i}.bounds(2,:)))
-        obs = i;
-        break;
+    else
+        colliding = colliding | inpolygon(traj(1,:),traj(2,:),obstacles{i}.bounds(1,:),obstacles{i}.bounds(2,:));
+        if any(colliding)
+            obs = i;
+            break;
+        end
     end
-end
+end    
 end
 
