@@ -1,4 +1,4 @@
-function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, next_model, local_env, next_env, Z, config, N_SAMPLES)
+function [ trajs, params, Z, p, pa, pg, idx ] = traj_forward( x0, px0, model, next_model, local_env, next_env, Z, config, N_SAMPLES, START_T)
 %TRAJ_FORWARD Generate forward samples of an action
 %   model is the skill we are using
 %   next_model is the following skill
@@ -27,6 +27,9 @@ else
     
     if nargin < 9
         N_SAMPLES = config.n_samples;
+    end
+    if nargin < 10
+        START_T = 1;
     end
 end
 
@@ -136,7 +139,7 @@ for i = 1:N_GEN_SAMPLES
             max_t = len;
         end
         if model.use_time
-            fa = [1000 * (1:len) / max_t; fa];
+            fa = [1000 * ((START_T):(START_T+len-1)) / max_t; fa];
             %fprintf('WARNING: time wrong');
         end
         
