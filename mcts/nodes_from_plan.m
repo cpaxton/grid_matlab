@@ -110,7 +110,7 @@ if ~done_plan
         end
         
         % add options for the next action
-        new_extra_children = nodes(idx).children((num + 1):length(nodes(idx).children));
+        new_extra_children = nodes(idx).children((num + 1):length(nodes(idx).children))
     else
         % pass down the next steps in the plan
         new_extra_children = extra_children;

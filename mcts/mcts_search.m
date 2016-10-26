@@ -142,7 +142,7 @@ while count <= config.num_iter
             end
         end
         
-        %fprintf('Selected child %d in node %d\n', best_traj, best_node);
+        fprintf('Selected child %d in node %d\n', best_traj, best_node);
         
         trace(depth, CHILD_NODE) = best_node;
         trace(depth, CHILD_TRAJ) = best_traj;
