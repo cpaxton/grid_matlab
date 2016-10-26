@@ -8,6 +8,8 @@ else
     goal_env = 0;
 end
 
+start_t = 1;
+
 if ~node.is_root
     if ~config.greedy_expansion
         [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
@@ -25,6 +27,11 @@ if ~node.is_root
         params = params(:,sort_idx(1:n_samples));
     end
     
+    lens = zeros(length(trajs));
+    for i = 1:length(trajs)
+       lens(i) = start_t + length(trajs{i}) - 1;
+    end
+    
     %p = log(raw_p);
     p = raw_p;
     
@@ -32,6 +39,7 @@ if ~node.is_root
     node.traj_params = [node.traj_params params];
     node.traj_raw_p = [node.traj_raw_p; raw_p];
     node.traj_p = [node.traj_p; p];
+    node.traj_t = [node.traj_t; lens];
     node.traj_parent_traj = [node.traj_parent_traj; ones(size(p))*parent_traj];
     node.traj_parent_node = [node.traj_parent_node; ones(size(p))*parent_node];
     node.traj_visits = [node.traj_visits; zeros(size(p))];
