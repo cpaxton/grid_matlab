@@ -17,8 +17,8 @@ idx = nodes(idx).goals(1);
 end_of_traj = nodes(parent_node).trajs{parent_traj}(:,end-1:end);
 p = traj_probability(end_of_traj, nodes(idx).models{nodes(idx).action_idx}, nodes(idx).local_env);
 
-depth = depth + 1;
 trace(depth,CHILD_P)  = p;
+%depth = depth + 1;
 
 %% Predict the Future
 % To make sure we have a fair comparison against longer/shorter

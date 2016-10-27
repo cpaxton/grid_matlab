@@ -2,9 +2,9 @@ function config = make_default_mcts_config()
     C = 1;
     alpha = 0.5;
     %compute_score = @(sum, nb, p, t) pw_compute_score(sum, nb, p, t, C, alpha);
-    compute_score = @(sum, nb, p, t) uct_compute_score(sum, nb, p, t, 1);
+    compute_score = @(sum, nb, p, t) uct_compute_score(sum, nb, p, t, 0.0);
     %compute_score = @(sum, nb, p, t) prior_compute_score(sum, nb, p, t, 0.1); 
-    option_compute_score = @(sum, nb, p, t) uct_compute_score(sum, nb, p, t, 1);
+    option_compute_score = @(sum, nb, p, t) uct_compute_score(sum, nb, p, t, 0);
     config = struct('update', 0, ...
                     'dist', 0, ...
                     'select', 0, ...
@@ -14,11 +14,11 @@ function config = make_default_mcts_config()
                     'compute_metric', @(obj) metric_probability_max(obj), ...
                     'compute_rollout_metric', @(obj) metric_probability(obj), ...
                     'draw_figures', true, ...
-                    'init_samples', 5, ... number of samples to use when creating a new node
+                    'init_samples', 10, ... number of samples to use when creating a new node
                     'greedy_expansion', true, ... do greedy expansion to improve rollouts
                     'num_greedy_samples', 10, ... randomly sample this many and choose the best
-                    'num_iter', 500, ... max number of iterations to perform
-                    'draw_step', 200, ... show output image every X iterations
+                    'num_iter', 200, ... max number of iterations to perform
+                    'draw_step', 2000, ... show output image every X iterations
                     'initialization', 'pw', ... pw or h -- pw initializes to Inf, h to probability
                     'rollouts', false,  ... should we roll out trajectories to the end at all, or just stop and use goal probs as our rollouts?
                     'highlight_extracted_path', false ... highlight the chosen path
