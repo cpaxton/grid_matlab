@@ -4,6 +4,6 @@ function score = prior_compute_score(sum, nb, p, t, C)
         score = Inf;
     else
         %score = (sum / (nb + 1)) + (C * p * sqrt(t)/(nb + 1));
-        score = (sum / (nb + 1)) + (C * p /(nb + 1));
+        score = (sum / (nb + 1)) + (C * (p /nb));
     end
 end
