@@ -36,6 +36,7 @@ while count <= config.num_iter
     % store a trace through the tree out to max depth
     trace = zeros(nodes(1).config.max_depth + length(nodes(1).models), 6);
     depth = 1;
+    is_rollout = false;
     
     % descend through the tree
     % choose child with best value, or use DPW to create a new child
@@ -82,7 +83,7 @@ while count <= config.num_iter
             
             done = false;
             for i = 1:samples
-                child = config.choose_child(nodes, parent_node);
+                child = config.choose_child(nodes, parent_node, parent_traj);
                 
                 if parent_node > 1 && nodes(parent_node).action_idx == nodes(child).action_idx
                     fprintf('Continuing previous action (%d->%f)\n',current_idx,child);
