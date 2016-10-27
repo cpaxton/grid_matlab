@@ -1,6 +1,3 @@
-%% set up experiments
-SKIP_FORWARD_BACKWARD = true;
-
 %% load needle data
 % test_needle;
 
@@ -100,4 +97,6 @@ if ~SKIP_FORWARD_BACKWARD
 end
 
 %% show results after running HMM
-show_original_bmm;
+if SHOW_BMM
+    show_original_bmm;
+end

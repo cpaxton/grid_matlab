@@ -1,4 +1,4 @@
-%% settings
+%% gmm settings
 use_pca = false;
 use_loglik = true;
 use_kmeans = true;
@@ -23,7 +23,14 @@ SHOW_RESULTS = false;
 SKIP_IMG = true;
 NORMALIZE = true;
 USE_AVG_LEN = true;
+ALWAYS_USE_PREV_GATE = true;
 
+%% set up bmm experiments
+SKIP_FORWARD_BACKWARD = true;
+USE_EXIT_FROM_GATE_MODEL = true;
+SHOW_BMM = false;
+
+%% LEVEL SETUP
 %DELETE_MOVEMENT_ROTATION = true;
 NUM_LEVELS = 12;
 NFIG = 1;
@@ -36,6 +43,7 @@ HOLD_OUT = false;
 
 %% initialize random number generator
 rng('default')
+learning_test_bmm;
 
 %% create individual segments
 ap = create_segments(bmm, trials, envs, predicates, MARGIN, NUM_LEVELS);
@@ -109,6 +117,7 @@ for k=1:bmm.k
         use_prev_gate = use_prev_gate && ap{k}(i).has_prev_gate;
         use_exit = use_exit && ap{k}(i).use_exit;
     end
+    use_prev_gate = use_prev_gate || ALWAYS_USE_PREV_GATE;
     
     if bmm.coef(1,k)
         models{k}.in_gate = true;

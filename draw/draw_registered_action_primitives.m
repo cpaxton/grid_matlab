@@ -3,7 +3,8 @@ figure(9);clf;
 if bmm.k > 3
     height = 2;
     width = ceil(bmm.k / 2);
-    primitive_names = {'Exit','Pass-Through','Connect','Approach','Pass-Exit','Exit'};
+    %primitive_names = {'Exit','Pass-Through','Connect','Approach','Pass-Exit','Exit'};
+    primitive_names = {'Exit','Pass-Through','Connect','Approach','Done','ExitFromGate'};
     for k=1:bmm.k
         subplot(height,width,k);
         set(gca, 'XTickLabel', [], 'YTickLabel', [], 'nextplot', 'add');

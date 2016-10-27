@@ -88,6 +88,8 @@ for i = 1:length(plan)-1
     end
     if prev_gate(i) > 0
         local_env.prev_gate = env.gates{prev_gate(i)}{prev_opt(i)};
+    else
+        local_env.prev_gate = fake_prev_gate(env);
     end
     next_env = [];
     next_env.gates = env.gates;
@@ -98,6 +100,8 @@ for i = 1:length(plan)-1
     end
     if prev_gate(i+1) > 0
         next_env.prev_gate = env.gates{prev_gate(i+1)}{prev_opt(i)};
+    else
+        next_env.prev_gate = fake_prev_gate(env);
     end
     
     if use_goal

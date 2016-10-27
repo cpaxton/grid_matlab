@@ -1,7 +1,4 @@
 function gate = relative_gate(x,y,w,gate)
-
-for i = 1:length(gate)
-    
     gate = rotate_gate(x,y,w,gate);
     
     gate.x = gate.x - x;
@@ -11,10 +8,6 @@ for i = 1:length(gate)
     gate.corners = gate.corners - tmp;
     gate.top = gate.top - tmp;
     gate.bottom = gate.bottom - tmp;
-end
-
-%draw_gates({gate});
-
 end
 % 
 % function ngate = relative_gate(x,y,w,gate)

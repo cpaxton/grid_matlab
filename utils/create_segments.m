@@ -163,6 +163,7 @@ for k=1:bmm.k
                         samples(next_sample).data(1:3,:), ...
                         samples(next_sample).prev_gate);
                 else
+                    local_env.prev_gate = fake_prev_gate(envs{i});
                     samples(next_sample).has_prev_gate = false;
                 end
                 
