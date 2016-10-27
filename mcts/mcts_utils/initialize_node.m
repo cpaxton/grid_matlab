@@ -1,4 +1,4 @@
-function node = initialize_node(node, goal, x, n_samples, config, parent_node, parent_traj)
+function node = initialize_node(node, goal, x, n_samples, config, parent_node, parent_traj, start_t)
 
 if isstruct(goal)
     goal_model = goal.models{goal.action_idx};
@@ -8,8 +8,10 @@ else
     goal_env = 0;
 end
 
-start_t = 1;
-
+if nargin < 8
+    start_t = 1;
+end
+    
 if ~node.is_root
     if node.is_terminal
         trajs = cell(1,n_samples);
@@ -22,12 +24,12 @@ if ~node.is_root
         [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             goal_model, node.local_env, goal_env, ...
-            node.Z, node.config, n_samples);
+            node.Z, node.config, n_samples, start_t);
     else
         [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             goal_model, node.local_env, goal_env, ...
-            node.Z, node.config, config.num_greedy_samples * n_samples);
+            node.Z, node.config, config.num_greedy_samples * n_samples, start_t);
         [raw_p,sort_idx] = sort(raw_p,'descend');
         raw_p = raw_p(1:n_samples);
         trajs = {trajs{sort_idx(1:n_samples)}};

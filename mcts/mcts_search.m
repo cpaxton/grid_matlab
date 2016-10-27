@@ -84,6 +84,13 @@ while count <= config.num_iter
             for i = 1:samples
                 child = config.choose_child(nodes, parent_node);
                 
+                if parent_node > 1 && nodes(parent_node).action_idx == nodes(child).action_idx
+                    fprintf('Continuing previous action (%d->%f)\n',current_idx,child);
+                    start_t = nodes(current_idx).traj_t(parent_traj);
+                else
+                    start_t = 1;
+                end
+                
                 if nodes(child).is_terminal
                     done = true;
                 end
@@ -98,7 +105,8 @@ while count <= config.num_iter
                     1, ...
                     config, ...
                     parent_node, ...
-                    parent_traj);
+                    parent_traj, ...
+                    start_t);
                 
                 if parent_node > 1
                     nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + 1;

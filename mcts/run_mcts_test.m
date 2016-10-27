@@ -8,8 +8,9 @@ end
 rng(101);
 w0 = NeedleMasterWorld(env);
 
-%x0 = [600; 800; 0; 0; 0];
-x0 = [190; 1000; 0; 0; 0];
+%x0 = [650; 700; 0; 0; 0];
+x0 = [600; 800; 0; 0; 0];
+%x0 = [190; 1000; 0; 0; 0];
 config = make_default_mcts_config();
 action_config = make_default_action_config();
 %action_config = make_fixed_action_config();
