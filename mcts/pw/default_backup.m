@@ -12,11 +12,13 @@ score = exp(mean(log(trace(1:(max_depth-1),CHILD_P))));
 %score = mean(trace(1:(max_depth-1),CHILD_P));
 
 for i = 1:max_depth
+    i
+    trace
     node_idx = trace(i, CHILD_NODE);
     traj_idx = trace(i, CHILD_TRAJ);
     option_idx = trace(i, CHILD_IDX);
    
-    if node_idx == 0
+    if node_idx == 0 || traj_idx == 0
         % Skip anything that was just included from one of our fake
         % rollouts
         continue

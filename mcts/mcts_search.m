@@ -34,7 +34,7 @@ while count <= config.num_iter
     x = x0;
 
     % store a trace through the tree out to max depth
-    trace = zeros(nodes(1).config.max_depth, 6);
+    trace = zeros(nodes(1).config.max_depth + length(nodes(1).models), 6);
     depth = 1;
     
     % descend through the tree

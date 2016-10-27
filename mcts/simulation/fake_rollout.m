@@ -17,7 +17,8 @@ idx = nodes(idx).goals(1);
 end_of_traj = nodes(parent_node).trajs{parent_traj}(:,end-1:end);
 p = traj_probability(end_of_traj, nodes(idx).models{nodes(idx).action_idx}, nodes(idx).local_env);
 
-trace(depth,CHILD_P)  = p;
+trace(depth,CHILD_P) = p;
+trace(depth,CHILD_NODE) = idx;
 %depth = depth + 1;
 
 %% Predict the Future
@@ -29,18 +30,21 @@ if ~isempty(nodes(idx).goals)
     while ~nodes(idx).is_terminal
         
         if nodes(idx).visits > 0
+            
+            depth = depth + 1;
+            
             p = nodes(idx).p / nodes(idx).visits;
             fprintf('---- %d %f\n', idx, p);
+            trace(depth,CHILD_NODE) = idx;
+            trace(depth,CHILD_P) = p;
             
-            % add depth
-            % add p to trace
         else
             break
         end
         
         idx = nodes(idx).goals(1);
+        depth = depth + 1;
     end
 end
-
 
 end
