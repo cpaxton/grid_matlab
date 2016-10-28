@@ -8,8 +8,8 @@ CHILD_IDX = 6;
 % compute score as the geometric mean of all observed actions
 % this is so we can reasonably compare long and short trajectories
 
-score = exp(mean(log(trace(1:(max_depth-1),CHILD_P))));
-%score = mean(trace(1:(max_depth-1),CHILD_P));
+%score = exp(mean(log(trace(1:(max_depth-1),CHILD_P))));
+score = sum(trace(1:(max_depth-1),CHILD_P));
 
 for i = 1:max_depth
     node_idx = trace(i, CHILD_NODE);
