@@ -19,6 +19,9 @@ while true
    best_num_visits = 0;
    best_node_idx = 0;
    best_traj_idx = 0;
+   best_prev_node = 0;
+   best_prev_traj = 0;
+   best_action = 0;
    best_p = 0;
    for i = 1:length(nodes(idx).children)
         child_idx = nodes(idx).children(i);
@@ -38,10 +41,12 @@ while true
                 best_prev_node = nodes(child_idx).traj_parent_node(traj_idx);
                 best_prev_traj = nodes(child_idx).traj_parent_traj(traj_idx);
                 best_p = nodes(child_idx).traj_p(traj_idx);
+                
+                best_action = nodes(best_prev_node).action_idx
             end
         end
    end
-   fprintf('%d->%d: best parent node = %d, id = %d, traj = %d, p=%f, visited %d times\n', idx, best_node_idx, best_prev_node, nodes(best_prev_node).action_idx, best_prev_traj, best_p, best_num_visits);
+   fprintf('%d->%d: best parent node = %d, id = %d, traj = %d, p=%f, visited %d times\n', idx, best_node_idx, best_prev_node, best_action, best_prev_traj, best_p, best_num_visits);
    prev_node = best_node_idx;
    prev_traj = best_traj_idx;
    idx = best_node_idx;
