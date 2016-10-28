@@ -29,7 +29,10 @@ if nodes(idx).step > 0
         nodes(idx).next_gate, ...
         nodes(idx).prev_gate_option, ...
         nodes(idx).next_gate_option);
+    
+    %nodes(idx).Z = 0;
     nodes(idx).Z = model_init_z(nodes(idx).models{nodes(idx).action_idx}, ...
+        nodes(idx).local_env, ...
         nodes(idx).config);
 end
 
@@ -80,6 +83,7 @@ if ~done_plan
                     nodes(end).prev_gate = child_prev_gate;
                     nodes(end).next_gate_option = i;
                     nodes(end).prev_gate_option = nodes(idx).next_gate_option;
+                    nodes(end).config = nodes(idx).config;
                     nodes(end).config.n_primitives = j;
                 end
             elseif child_prev_gate <= length(nodes(idx).world.env.gates) && child_prev_gate > 0
@@ -94,6 +98,7 @@ if ~done_plan
                     nodes(end).next_gate_option = length(nodes(idx).world.env.gates{child_next_gate});
                 end
                 nodes(end).prev_gate_option = nodes(idx).next_gate_option;
+                nodes(end).config = nodes(idx).config;
                 nodes(end).config.n_primitives = j;
             else
                 nodes = [nodes MctsNode(nodes(idx).world, ...
@@ -105,12 +110,13 @@ if ~done_plan
                 nodes(end).prev_gate = 0;
                 nodes(end).next_gate_option = 1;
                 nodes(end).prev_gate_option = nodes(idx).next_gate_option;
-                nodes(end).config.n_primitives = 1;
+                nodes(end).config = nodes(idx).config;
+                nodes(end).config.n_primitives = j;
             end
         end
         
         % add options for the next action
-        new_extra_children = nodes(idx).children((num + 1):length(nodes(idx).children))
+        new_extra_children = nodes(idx).children((num + 1):length(nodes(idx).children));
     else
         % pass down the next steps in the plan
         new_extra_children = extra_children;
@@ -121,8 +127,9 @@ if ~done_plan
     nodes(idx).goals = new_extra_children;
     
     for i = 1:length(nodes(idx).children)
-        nodes(nodes(idx).children(i)).config = nodes(idx).config;
-        fprintf(' - child of %d: idx = %d\n', idx, nodes(idx).children(i));
+        fprintf(' - child of %d: idx = %d with %d primitives\n', ...
+            idx, nodes(idx).children(i), ...
+            nodes(nodes(idx).children(i)).config.n_primitives);
         nodes(nodes(idx).children(i)).depth = nodes(idx).depth + 1;
         nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, nodes(idx).children(i), new_extra_children);
     end
