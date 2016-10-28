@@ -46,7 +46,9 @@ while true
             end
         end
    end
-   fprintf('%d->%d: best parent node = %d, id = %d, traj = %d, p=%f, visited %d times\n', idx, best_node_idx, best_prev_node, best_action, best_prev_traj, best_p, best_num_visits);
+   fprintf('%d->%d: best parent node = %d, id = %d, traj = %d, p=%f, visited %d times\n', ...
+       idx, best_node_idx, best_prev_node, best_action, best_prev_traj, ...
+       best_p, best_num_visits);
    prev_node = best_node_idx;
    prev_traj = best_traj_idx;
    idx = best_node_idx;
