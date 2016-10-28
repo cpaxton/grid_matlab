@@ -1,6 +1,6 @@
 function node = initialize_node(node, goal, x, n_samples, config, parent_node, parent_traj, start_t)
 
-if isstruct(goal)
+if isobject(goal)
     goal_model = goal.models{goal.action_idx};
     goal_env = goal.local_env;
 else
@@ -11,7 +11,8 @@ end
 if nargin < 8
     start_t = 1;
 end
-    
+   
+Z = [];
 if ~node.is_root
     if node.is_terminal
         previous_visit = (node.traj_parent_node == parent_node) & (node.traj_parent_traj == parent_traj);
@@ -24,21 +25,27 @@ if ~node.is_root
         end
         params = [];
         raw_p = ones(n_samples,1) * traj_probability(x, node.models{node.action_idx}, node.local_env);
+        raw_pg = ones(n_samples,1);
     elseif ~config.greedy_expansion
-        [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
+        [ trajs, params, Z, ~, raw_p, raw_pg, ~ ] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             goal_model, node.local_env, goal_env, ...
             node.Z, node.config, n_samples, start_t);
     else
-        [ trajs, params, ~, ~, raw_p, ~, ~ ] = traj_forward(x, 1, ...
+        [ trajs, params, Z, ~, raw_p, raw_pg, ~] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             goal_model, node.local_env, goal_env, ...
             node.Z, node.config, config.num_greedy_samples * n_samples, start_t);
+        
         [raw_p,sort_idx] = sort(raw_p,'descend');
         raw_p = raw_p(1:n_samples);
+        raw_pg = raw_pg(sort_idx);
+        raw_pg = raw_pg(1:n_samples);
         trajs = {trajs{sort_idx(1:n_samples)}};
         params = params(:,sort_idx(1:n_samples));
     end
+    % optionally use initialized Z
+    node.Z = Z;
     
     lens = zeros(length(trajs));
     for i = 1:length(trajs)
@@ -52,6 +59,8 @@ if ~node.is_root
     node.traj_params = [node.traj_params params];
     node.traj_raw_p = [node.traj_raw_p; raw_p];
     node.traj_p = [node.traj_p; p];
+    node.traj_p_max = max(node.traj_p_max, p);
+    node.traj_h = [node.traj_h; p * raw_pg];
     node.traj_t = [node.traj_t; lens];
     node.traj_parent_traj = [node.traj_parent_traj; ones(size(p))*parent_traj];
     node.traj_parent_node = [node.traj_parent_node; ones(size(p))*parent_node];
