@@ -1,4 +1,4 @@
-function Z = model_init_z(model, config)
+function Z = model_init_z(model, local_env, config)
     movement_guess = model.movement_mean;
     rotation_guess = model.rotation_mean;
     n_steps = model.steps_mean;
