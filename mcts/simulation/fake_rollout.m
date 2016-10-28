@@ -43,7 +43,6 @@ if ~isempty(nodes(idx).goals)
         end
         
         idx = nodes(idx).goals(1);
-        depth = depth + 1;
     end
 end
 
