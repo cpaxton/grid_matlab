@@ -34,7 +34,9 @@ classdef MctsNode
         traj_raw_p = []
         traj_params = []
         traj_p = []
+        traj_h = []
         traj_p_sum = []
+        traj_p_max = -Inf;
         traj_visits = []
         traj_score = []
         traj_children = []
