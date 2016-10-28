@@ -127,7 +127,7 @@ if ~done_plan
         nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, nodes(idx).children(i), new_extra_children);
     end
     nodes(idx).children = [nodes(idx).children extra_children];
-    if nodes(idx).action_idx ~= 4 && nodes(idx).action_idx ~= 0
+    if nodes(idx).action_idx ~= 4 && nodes(idx).action_idx ~= 0 && false
         nodes(idx).is_terminal = true;
     end
 else
