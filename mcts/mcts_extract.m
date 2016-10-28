@@ -42,7 +42,7 @@ while true
                 best_prev_traj = nodes(child_idx).traj_parent_traj(traj_idx);
                 best_p = nodes(child_idx).traj_p(traj_idx);
                 
-                best_action = nodes(best_prev_node).action_idx
+                best_action = nodes(best_prev_node).action_idx;
             end
         end
    end

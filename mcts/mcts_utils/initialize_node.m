@@ -14,6 +14,10 @@ end
     
 if ~node.is_root
     if node.is_terminal
+        previous_visit = (node.traj_parent_node == parent_node) & (node.traj_parent_traj == parent_traj);
+        if previous_visit
+           fprintf('already did this\n'); 
+        end
         trajs = cell(1,n_samples);
         for i = 1:n_samples
             trajs{i} = x;
