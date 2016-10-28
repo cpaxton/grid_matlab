@@ -97,7 +97,9 @@ while count <= config.num_iter
                 end
                 
                 goal = 0;
-                %goal = nodes(nodes(child).goals(1));
+                if ~isempty(nodes(child).goals)
+                    goal = nodes(nodes(child).goals(1));
+                end
                 
                 nodes(child) = initialize_node(...
                     nodes(child), ...
@@ -155,7 +157,7 @@ while count <= config.num_iter
         end
         
         %fprintf('Selected child %d in node %d\n', best_traj, best_node);
-        
+
         trace(depth, CHILD_NODE) = best_node;
         trace(depth, CHILD_TRAJ) = best_traj;
         trace(depth, CHILD_P) = best_p;
