@@ -70,6 +70,12 @@ while count <= config.num_iter
         elseif num_visits < 1 || config.expand(num_visits, num_children)
             % choose a child
             
+            if num_visits < 1
+                is_rollout = true;
+            else
+                is_rollout = false;
+            end
+            
             new_config = config;
             
             if num_visits == 0
@@ -109,7 +115,9 @@ while count <= config.num_iter
                     config, ...
                     parent_node, ...
                     parent_traj, ...
-                    start_t);
+                    start_t, ...
+                    is_rollout ...
+                );
                 
                 if parent_node > 1
                     nodes(parent_node).traj_children(parent_traj) = nodes(parent_node).traj_children(parent_traj) + 1;

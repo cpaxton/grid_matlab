@@ -1,4 +1,4 @@
-function node = initialize_node(node, goal, x, n_samples, config, parent_node, parent_traj, start_t)
+function node = initialize_node(node, goal, x, n_samples, config, parent_node, parent_traj, start_t, is_rollout)
 
 if isobject(goal)
     goal_model = goal.models{goal.action_idx};
@@ -32,10 +32,17 @@ if ~node.is_root
             goal_model, node.local_env, goal_env, ...
             node.Z, node.config, n_samples, start_t);
     else
+        if is_rollout
+            greedy_samples = config.num_greedy_samples * n_samples;
+        else
+            greedy_samples = n_samples;
+        end
+        
+        
         [ trajs, params, Z, ~, raw_p, raw_pg, ~] = traj_forward(x, 1, ...
             node.models{node.action_idx}, ...
             goal_model, node.local_env, goal_env, ...
-            node.Z, node.config, config.num_greedy_samples * n_samples, start_t);
+            node.Z, node.config, greedy_samples, start_t);
         
         [raw_p,sort_idx] = sort(raw_p,'descend');
         raw_p = raw_p(1:n_samples);
@@ -52,7 +59,10 @@ if ~node.is_root
        lens(i) = start_t + length(trajs{i}) - 1;
     end
     
+    
     %p = log(raw_p);
+    %h = log(raw_p) + log(raw_pg);
+    h = raw_p * raw_pg;
     p = raw_p;
     
     node.trajs = {node.trajs{:} trajs{:}};
@@ -60,7 +70,7 @@ if ~node.is_root
     node.traj_raw_p = [node.traj_raw_p; raw_p];
     node.traj_p = [node.traj_p; p];
     node.traj_p_max = max(node.traj_p_max, p);
-    node.traj_h = [node.traj_h; p * raw_pg];
+    node.traj_h = [node.traj_h; h];
     node.traj_t = [node.traj_t; lens];
     node.traj_parent_traj = [node.traj_parent_traj; ones(size(p))*parent_traj];
     node.traj_parent_node = [node.traj_parent_node; ones(size(p))*parent_node];
