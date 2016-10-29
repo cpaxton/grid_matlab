@@ -2,7 +2,7 @@ function Z = model_init_z_env(model, local_env, config)
 
     x0 = [190; 1000; 0; 0; 0];
     if ~local_env.fake_prev_gate
-        local_env.prev_gate
+        [~,x0] = get_gate_points(local_env.prev_gate);
     end
 
     N_Z_DIM = 3*config.n_primitives;
