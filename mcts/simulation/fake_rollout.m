@@ -34,7 +34,8 @@ if ~isempty(nodes(idx).goals)
             depth = depth + 1;
             
             p = nodes(idx).p / nodes(idx).visits;
-            fprintf('---- %d %f\n', idx, p);
+            %fprintf('---- %d %f\n', idx, p);
+            
             trace(depth,CHILD_NODE) = idx;
             trace(depth,CHILD_P) = p;
             

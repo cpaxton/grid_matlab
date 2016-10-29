@@ -17,7 +17,6 @@ function x=sample_primitive(x0,ui,vi,ti)
 % x(3,:) = x(3,:) + (t * ui);
 
 assert(size(x0,1) == 5);
-
 len = max(ceil(ti),1)+1;
 x = repmat(x0,1,len);
 for i = 2:len

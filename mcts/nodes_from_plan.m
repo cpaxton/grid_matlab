@@ -30,10 +30,10 @@ if nodes(idx).step > 0
         nodes(idx).prev_gate_option, ...
         nodes(idx).next_gate_option);
     
-    %nodes(idx).Z = 0;
-    nodes(idx).Z = model_init_z(nodes(idx).models{nodes(idx).action_idx}, ...
-        nodes(idx).local_env, ...
-        nodes(idx).config);
+    nodes(idx).Z = 0;
+    %nodes(idx).Z = model_init_z(nodes(idx).models{nodes(idx).action_idx}, ...
+    %    nodes(idx).local_env, ...
+    %    nodes(idx).config);
 end
 
 %% if we can still descend farther into the tree
@@ -134,7 +134,7 @@ if ~done_plan
         nodes = nodes_from_plan_helper(nodes, plan, prev_gate, next_gate, nodes(idx).children(i), new_extra_children);
     end
     nodes(idx).children = [nodes(idx).children extra_children];
-    if nodes(idx).action_idx ~= 4 && nodes(idx).action_idx ~= 0 && false
+    if nodes(idx).action_idx ~= 4 && nodes(idx).action_idx ~= 0 && nodes(idx).action_idx ~= 2 && true
         nodes(idx).is_terminal = true;
     end
 else
