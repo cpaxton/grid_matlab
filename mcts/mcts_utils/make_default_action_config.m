@@ -14,5 +14,6 @@ config = struct('n_iter', 1, ...
             'rollout_depth', 1, ...
             'weighted_sample_starts', true, ... % sample from best or rollout all
             'draw', 'mvn', ... % mvn or uniform
+            'initialization', 'env', ... env or demo
             'fixed_num_primitives', true);
 end

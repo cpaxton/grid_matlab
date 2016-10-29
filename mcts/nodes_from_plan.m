@@ -30,10 +30,18 @@ if nodes(idx).step > 0
         nodes(idx).prev_gate_option, ...
         nodes(idx).next_gate_option);
     
-    nodes(idx).Z = 0;
-    %nodes(idx).Z = model_init_z(nodes(idx).models{nodes(idx).action_idx}, ...
-    %    nodes(idx).local_env, ...
-    %    nodes(idx).config);
+    if strcmp(nodes(idx).config.initialization,'env')
+        nodes(idx).Z = model_init_z_env(nodes(idx).models{nodes(idx).action_idx}, ...
+           nodes(idx).local_env, ...
+           nodes(idx).config);
+% nodes(idx).Z = 0;
+    elseif strcmp(nodes(idx).config.initialization,'demo')
+        nodes(idx).Z = model_init_z(nodes(idx).models{nodes(idx).action_idx}, ...
+           nodes(idx).config);
+    else
+        fprintf('ERROR: unrecognized initialization option %s\n', nodes(idx).config.initialization);
+        assert(false);
+    end
 end
 
 %% if we can still descend farther into the tree

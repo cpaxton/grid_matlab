@@ -21,8 +21,10 @@ classdef NeedleMasterWorld
             end
             if prev_gate > 0 && prev_gate <= length(obj.env.gates)
                 local_env.prev_gate = obj.env.gates{prev_gate}{prev_gate_opt};
+                local_env.fake_prev_gate = false;
             else
                 local_env.prev_gate = fake_prev_gate(obj.env);
+                local_env.fake_prev_gate = true;
             end
         end
         
