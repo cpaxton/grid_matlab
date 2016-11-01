@@ -22,6 +22,7 @@ function config = make_default_mcts_config()
                     'initialization', 'pw', ... pw or h -- pw initializes to Inf, h to probability
                     'rollouts', false,  ... should we roll out trajectories to the end at all, or just stop and use goal probs as our rollouts?
                     'highlight_extracted_path', true, ... highlight the chosen path
-                    'dist_update_step', 20 ...
+                    'dist_update_step', 20, ... how many samples do we need to try to refit distribution?
+                    'initialization_samples', 100 ... [SMART SEARCH] how many samples do we initialize the tree with?
                     );
 end
