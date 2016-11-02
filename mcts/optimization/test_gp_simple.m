@@ -14,14 +14,7 @@ hyp = struct('mean', [], 'cov', [0 0], 'lik', -1);
 % new params
 hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 
-%% Run for N iterations
-
-% inference
-
+%% Inference
 figure(1);
-[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, xs);
+[mu, s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, xs);
 plot_gp(mu, s2, x, y, xs);
-
-for i = 1:1
-    
-end
