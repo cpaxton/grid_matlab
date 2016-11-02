@@ -1,9 +1,12 @@
 %% Test GP update
 % create "dataset"
 
-x = gpml_randn(0.8, 20, 1);                 % 20 training inputs
-y = sin(3*x) + 0.1*gpml_randn(0.9, 20, 1);  % 20 noisy training targets
-xs = linspace(-3, 3, 61)';                  % 61 test inputs
+[traj, nodes] = run_mcts_test(envs{4}, models);
+x = nodes(2).traj_params(:,1:10)';
+y = log(nodes(2).traj_p(1:10));
+min_xs = nodes(2).Z.mu(1) - 2 * nodes(2).Z.sigma(1,1);
+max_xs = nodes(2).Z.mu(1) + 2 * nodes(2).Z.sigma(1,1);
+xs = nodes(2).traj_params'; %linspace(min_xs, max_xs, 101)';                  % 61 test inputs
 
 % set up the mean
 meanfunc = [];
@@ -18,9 +21,9 @@ hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 
 % inference
 
-figure(1);
-[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, xs);
-plot_gp(mu, s2, x, y, xs);
+figure(2);
+[mu s2] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, xs);
+plot_gp(mu, s2, x(:,1), y, xs(:,1));
 
 for i = 1:1
     
