@@ -28,6 +28,7 @@ addpath('./mcts/mcts_utils');
 addpath('./mcts/pw');
 addpath('./mcts/simulation');
 addpath('./mcts/configs');
+addpath('./mcts/optimization');
 
 %% Motion and Trajectory Optimization
 addpath('./motion');
