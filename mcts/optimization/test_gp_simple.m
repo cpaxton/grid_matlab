@@ -15,6 +15,17 @@ hyp = struct('mean', [], 'cov', [0 0], 'lik', -1);
 hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 
 %% Inference
-figure(1);
+figure(1); clf; hold on;
 [mu, s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, xs);
 plot_gp(mu, s2, x, y, xs);
+
+Z = [];
+Z.mu = mean(x);
+Z.sigma = std(x);
+N_GEN_SAMPLES = 100;
+for i = 1:10
+   x2 = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
+   [y2, sy2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x2);
+   [ymax,idx] = max(y2);
+   plot(x2(idx),ymax,'b*');
+end
