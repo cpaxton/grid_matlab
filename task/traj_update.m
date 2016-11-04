@@ -7,10 +7,12 @@ if nargin < 4
     iter = 1;
     STEP_SIZE = 0.75;
     good = 1;
+    N_SAMPLES = length(p);
 else
     iter = config.start_iter;
     STEP_SIZE = config.step_size;
     good = config.good;
+    N_SAMPLES = config.n_samples;
 end
 N_Z_DIM = size(Z.mu,1);
 
@@ -20,10 +22,10 @@ p = p / sum(p);
 
 mu = zeros(size(Z.mu));
 sigma = zeros(size(Z.sigma));
-for i=1:config.n_samples
+for i=1:N_SAMPLES
     mu = mu + (p(i) * params(:,i));
 end
-for i=1:config.n_samples
+for i=1:N_SAMPLES
     ds = params(:,i)-mu;
     sigma = sigma + (p(i) * (ds * ds'));
 end
