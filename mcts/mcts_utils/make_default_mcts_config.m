@@ -23,6 +23,9 @@ function config = make_default_mcts_config()
                     'rollouts', false,  ... should we roll out trajectories to the end at all, or just stop and use goal probs as our rollouts?
                     'highlight_extracted_path', true, ... highlight the chosen path
                     'dist_update_step', 20, ... how many samples do we need to try to refit distribution?
-                    'initialization_samples', 100 ... [SMART SEARCH] how many samples do we initialize the tree with?
+                    'initialization_samples', 100, ... [SMART SEARCH] how many samples do we initialize the tree with?
+                    'gp', true, ... Use Gaussian Process for smart search
+                    'gp_samples', 100, ... How many samples used for CEM with GP?
+                    'gp_iter', 1 ... How many CEM iterations do we use before drawing a new sample
                     );
 end
