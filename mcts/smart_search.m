@@ -1,6 +1,7 @@
 % Search Version 2
 % - Initialize search by drawing a large number of samples recursively
 % through the tree.
+env = envs{4}
 
 %% Create environment and set up
 rng(101);
@@ -30,6 +31,8 @@ xs = zeros(5, nodes(1).config.max_depth);
 %% Main loop: iterate until budget is exhausted
 % while not done
 while count <= config.num_iter
+   
     
+    count = count + 1;
 end
     
