@@ -28,6 +28,10 @@ count = 1;
 
 xs = zeros(5, nodes(1).config.max_depth);
 
+figure(1); clf; hold on;
+draw_environment(w0.env);
+draw_nodes(nodes);
+
 %% Main loop: iterate until budget is exhausted
 % while not done
 while count <= config.num_iter

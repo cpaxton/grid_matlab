@@ -16,6 +16,7 @@ pidx = 1;
 
 depth = 1;
 
+fprintf('INITIALIZING:\n');
 while true
     parent = [];
     children = [];
@@ -66,7 +67,7 @@ while true
         nodes(idx(i)) = node;
     end
     
-    fprintf('level %d\n', depth);
+    fprintf(' - depth = %d\n', depth);
     
     idx = children;
     pidx = T;
