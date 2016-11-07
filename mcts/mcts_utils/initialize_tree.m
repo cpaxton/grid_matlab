@@ -26,11 +26,9 @@ while true
         parent = [parent ones(length(nodes(idx(i)).children),1) * idx(i)];
         T = [T pidx(i) * nodes(idx).T];
         
-        [parent children T]
-        
         n_samples = p(i) * config.initialization_samples;
         node = nodes(idx(i));
-        if node.action_idx > 0
+        if node.action_idx > 0 && ~isempty(node.children)
             [trajs, params, ~, ~, raw_p, ~, parent_traj] = traj_forward(x, p, ...
                 node.models{node.action_idx}, ...
                 0, node.local_env, 0, ...
