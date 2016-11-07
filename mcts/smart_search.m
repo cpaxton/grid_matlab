@@ -22,3 +22,14 @@ nodes = nodes_from_plan(plan, prev_gate, next_gate, w0, models, action_config);
 nodes = initialize_tree(nodes, x0, w0, config); % draw 100 samples and send them down the tree
 % note: extra branches aren't "dead", they just have a heuristic associated
 % with them.
+
+count = 1;
+
+xs = zeros(5, nodes(1).config.max_depth);
+
+%% Main loop: iterate until budget is exhausted
+% while not done
+while count <= config.num_iter
+    
+end
+    
