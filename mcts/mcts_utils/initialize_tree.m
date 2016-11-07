@@ -21,19 +21,24 @@ while true
     parent = [];
     children = [];
     T = [];
-    assert(sum(p) == 1);
+    ends = [];
+    next_p = [];
+    assert(abs(sum(p) - 1) < 1e-8);
+    is_root = false;
     for i = 1:length(idx)
         children = [children nodes(idx(i)).children];
         parent = [parent ones(length(nodes(idx(i)).children),1) * idx(i)];
         T = [T pidx(i) * nodes(idx).T];
         
-        n_samples = p(i) * config.initialization_samples;
+        n_samples = round(p(i) * config.initialization_samples);
         node = nodes(idx(i));
         if node.action_idx > 0 && ~isempty(node.children)
             [trajs, params, ~, ~, raw_p, ~, parent_traj] = traj_forward(x, p, ...
                 node.models{node.action_idx}, ...
                 0, node.local_env, 0, ...
                 node.Z, node.config, n_samples, start_t);
+            ends = [ends traj_ends(trajs)];
+            next_p = [next_p raw_p];
             
             lens = zeros(length(trajs));
             for j = 1:length(trajs)
@@ -48,11 +53,13 @@ while true
             node.traj_p_max = max(node.traj_p_max, p);
             %node.traj_h = [node.traj_h; h];
             node.traj_t = [node.traj_t; lens];
-            node.traj_parent_traj = [node.traj_parent_traj; ones(size(p))*parent_traj];
+            node.traj_parent_traj = [node.traj_parent_traj; parent_traj];
             node.traj_parent_node = [node.traj_parent_node; ones(size(p))*parent_node];
             node.traj_visits = [node.traj_visits; zeros(size(p))];
             node.traj_p_sum = [node.traj_p_sum; zeros(size(p))];
             node.traj_children = [node.traj_children; zeros(size(p))];
+        else
+            is_root = true;
         end
         
         if config.initialization == 'pw'
@@ -71,9 +78,17 @@ while true
     
     idx = children;
     pidx = T;
+    if ~is_root
+        x = ends;
+        p = next_p / sum(next_p);
+    else
+        fprintf('   - note: root node.\n');
+    end
+    
+    assert(size(x,2) == length(p));
     
     depth = depth + 1;
-    if isempty(idx)
+    if isempty(idx) || isempty(p)
         break
     end
 end
