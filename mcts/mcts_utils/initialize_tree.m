@@ -26,13 +26,15 @@ while true
     assert(abs(sum(p) - 1) < 1e-8);
     is_root = false;
     for i = 1:length(idx)
+        fprintf('   - %d\n',idx);
         children = [children nodes(idx(i)).children];
         parent = [parent ones(length(nodes(idx(i)).children),1) * idx(i)];
-        T = [T pidx(i) * nodes(idx).T];
+        T = [pidx(i) * nodes(idx(i)).T];
         
-        n_samples = round(p(i) * config.initialization_samples);
+        n_samples = round(pidx(i) * config.initialization_samples);
         node = nodes(idx(i));
         if node.action_idx > 0 && ~isempty(node.children)
+            node.action_idx
             [trajs, params, ~, ~, raw_p, ~, parent_traj] = traj_forward(x, p, ...
                 node.models{node.action_idx}, ...
                 0, node.local_env, 0, ...
