@@ -63,7 +63,7 @@ while true
             node.trajs = {node.trajs{:} trajs{:}};
             node.traj_params = [node.traj_params params];
             node.traj_raw_p = [node.traj_raw_p; raw_p];
-            node.traj_p = [node.traj_p; p];
+            node.traj_p = [node.traj_p; raw_p];
             node.traj_p_max = max(node.traj_p_max, p);
             %node.traj_h = [node.traj_h; h];
             node.traj_t = [node.traj_t; lens];
@@ -75,7 +75,6 @@ while true
         else
             is_root = true;
         end
-        
         %% Initialize new trajectories
         if config.initialization == 'pw'
             traj_score = ones(size(p)) * Inf;
