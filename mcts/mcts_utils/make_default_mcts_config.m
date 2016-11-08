@@ -17,7 +17,7 @@ function config = make_default_mcts_config()
                     'init_samples', 1, ... number of samples to use when creating a new node
                     'greedy_expansion', true, ... do greedy expansion to improve rollouts
                     'num_greedy_samples', 1, ... randomly sample this many and choose the best
-                    'num_iter', 50, ... max number of iterations to perform
+                    'num_iter', 10, ... max number of iterations to perform
                     'draw_step', 20000, ... show output image every X iterations
                     'initialization', 'pw', ... pw or h -- pw initializes to Inf, h to probability
                     'rollouts', false,  ... should we roll out trajectories to the end at all, or just stop and use goal probs as our rollouts?

@@ -1,7 +1,9 @@
 %% Test GP update
 % create "dataset"
 
-[traj, nodes] = run_mcts_test(envs{4}, models);
+ENV = 2;
+figure(1); clf; hold on;
+[traj, nodes] = run_mcts_test(envs{ENV}, models);
 x = nodes(2).traj_params';
 y = log(nodes(2).traj_p);
 min_xs = nodes(2).Z.mu(1) - 2 * nodes(2).Z.sigma(1,1);
@@ -17,14 +19,13 @@ hyp = struct('mean', [], 'cov', [1 1], 'lik', 0.1);
 %hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
 
 % new params
-%hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
+hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 
 START_T = 0;
 local_env = nodes(2).local_env;
 model = nodes(2).models{nodes(2).action_idx};
-for iter = 1:5
-    figure(1);
-    draw_environment(envs{4});
+figure(1); draw_environment(envs{ENV});
+for iter = 1:30
     Z = nodes(2).Z;
     
     %% Run for N iterations
@@ -57,7 +58,7 @@ for iter = 1:5
     end
     p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
     p_action_traj;
-    p_action = mean(p_action_traj);
+    p_action = (mean(p_action_traj));
     fprintf('actual: %f, expected: %f\n', p_action, pmax);
     
     x = [x; samples(idx,:)];
@@ -65,8 +66,8 @@ for iter = 1:5
     
 end
 [p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
-[maxp, idx] = max(p);
+[maxp, idx] = max(y);
 
 %% actually show the current best
 traj = sample_seq(x0,samples(idx,:)');
-    plot(traj(1,:),traj(2,:),'b*');
+    plot(traj(1,:),traj(2,:),'g*');
