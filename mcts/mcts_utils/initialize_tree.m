@@ -25,19 +25,31 @@ while true
     next_p = [];
     assert(abs(sum(p) - 1) < 1e-8);
     is_root = false;
+    
+    %% loop over the current set of equal nodes
     for i = 1:length(idx)
         fprintf('   - %d\n',idx);
         children = [children nodes(idx(i)).children];
         parent = [parent ones(length(nodes(idx(i)).children),1) * idx(i)];
         T = [pidx(i) * nodes(idx(i)).T];
         
+        %% set up goal
+        % goals are chosen at random from the current node
+        goal = 0;
+        if ~isempty(nodes(idx(i)).goals)
+            r = randi(length(nodes(idx(i)).goals));
+            goal = nodes(nodes(idx(i)).goals(r));
+        end
+        
+        %% generate trajectories if necessary
         n_samples = round(pidx(i) * config.initialization_samples);
         node = nodes(idx(i));
-        if node.action_idx > 0 && ~isempty(node.children)
+        if node.action_idx > 0 && ~isempty(node.children) && n_samples > 0
             node.action_idx
-            [trajs, params, ~, ~, raw_p, ~, parent_traj] = traj_forward(x, p, ...
+            [trajs, params, ~, raw_p, raw_pa, raw_pg, parent_traj] = traj_forward(x, p, ...
                 node.models{node.action_idx}, ...
-                0, node.local_env, 0, ...
+                goal.models{goal.action_idx}, ...
+                node.local_env, goal.local_env, ...
                 node.Z, node.config, n_samples, start_t);
             ends = [ends traj_ends(trajs)];
             next_p = [next_p raw_p];
@@ -64,6 +76,7 @@ while true
             is_root = true;
         end
         
+        %% Initialize new trajectories
         if config.initialization == 'pw'
             traj_score = ones(size(p)) * Inf;
         elseif config.initialization == 'h'
@@ -76,6 +89,9 @@ while true
         nodes(idx(i)) = node;
     end
     
+    %% Update and move on
+    % Set up lists of children as the next set of nodes we sample from
+    % Set up probabilities we want to sample from
     fprintf(' - depth = %d\n', depth);
     
     idx = children;
@@ -89,6 +105,7 @@ while true
     
     assert(size(x,2) == length(p));
     
+    %% 
     depth = depth + 1;
     if isempty(idx) || isempty(p)
         break

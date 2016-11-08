@@ -22,14 +22,14 @@ hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 START_T = 0;
 local_env = nodes(2).local_env;
 model = nodes(2).models{nodes(2).action_idx};
-for iter = 1:3
+for iter = 1:1
     figure(1);
     draw_environment(envs{4});
     Z = nodes(2).Z;
     
     %% Run for N iterations
     % GP/cross entropy optimization
-    N_ITER = 5;
+    N_ITER = 50;
     N_GEN_SAMPLES = 500;
     for i = 1:N_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
@@ -38,7 +38,7 @@ for iter = 1:3
         x0 = [190; 1000; 0; 0; 0];
         [pmax, idx] = max(p);
         traj = sample_seq(x0,samples(idx,:)');
-        plot(traj(1,:),traj(2,:),'b*');
+        plot(traj(1,:),traj(2,:),'b.');
         
         Z = traj_update(samples', exp(p), Z);
     end

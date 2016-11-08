@@ -1,7 +1,7 @@
 % Search Version 2
 % - Initialize search by drawing a large number of samples recursively
 % through the tree.
-env = envs{4}
+env = envs{4};
 
 %% Create environment and set up
 rng(101);
