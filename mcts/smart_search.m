@@ -36,6 +36,16 @@ draw_nodes(nodes);
 % while not done
 while count <= config.num_iter
    
+    %% FORWARD: trace down the tree
+    % chose either one of:
+    % - draw each sample from GP distribution
+    % - explore an existing sample (based on how good our existing samples
+    % are)
+    
+    %% BACKWARD: trace back up the tree
+    % back up expected values of explored branches
+    % assign values to unexplored branches based on our estimates of how
+    % goo they might be
     
     count = count + 1;
 end
