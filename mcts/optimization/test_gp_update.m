@@ -11,37 +11,37 @@ xs = nodes(2).traj_params'; %linspace(min_xs, max_xs, 101)';                  % 
 % set up the mean
 meanfunc = [];
 covfunc = @covSEiso;
-covfunc = @covSEard;
+%covfunc = @covSEard;
 likfunc = @likGauss;
-%hyp = struct('mean', [], 'cov', [0 0], 'lik', 0.0);
-hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
+hyp = struct('mean', [], 'cov', [1 1], 'lik', 0.1);
+%hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
 
 % new params
-hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
+%hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 
 START_T = 0;
 local_env = nodes(2).local_env;
 model = nodes(2).models{nodes(2).action_idx};
-for iter = 1:1
+for iter = 1:5
     figure(1);
     draw_environment(envs{4});
     Z = nodes(2).Z;
     
     %% Run for N iterations
     % GP/cross entropy optimization
-    N_ITER = 50;
-    N_GEN_SAMPLES = 500;
+    N_ITER = 5;
+    N_GEN_SAMPLES = 100;
     for i = 1:N_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
-        [p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, samples);
+        [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, samples);
         x0 = [190; 1000; 0; 0; 0];
         [pmax, idx] = max(p);
-        traj = sample_seq(x0,samples(idx,:)');
-        plot(traj(1,:),traj(2,:),'b.');
         
         Z = traj_update(samples', exp(p), Z);
     end
+    traj = sample_seq(x0,samples(idx,:)');
+    plot(traj(1,:),traj(2,:),'b.');
     
     
     fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
@@ -64,3 +64,9 @@ for iter = 1:1
     y = [y; p_action];
     
 end
+[p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
+[maxp, idx] = max(p);
+
+%% actually show the current best
+traj = sample_seq(x0,samples(idx,:)');
+    plot(traj(1,:),traj(2,:),'b*');
