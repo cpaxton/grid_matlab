@@ -27,7 +27,13 @@ model = nodes(2).models{nodes(2).action_idx};
 goal_node = nodes(nodes(2).goals(1));
 goal_model = goal_node.models{goal_node.action_idx};
 figure(1); draw_environment(envs{ENV});
-for iter = 1:30
+
+N_ITER = 30;
+gamma = zeros(N_ITER+1,1);
+delta = 1e-6;
+alpha = log(2/delta);
+
+for iter = 1:N_ITER
     Z = nodes(2).Z;
     
     %% Run for N iterations
@@ -38,14 +44,24 @@ for iter = 1:30
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
         [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, samples);
-        x0 = [190; 1000; 0; 0; 0];
-        [pmax, idx] = max(p);
         
-        Z = traj_update(samples', exp(p), Z);
+        x0 = [190; 1000; 0; 0; 0];
+        
+        phi = alpha*sqrt(sp + gamma(iter)) - sqrt(gamma(iter));
+        
+        [pmax, idx] = max(p + phi);
+        
+        [p (p + phi) exp(p + phi)]
+        
+        Z = traj_update(samples', exp(p + phi), Z);
     end
+    
+    % variance of the selected value
+    spmax = sp(idx);
+    gamma(iter + 1) = gamma(iter) + sqrt(spmax)
+    
     traj = sample_seq(x0,samples(idx,:)');
     plot(traj(1,:),traj(2,:),'b.');
-    
     
     fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
     len = size(fa,2);
