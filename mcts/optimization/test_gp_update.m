@@ -24,6 +24,8 @@ hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
 START_T = 0;
 local_env = nodes(2).local_env;
 model = nodes(2).models{nodes(2).action_idx};
+goal_node = nodes(nodes(2).goals(1));
+goal_model = goal_node.models{goal_node.action_idx};
 figure(1); draw_environment(envs{ENV});
 for iter = 1:30
     Z = nodes(2).Z;

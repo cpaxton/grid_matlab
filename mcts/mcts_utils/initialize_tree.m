@@ -26,6 +26,8 @@ while true
     assert(abs(sum(p) - 1) < 1e-8);
     is_root = false;
     
+    idx
+    
     %% loop over the current set of equal nodes
     for i = 1:length(idx)
         fprintf('   - %d\n',idx);
