@@ -34,6 +34,8 @@ gamma = zeros(N_ITER+1,1);
 delta = 1e-6;
 alpha = 1*log(2/delta);
 
+%% OPTIMIZE ONE
+
 for iter = 1:N_ITER
     Z = nodes(2).Z;
     
@@ -86,9 +88,9 @@ for iter = 1:N_ITER
     y = [y; exp(p_action)];
     
 end
-[p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
+%[p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
 [maxp, idx] = max(y);
 
 %% actually show the current best
-traj = sample_seq(x0,samples(idx,:)');
-    plot(traj(1,:),traj(2,:),'g*');
+traj = sample_seq(x0,x(idx,:)');
+plot(traj(1,:),traj(2,:),'g*');
