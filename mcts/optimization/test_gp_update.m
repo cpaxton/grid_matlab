@@ -5,7 +5,7 @@ ENV = 3;
 figure(1); clf; hold on;
 [traj, nodes] = run_mcts_test(envs{ENV}, models);
 x = nodes(2).traj_params';
-y = log(nodes(2).traj_p);
+y = (nodes(2).traj_p);
 min_xs = nodes(2).Z.mu(1) - 2 * nodes(2).Z.sigma(1,1);
 max_xs = nodes(2).Z.mu(1) + 2 * nodes(2).Z.sigma(1,1);
 xs = nodes(2).traj_params'; %linspace(min_xs, max_xs, 101)';                  % 61 test inputs
@@ -15,8 +15,9 @@ meanfunc = [];
 covfunc = @covSEiso;
 %covfunc = @covSEard;
 likfunc = @likGauss;
-hyp = struct('mean', [], 'cov', [1 1], 'lik', 0.1);
+%hyp = struct('mean', [], 'cov', [1 1], 'lik', 0.1);
 %hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
+hyp = struct('mean', [], 'cov', [2.3695e+01 -3.6746e+01], 'lik', -2.0224e+01);
 
 % new params
 hyp2 = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, x, y);
@@ -31,7 +32,7 @@ figure(1); draw_environment(envs{ENV});
 N_ITER = 30;
 gamma = zeros(N_ITER+1,1);
 delta = 1e-6;
-alpha = log(2/delta);
+alpha = 1*log(2/delta);
 
 for iter = 1:N_ITER
     Z = nodes(2).Z;
@@ -39,7 +40,7 @@ for iter = 1:N_ITER
     %% Run for N iterations
     % GP/cross entropy optimization
     N_ITER = 5;
-    N_GEN_SAMPLES = 100;
+    N_GEN_SAMPLES = 50;
     for i = 1:N_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
@@ -53,9 +54,9 @@ for iter = 1:N_ITER
         [pmax, idx] = max(p + phi);
         
         % for debugging: phi
-        % [p (p + phi) exp(p + phi)]
+        %[p (p + phi) exp(p + phi)]
         
-        Z = traj_update(samples', exp(p + phi), Z);
+        Z = traj_update(samples', (p + phi), Z);
     end
     
     % variance of the selected value
@@ -78,11 +79,11 @@ for iter = 1:N_ITER
     end
     p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
     p_action_traj;
-    p_action = (mean(p_action_traj));
-    fprintf('actual: %f, expected: %f\n', p_action, pmax);
+    p_action = mean(p_action_traj);
+    fprintf('actual: %f, expected: %f,value: %f\n', p_action, log(p(idx)), log(pmax));
     
     x = [x; samples(idx,:)];
-    y = [y; p_action];
+    y = [y; exp(p_action)];
     
 end
 [p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
