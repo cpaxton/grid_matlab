@@ -49,16 +49,18 @@ for iter = 1:N_ITER
         
         phi = alpha*sqrt(sp + gamma(iter)) - sqrt(gamma(iter));
         
+        % compute phi: mutual information
         [pmax, idx] = max(p + phi);
         
-        [p (p + phi) exp(p + phi)]
+        % for debugging: phi
+        % [p (p + phi) exp(p + phi)]
         
         Z = traj_update(samples', exp(p + phi), Z);
     end
     
     % variance of the selected value
     spmax = sp(idx);
-    gamma(iter + 1) = gamma(iter) + sqrt(spmax)
+    gamma(iter + 1) = gamma(iter) + sqrt(spmax);
     
     traj = sample_seq(x0,samples(idx,:)');
     plot(traj(1,:),traj(2,:),'b.');
