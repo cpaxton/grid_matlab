@@ -1,7 +1,7 @@
 % Search Version 2
 % - Initialize search by drawing a large number of samples recursively
 % through the tree.
-env = envs{4};
+env = envs{3};
 
 %% Create environment and set up
 rng(101);
@@ -48,6 +48,7 @@ START_T = 0;
 local_env = nodes(2).local_env;
 model = nodes(2).models{nodes(2).action_idx};
 for iter = 1:30
+    break
     Z = nodes(2).Z;
     
     %% Run for N iterations
@@ -87,7 +88,7 @@ for iter = 1:30
     y = [y; p_action];
     
 end
-[p, sp] = gp(hyp2, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
+[p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
 [maxp, idx] = max(y);
 
 %% actually show the current best
