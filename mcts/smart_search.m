@@ -35,38 +35,57 @@ draw_nodes(nodes);
 %% GP setup
 
 x = nodes(2).traj_params';
-y = log(nodes(2).traj_p);
+y = (nodes(2).traj_p);
 
 meanfunc = [];
 covfunc = @covSEiso;
 %covfunc = @covSEard;
 likfunc = @likGauss;
-hyp = struct('mean', [], 'cov', [1 1], 'lik', 0.1);
+%hyp = struct('mean', [], 'cov', [1 -1], 'lik', 0.1);
+%hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
+hyp = struct('mean', [], 'cov', [2.3695e+01 -3.6746e+01], 'lik', -2.0224e+01);
 %hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
 
 START_T = 0;
 local_env = nodes(2).local_env;
-model = nodes(2).models{nodes(2).action_idx};
-for iter = 1:30
-    break
-    Z = nodes(2).Z;
-    
+NODE_IDX = 2;
+model = nodes(NODE_IDX).models{nodes(NODE_IDX).action_idx};
+Z = nodes(NODE_IDX).Z;
+
+N_ITER = 30;
+gamma = zeros(N_ITER+1,1);
+delta = 1e-6;
+alpha = 1*log(2/delta);
+
+for iter = 1:N_ITER
     %% Run for N iterations
     % GP/cross entropy optimization
-    N_ITER = 5;
-    N_GEN_SAMPLES = 100;
-    for i = 1:N_ITER
+    N_CEM_ITER = 5;
+    N_GEN_SAMPLES = 50;
+    for i = 1:N_CEM_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
-        [p, ~] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, samples);
-        x0 = [190; 1000; 0; 0; 0];
-        [pmax, idx] = max(p);
+        [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, samples);
         
-        Z = traj_update(samples', exp(p), Z);
+        x0 = [190; 1000; 0; 0; 0];
+        
+        phi = alpha*(sqrt(sp + gamma(iter)) - sqrt(gamma(iter)));
+        
+        % compute phi: mutual information
+        [pmax, idx] = max(p + phi);
+        
+        % for debugging: phi
+        %[p (p + phi) exp(p + phi)]
+        
+        Z = traj_update(samples', (p + phi), Z);
     end
+    
+    % variance of the selected value
+    spmax = sp(idx);
+    gamma(iter + 1) = gamma(iter) + sqrt(spmax);
+    
     traj = sample_seq(x0,samples(idx,:)');
     plot(traj(1,:),traj(2,:),'b.');
-    
     
     fa = traj_get_reproduction_features(traj(:,1:end-1),model,local_env);
     len = size(fa,2);
@@ -81,18 +100,17 @@ for iter = 1:30
     end
     p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
     p_action_traj;
-    p_action = (mean(p_action_traj));
-    fprintf('actual: %f, expected: %f\n', p_action, pmax);
+    p_action = mean(p_action_traj);
+    fprintf('actual: %f, expected: %f,value: %f\n', p_action, log(p(idx)), log(pmax));
     
     x = [x; samples(idx,:)];
-    y = [y; p_action];
-    
+    y = [y; exp(p_action)];
 end
 [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
 [maxp, idx] = max(y);
 
 %% actually show the current best
-traj = sample_seq(x0,samples(idx,:)');
+traj = sample_seq(x0,x(idx,:)');
     plot(traj(1,:),traj(2,:),'g*');
 
 %% Main loop: iterate until budget is exhausted
