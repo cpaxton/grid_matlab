@@ -1,7 +1,7 @@
 %% Test GP update
 % create "dataset"
 
-ENV = 2;
+ENV = 3;
 figure(1); clf; hold on;
 [traj, nodes] = run_mcts_test(envs{ENV}, models);
 x = nodes(2).traj_params';
@@ -47,7 +47,7 @@ for iter = 1:N_ITER
         
         x0 = [190; 1000; 0; 0; 0];
         
-        phi = alpha*sqrt(sp + gamma(iter)) - sqrt(gamma(iter));
+        phi = alpha*(sqrt(sp + gamma(iter)) - sqrt(gamma(iter)));
         
         % compute phi: mutual information
         [pmax, idx] = max(p + phi);
