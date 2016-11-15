@@ -58,13 +58,13 @@ for iter = 1:N_ITER
     %% Run for N iterations
     % GP/cross entropy optimization
     N_CEM_ITER = 5;
-    N_GEN_SAMPLES = 500;
+    N_GEN_SAMPLES = 50;
     for i = 1:N_CEM_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
         [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, ...
             nodes(NODE_IDX).traj_params', ...
-            nodes(NODE_IDX).traj_p, ...
+            exp(nodes(NODE_IDX).traj_p), ...
             samples);
         
         x0 = [190; 1000; 0; 0; 0];
