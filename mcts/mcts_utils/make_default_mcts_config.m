@@ -30,7 +30,7 @@ function config = make_default_mcts_config(extra)
                     'dist_update_step', 20, ... how many samples do we need to try to refit distribution?
                     'initialization_samples', 50, ... [SMART SEARCH] how many samples do we initialize the tree with?
                     'gp', true, ... Use Gaussian Process for smart search
-                    'gp_samples', 100, ... How many samples used for CEM with GP?
+                    'gp_samples', 50, ... How many samples used for CEM with GP?
                     'gp_iter', 1 ... How many CEM iterations do we use before drawing a new sample
                     );
 end

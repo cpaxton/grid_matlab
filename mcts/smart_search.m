@@ -34,16 +34,13 @@ draw_nodes(nodes);
 
 %% GP setup
 
-x = nodes(2).traj_params';
-y = (nodes(2).traj_p);
-
 meanfunc = [];
 covfunc = @covSEiso;
 %covfunc = @covSEard;
 likfunc = @likGauss;
-%hyp = struct('mean', [], 'cov', [1 -1], 'lik', 0.1);
+hyp = struct('mean', [], 'cov', [1 -1], 'lik', 0.1);
 %hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
-hyp = struct('mean', [], 'cov', [2.3695e+01 -3.6746e+01], 'lik', -2.0224e+01);
+%hyp = struct('mean', [], 'cov', [2.3695e+01 -3.6746e+01], 'lik', -2.0224e+01);
 %hyp = struct('mean', [], 'cov', zeros(13,1), 'lik', 0.0);
 
 START_T = 0;
@@ -61,14 +58,14 @@ for iter = 1:N_ITER
     %% Run for N iterations
     % GP/cross entropy optimization
     N_CEM_ITER = 5;
-    N_GEN_SAMPLES = 50;
+    N_GEN_SAMPLES = 500;
     for i = 1:N_CEM_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
         [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, ...
             nodes(NODE_IDX).traj_params', ...
             nodes(NODE_IDX).traj_p, ...
-            nodes(NODE_IDX).traj_params');
+            samples);
         
         x0 = [190; 1000; 0; 0; 0];
         
@@ -99,23 +96,15 @@ for iter = 1:N_ITER
     end
     if model.use_time
         fa = [1000 * ((START_T):(START_T+len-1)) / max_t; fa];
-        %fprintf('WARNING: time wrong');
     end
     p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
-    p_action_traj;
     p_action = mean(p_action_traj);
-    fprintf('actual: %f, expected: %f, value: %f\n', p_action, log(p(idx)), log(pmax));
+    fprintf('actual: %f, expected: %f, value: %f\n', p_action, log(p(idx)), pmax);
     
     % add this one to the tree
-    
-
+    nodes(NODE_IDX).traj_p = [nodes(NODE_IDX).traj_p; p_action];
+    nodes(NODE_IDX).traj_params = [nodes(NODE_IDX).traj_params samples(idx,:)'];
 end
-[p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
-[maxp, idx] = max(y);
-
-%% actually show the current best
-traj = sample_seq(x0,x(idx,:)');
-    plot(traj(1,:),traj(2,:),'g*');
 
 %% Main loop: iterate until budget is exhausted
 % while not done

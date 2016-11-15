@@ -42,7 +42,7 @@ for iter = 1:N_ITER
     %% Run for N iterations
     % GP/cross entropy optimization
     N_ITER = 5;
-    N_GEN_SAMPLES = 50;
+    N_GEN_SAMPLES = 500;
     for i = 1:N_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
