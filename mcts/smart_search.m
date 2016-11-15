@@ -65,7 +65,10 @@ for iter = 1:N_ITER
     for i = 1:N_CEM_ITER
         samples = mvnsample(Z.mu,Z.sigma,N_GEN_SAMPLES)';
         %samples = x';
-        [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, samples);
+        [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, ...
+            nodes(NODE_IDX).traj_params', ...
+            nodes(NODE_IDX).traj_p, ...
+            nodes(NODE_IDX).traj_params');
         
         x0 = [190; 1000; 0; 0; 0];
         
@@ -103,8 +106,9 @@ for iter = 1:N_ITER
     p_action = mean(p_action_traj);
     fprintf('actual: %f, expected: %f,value: %f\n', p_action, log(p(idx)), log(pmax));
     
-    x = [x; samples(idx,:)];
-    y = [y; exp(p_action)];
+    % add this one to the tree
+    
+
 end
 [p, sp] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, x, y, x);
 [maxp, idx] = max(y);
