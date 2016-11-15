@@ -104,7 +104,7 @@ for iter = 1:N_ITER
     p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
     p_action_traj;
     p_action = mean(p_action_traj);
-    fprintf('actual: %f, expected: %f,value: %f\n', p_action, log(p(idx)), log(pmax));
+    fprintf('actual: %f, expected: %f, value: %f\n', p_action, log(p(idx)), log(pmax));
     
     % add this one to the tree
     
