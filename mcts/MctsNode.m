@@ -42,6 +42,7 @@ classdef MctsNode
         traj_children = []
         traj_t = []
         traj_ends = []
+        traj_depth = []
         
         % actor position
         x0

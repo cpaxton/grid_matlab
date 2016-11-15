@@ -9,6 +9,4 @@ for i = 1:length(nodes)
    end
 end
 
-
-
 end

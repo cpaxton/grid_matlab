@@ -52,7 +52,8 @@ while true
                 goal.models{goal.action_idx}, ...
                 node.local_env, goal.local_env, ...
                 node.Z, node.config, n_samples, start_t);
-            next_p = [next_p raw_p];
+            cum_p = (raw_p .* p(parent_traj));
+            next_p = [next_p cum_p];
             
             lens = zeros(length(trajs));
             for j = 1:length(trajs)
@@ -74,13 +75,15 @@ while true
             node.traj_visits = [node.traj_visits; zeros(size(raw_p))];
             node.traj_p_sum = [node.traj_p_sum; zeros(size(raw_p))];
             node.traj_children = [node.traj_children; zeros(size(p))];
+            node.traj_depth = [node.traj_depth; ones(n_samples,1)*depth];
             
             %% Initialize new trajectories
-            if config.initialization == 'pw'
-                traj_score = ones(size(raw_p)) * Inf;
-            elseif config.initialization == 'h'
-                traj_score = raw_p;
-            end
+            %if config.initialization == 'pw'
+            %    traj_score = ones(size(raw_p)) * Inf;
+            %elseif config.initialization == 'h'
+            %    traj_score = raw_p;
+            %end
+            traj_score = cum_p;
             node.traj_score = [node.traj_score; traj_score];
         else
             is_root = true;
