@@ -98,8 +98,8 @@ for iter = 1:N_ITER
         fa = [1000 * ((START_T):(START_T+len-1)) / max_t; fa];
     end
     p_action_traj = compute_loglik(fa,model.Mu,model.Sigma,model,model.in);
-    p_action = mean(p_action_traj);
-    fprintf('actual: %f, expected: %f, value: %f\n', p_action, log(p(idx)), pmax);
+    p_action = exp(mean(p_action_traj));
+    fprintf('actual: %f, expected: %f, value: %f\n', log(p_action), log(p(idx)), pmax);
     
     % add this one to the tree
     nodes(NODE_IDX).traj_p = [nodes(NODE_IDX).traj_p; p_action];
