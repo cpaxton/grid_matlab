@@ -47,6 +47,7 @@ learning_test_bmm;
 
 %% create individual segments
 ap = create_segments(bmm, trials, envs, predicates, MARGIN, NUM_LEVELS);
+training_data = cell(size(ap));
 
 if SHOW_SEGMENTS_EXAMPLE
     draw_registered_action_primitives(bmm,ap);
@@ -266,6 +267,9 @@ for k=1:bmm.k
     if HOLD_OUT
         testData = create_primitive_training_data(models{k},apt{k});
     end
+    
+    % set features for model fitting
+    training_data{k}.features = trainingData;
     
     models{k}.norm_mean = norm_mean;
     models{k}.norm_std = norm_std;
