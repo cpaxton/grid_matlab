@@ -263,13 +263,14 @@ for k=1:bmm.k
     %end
     
     %% learning
-    [trainingData,norm_mean,norm_std] = create_primitive_training_data(models{k},ap{k});
+    [trainingData,controls,norm_mean,norm_std] = create_primitive_training_data(models{k},ap{k});
     if HOLD_OUT
         testData = create_primitive_training_data(models{k},apt{k});
     end
     
     % set features for model fitting
     training_data{k}.features = trainingData;
+    training_data{k}.controls = controls;
     
     models{k}.norm_mean = norm_mean;
     models{k}.norm_std = norm_std;

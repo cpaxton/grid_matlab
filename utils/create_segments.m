@@ -93,6 +93,7 @@ for k=1:bmm.k
                 % rotation.
                 
                 effort_features = abs(segs{ex}(4:5,:));
+                samples(next_sample).control = segs{ex}(4:5,:);
                 
                 % providing the original data and computing trajectory
                 % segments for each action primitive example

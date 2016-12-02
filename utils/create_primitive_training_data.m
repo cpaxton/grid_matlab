@@ -1,6 +1,7 @@
-function [trainingData,norm_mean,norm_std] = create_primitive_training_data(model,ap)
+function [trainingData,controls,norm_mean,norm_std] = create_primitive_training_data(model,ap)
 
 trainingData = [];
+controls = [];
 
 for i = 1:length(ap)
     
@@ -15,6 +16,7 @@ for i = 1:length(ap)
     %fprintf('WARNING: time wrong');
     
     trainingData = [trainingData data];
+    controls = [controls ap(i).control]; 
 end
 
 
