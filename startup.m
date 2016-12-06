@@ -47,7 +47,7 @@ addpath([pwd '/tests/conference']);
 
 %% Neural Net
 addpath([pwd '/neural_net']);
-addpath([pwd 'tests/nn']);
+addpath([pwd '/tests/nn']);
 
 %% Task Modeling and Specification
 addpath([pwd '/segmentation']);
