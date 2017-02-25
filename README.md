@@ -20,6 +20,16 @@ Please cite as:
   year={2016},
   organization={AAAI}
 }
+
+@inproceedings{paxton2016want,
+  title={Do what I want, not what I did: Imitation of skills by planning sequences of actions},
+  author={Paxton, Chris and Jonathan, Felix and Kobilarov, Marin and Hager, Gregory D},
+  booktitle={Intelligent Robots and Systems (IROS), 2016 IEEE/RSJ International Conference on},
+  pages={3778--3785},
+  year={2016},
+  organization={IEEE}
+}
+
 ```
 
 ## Environment Setup
